@@ -20,7 +20,7 @@ Neume Note is a front-end application that runs directly in your web browser, le
 
 ### Setup
 
-1. Visit [Neume Note's web page]().
+1. Visit [Neume Note's web page](https://andarmanik.github.io/NeumeNoteJAM/).
 2. Enter your OpenAI API key when prompted. This key is stored in your browser for future sessions and can be removed at any time through the app's settings.
 
 ## Usage
