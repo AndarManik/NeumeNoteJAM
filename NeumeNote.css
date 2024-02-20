@@ -116,6 +116,7 @@ textarea::selection {
 .thought {
   border-bottom: 1px solid var(--note-border-color);
   padding: 1.3em;
+  position: relative;
 }
 
 .apiInputContainer {
@@ -152,4 +153,12 @@ textarea::selection {
 
 .apiInput::selection {
   background-color: var(--textarea-selection-background);
+}
+
+.distanceIndex {
+  position: absolute; /* Absolute positioning relative to parent */
+    bottom: 0; /* Align bottom */
+    left: 0; /* Align left */
+    padding-left: 0.5em; /* Optional, for spacing */
+    font-size: 10px;
 }

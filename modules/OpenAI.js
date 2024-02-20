@@ -69,9 +69,9 @@ Format: There may not be white space before or after the [[Smart Complete]] tag,
 
   async partition(
     prompt,
-    system = `Task: Partition the text into a list of chunks and return that list in a JSON object.
-Details: Ensure each chunk pertains to one idea, concept, or thing. Split large text with many ideas into many smaller chunks. Combine many small texts with one common idea into one larger chunk.
-Format: The JSON object should have one key 'chunks' with the value being a list of strings.`
+    system = `Task: Copy all of the users text into an array of strings, where each string is one idea, concept, or thing. 
+Details: The array of strings should contain all of the users text in the order that it is provided in.
+Format: Output as a JSON object. The JSON object should have one key 'strings' with the value being a list of strings.`
   ) {
     const completion = await fetch(this.completionEndpoint, {
       method: "POST",

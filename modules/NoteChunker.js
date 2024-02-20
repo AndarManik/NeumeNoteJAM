@@ -35,7 +35,7 @@ async function parallelChunk(initialChunks) {
   await Promise.all(
     initialChunks.map(async (chunk, index) => {
       const parition = await openAI.partition(chunk);
-      resolvedChunks[index] = parition.chunks;
+      resolvedChunks[index] = parition.strings;
     })
   );
 

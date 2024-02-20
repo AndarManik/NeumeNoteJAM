@@ -4,17 +4,19 @@ class Notes {
     this.chunks = [];
     this.embeddings = [];
     this.chunk2note = [];
+    this.note2chunk = [];
     this.isSearching = false;
   }
 
   setData(data) {
-    if(!data){
+    if (!data) {
       return;
     }
     this.notes = data.notes;
     this.chunks = data.chunks;
     this.embeddings = data.embeddings;
     this.chunk2note = data.chunk2note;
+    this.note2chunk = data.note2chunk;
   }
 
   pushNote(note) {
@@ -24,19 +26,12 @@ class Notes {
   pushChunks(texts, embeddings) {
     const searchSection = document.getElementById("searchSection");
     searchSection.innerHTML = "";
+
+    this.note2chunk.push([texts.length, this.chunks.length]);
     this.chunks.push(...texts);
     this.embeddings.push(...embeddings);
-
-    texts.forEach((text) => {
-      this.chunk2note.push(this.notes.length - 1);
-
-      const thoughtDiv = document.createElement("div");
-      thoughtDiv.classList.add("textarea");
-      thoughtDiv.classList.add("thought");
-      thoughtDiv.textContent = text;
-
-      searchSection.appendChild(thoughtDiv);
-    });
+    texts.forEach(() => {this.chunk2note.push(this.notes.length - 1)});
+    this.displayNotes(this.notes.length - 1)
   }
 
   getSearchText() {
@@ -51,14 +46,49 @@ class Notes {
     searchSection.innerHTML = "";
     const nearest = this.nearestNeighbor(embedding, 6);
 
-    nearest.forEach((index) => {
+    nearest.forEach((data) => {
+      const { index, distance } = data;
       const thoughtDiv = document.createElement("div");
       thoughtDiv.classList.add("thought");
       thoughtDiv.textContent = this.chunks[index];
+
+      thoughtDiv.addEventListener("click", (e) => {
+        const noteIndex = this.chunk2note[index];
+        this.displayNotes(noteIndex);
+      });
+
+      const distanceIndex = document.createElement("div");
+      distanceIndex.classList.add("distanceIndex");
+      distanceIndex.textContent = distance.toFixed(3);
+
+      thoughtDiv.appendChild(distanceIndex);
       searchSection.appendChild(thoughtDiv);
     });
 
     this.isSearching = false;
+  }
+
+  displayNotes(noteIndex) {
+    const searchSection = document.getElementById("searchSection");
+    searchSection.innerHTML = "";
+    const chunkPositions = this.note2chunk[noteIndex];
+    for (let i = 0; i < chunkPositions[0]; i++) {
+      const index = chunkPositions[1] + i;
+      const thoughtDiv = document.createElement("div");
+      thoughtDiv.classList.add("thought");
+      thoughtDiv.textContent = this.chunks[index];
+
+      thoughtDiv.addEventListener("click", (e) => {
+        this.search(this.embeddings[index]);
+      });
+
+      const distanceIndex = document.createElement("div");
+      distanceIndex.classList.add("distanceIndex");
+      distanceIndex.textContent = i + 1;
+      thoughtDiv.appendChild(distanceIndex);
+
+      searchSection.appendChild(thoughtDiv);
+    }
   }
 
   nearestNeighbor(embedding, N) {
@@ -71,7 +101,7 @@ class Notes {
     });
 
     distances.sort((a, b) => a.distance - b.distance);
-    return distances.slice(0, N).map((obj) => obj.index);
+    return distances.slice(0, N);
   }
 }
 
