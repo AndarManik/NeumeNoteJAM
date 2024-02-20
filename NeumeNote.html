@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sample Website</title>
+    <link rel="stylesheet" href="NeumeNote.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <h2>Neume Note</h2>
+    </div>
+    <div class="notebody">
+      <div class="noteSection">
+        <textarea
+          id="completeSection"
+          placeholder="Notes are written here. To smart complete press SHIFT + ENTER. To save press CTRL + S."
+        ></textarea>
+      </div>
+      
+      <div class="noteSection">
+        <textarea
+          id="searchInputSection"
+          placeholder="You can search through your previous notes here."
+        ></textarea>
+        <div id="searchSection"></div>
+      </div>
+    </div>
+    <script type="module" src="./NeumeNote.js"></script>
+  </body>
+</html>

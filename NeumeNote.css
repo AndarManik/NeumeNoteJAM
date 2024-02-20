@@ -1,0 +1,155 @@
+:root {
+  --scrollbar-thumb-color: #ddd;
+  --scrollbar-track-color: transparent;
+  --body-text-color: #333;
+  --note-border-color: #ddd;
+  --textarea-focus-background: #f4f4f4;
+  --textarea-selection-background: #bbbbbb;
+}
+
+*::-webkit-scrollbar {
+  width: 1em;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+}
+
+body {
+  margin: 0;
+  height: 100svh;
+  width: 100svw;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--body-text-color);
+  font-family: "Roboto Slab";
+  box-sizing: border-box;
+}
+
+.header {
+  font-weight: 400;
+  display: flex;
+  padding-left: 1.3em;
+  height: 5svh;
+}
+
+.header h2 {
+  margin-bottom: 0;
+  margin-top: 0.2em;
+}
+
+.notebody {
+  display: flex;
+  flex-direction: row;
+  height: calc(95svh - 1px);
+  width: 100svw;
+  justify-content: center;
+  box-sizing: border-box;
+  border-top: 1px solid var(--note-border-color);
+}
+
+.noteSection {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  font-family: "Roboto Slab";
+  font-weight: 500;
+  word-spacing: 0.2em;
+  line-height: 1.4em;
+  font-size: 15px;
+  resize: none;
+  border: none;
+  color: var(--body-text-color);
+  text-decoration-color: var(--body-text-color);
+}
+textarea:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  background: var(--textarea-focus-background);
+}
+
+textarea::selection {
+  background-color: var(--textarea-selection-background);
+}
+
+#completeSection {
+  padding: 1.3em;
+  height: 100%;
+  border-right: 1px solid var(--note-border-color);
+}
+#searchInputSection {
+  height: 5svh;
+  border-bottom: 1px solid var(--note-border-color);
+  padding-top: 1.3em;
+  padding-left: 1.3em;
+}
+#searchSection {
+  height: calc(100% - 1px);
+  width: calc(100% - 1px);
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto Slab";
+  font-weight: 500;
+  word-spacing: 0.2em;
+  line-height: 1.4em;
+  font-size: 15px;
+  color: var(--body-text-color);
+  text-decoration-color: var(--body-text-color);
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+.thought {
+  border-bottom: 1px solid var(--note-border-color);
+  padding: 1.3em;
+}
+
+.apiInputContainer {
+  background: #ffffff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  border: 1px solid var(--note-border-color);
+  padding: 1.3em;
+}
+
+.apiInput {
+  font-family: "Roboto Slab";
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  margin-top: 1.3em;
+  padding-left: 1.3em;
+  padding-right: 1.3em;
+  width: 30svw;
+  height: 3svw;
+  border: 1px solid var(--note-border-color);
+}
+
+.apiInput:focus {
+  outline: none;
+  box-shadow: none;
+  border: 1px solid var(--note-border-color);
+}
+
+.apiInput::selection {
+  background-color: var(--textarea-selection-background);
+}
