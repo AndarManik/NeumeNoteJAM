@@ -24,8 +24,8 @@ class Notes {
   pushChunks(texts, embeddings) {
     const searchSection = document.getElementById("searchSection");
     searchSection.innerHTML = "";
-    this.chunks.push(texts);
-    this.embeddings.push(embeddings);
+    this.chunks.push(...texts);
+    this.embeddings.push(...embeddings);
 
     texts.forEach((text) => {
       this.chunk2note.push(this.notes.length - 1);
@@ -40,10 +40,9 @@ class Notes {
   }
 
   getSearchText() {
-    isSearching = true;
-
-    const searchText = document.getElementById("searchSection").value;
-    document.getElementById("searchSection").value = "";
+    this.isSearching = true;
+    const searchText = document.getElementById("searchInputSection").value;
+    document.getElementById("searchInputSection").value = "";
     return searchText;
   }
 
@@ -55,15 +54,15 @@ class Notes {
     nearest.forEach((index) => {
       const thoughtDiv = document.createElement("div");
       thoughtDiv.classList.add("thought");
-      thoughtDiv.textContent = chunks[index];
+      thoughtDiv.textContent = this.chunks[index];
       searchSection.appendChild(thoughtDiv);
     });
 
-    isSearching = false;
+    this.isSearching = false;
   }
 
   nearestNeighbor(embedding, N) {
-    const distances = embeddings.map((e, i) => {
+    const distances = this.embeddings.map((e, i) => {
       let sum = 0;
       for (let j = 0; j < embedding.length; j++) {
         sum += (e[j] - embedding[j]) ** 2;
