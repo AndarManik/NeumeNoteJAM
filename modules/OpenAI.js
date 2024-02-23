@@ -32,10 +32,13 @@ class OpenAI {
 
   async smartComplete(
     prompt,
-    system = `Role: You are the "smart complete" feature in a note taking app. The text you provide will replace the [[Smart Complete]] tag.
-Task: Follow the instructions provided by the user near the [[Smart Complete]]. If no instructions are provided complete or expand on the text based on the context before and after the [[Smart Complete]] tag.
-Style: Unless specified otherwise by the user, respond in sentences seperated with linebreaks. Make these sentence detailed but concise.
-Format: There may not be white space before or after the [[Smart Complete]] tag, inlclude leadeing and trailing whitespace.`
+    system = `Task:
+  Determine the best text to replace the [[Smart Complete]] tag in the users message. Infer the desired text based on the intructions in the user's message. If no instructions are present, complete the users message.
+
+Format: 
+  Respond with only the text which would replace the [[Smart Complete]], for a simplified example respond with "dog's" if the user's message is "The man put on his [[Smart Complete]] leash before going for a walk.
+  Include spaces or line breaks at the start and end if needed, for a simplified example respond with " gazelle" if the user's messagge is "The cheetah hunts the[[Smart Complete]]".
+`
   ) {
     try {
       const response = await fetch(this.completionEndpoint, {
@@ -60,8 +63,7 @@ Format: There may not be white space before or after the [[Smart Complete]] tag,
         );
       }
 
-      console.log(response.body);
-      return response.body;
+      return this.streamTextLines(response.body);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -69,9 +71,20 @@ Format: There may not be white space before or after the [[Smart Complete]] tag,
 
   async partition(
     prompt,
-    system = `Task: Copy all of the users text into an array of strings, where each string is one idea, concept, or thing. 
-Details: The array of strings should contain all of the users text in the order that it is provided in.
-Format: Output as a JSON object. The JSON object should have one key 'strings' with the value being a list of strings.`
+    system = `Task:
+  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity.
+    
+Requirements:
+  Delimiters should be extracted from the end of each segment.
+  Use several consecutive words as delimiters to ensure a single occurrence within the message.
+  The output should be formatted as a JSON object with a single key delimiters, associated with a list of identified delimiters.
+    
+Example: 
+  Given the message "If dogs are mammals, then dogs breath air. The sun is a star.", an appropriate output would be 
+  {"delimiters": ["dogs breath air.", "a star."]}.
+    
+Output Format: 
+  The result should be a JSON object that lists the identified delimiters.`
   ) {
     const completion = await fetch(this.completionEndpoint, {
       method: "POST",
@@ -86,7 +99,7 @@ Format: Output as a JSON object. The JSON object should have one key 'strings' w
           { role: "user", content: `${prompt}` },
         ],
         response_format: { type: "json_object" },
-        presence_penalty: -2,
+        presence_penalty: -1,
       }),
     });
 
@@ -121,6 +134,47 @@ Format: Output as a JSON object. The JSON object should have one key 'strings' w
       }),
     });
     return (await embeddings.json()).data.map((data) => data.embedding);
+  }
+
+  // smelly way to turn the stream calls into async iterables
+  async *streamTextLines(textStream) {
+    const reader = textStream.getReader();
+    let buffer = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        const chunkText = new TextDecoder().decode(value, { stream: true });
+        buffer += chunkText;
+
+        let newlineIndex;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.startsWith("data: ")) {
+            if (line === "data: [DONE]") {
+              return; 
+            }
+            const jsonData = JSON.parse(line.substring(6)); 
+            if (
+              jsonData.choices &&
+              jsonData.choices.length > 0 &&
+              jsonData.choices[0].delta.content !== undefined
+            ) {
+              yield jsonData.choices[0].delta.content; 
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Stream processing error:", error);
+    } finally {
+      reader.releaseLock();
+    }
   }
 }
 

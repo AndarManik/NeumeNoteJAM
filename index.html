@@ -11,23 +11,22 @@
     />
   </head>
   <body>
-    <div class="header">
-      <h2>Neume Note</h2>
-    </div>
+    <div class="header"></div>
+
     <div class="notebody">
-      <div class="noteSection">
+      <div class="leftSection">
+        <textarea
+          id="searchInputSection"
+          placeholder="Write what you want to find here. To search press SHIFT + ENTER."
+        ></textarea>
+        <div id="searchSection"></div>
+      </div>
+      
+      <div class="rightSection">
         <textarea
           id="completeSection"
           placeholder="Notes are written here. To smart complete press SHIFT + ENTER. To save press CTRL + S."
         ></textarea>
-      </div>
-      
-      <div class="noteSection">
-        <textarea
-          id="searchInputSection"
-          placeholder="You can search through your previous notes here."
-        ></textarea>
-        <div id="searchSection"></div>
       </div>
     </div>
     <script type="module" src="./NeumeNote.js"></script>

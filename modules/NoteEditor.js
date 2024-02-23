@@ -3,24 +3,38 @@ class NoteEditor {
     this.textAfterCursor = "";
     this.textBeforeCursor = "";
     this.isCompleteing = false;
+    this.chunks = [];
+    this.embeddings = [];
+    this.noteIndex = -1;
   }
 
   cutText() {
-    const text = document.getElementById("completeSection").value;
-    document.getElementById("completeSection").value = "";
-    return text;
+    document.getElementById("searchSection").classList.toggle("animate");
+
+    const completeSection = document.getElementById("completeSection");
+    const text = completeSection.value;
+    completeSection.value = "";
+
+    const chunks = this.chunks;
+    this.chunks = [];
+
+    const embeddings = this.embeddings;
+    this.embeddings = []
+
+    const noteIndex = this.noteIndex;
+    this.noteIndex = -1;
+
+    return {text, chunks, embeddings, noteIndex};
   }
 
   getTextWithSmartTag() {
     this.isCompleteing = true;
-    const completeSection = document.getElementById("completeSection");
-    const text = completeSection.value;
-    const cursorPosition = completeSection.selectionStart;
+    document.getElementById("completeSection").classList.toggle("animate");
+    const { value: text, selectionStart: cursorPosition } =
+      document.getElementById("completeSection");
     this.textBeforeCursor = text.substring(0, cursorPosition);
     this.textAfterCursor = text.substring(cursorPosition);
-    const textWithSmartTag =
-      this.textBeforeCursor + "[[Smart Complete]]" + this.textAfterCursor;
-    return textWithSmartTag;
+    return `${this.textBeforeCursor}[[Smart Complete]]${this.textAfterCursor}`;
   }
 
   hasText() {
@@ -30,47 +44,20 @@ class NoteEditor {
 
   async streamTextToNote(textStream) {
     const completeSection = document.getElementById("completeSection");
-    const reader = textStream.getReader();
-    let buffer = '';
-  
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          console.log("Stream completed.");
-          break;
-        }
-  
-        // Convert the chunk from Uint8Array to a string
-        const chunkText = new TextDecoder().decode(value, { stream: true });
-        buffer += chunkText;
-  
-        // Process each line as it's complete
-        let newlineIndex;
-        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-          const line = buffer.slice(0, newlineIndex).trim();
-          buffer = buffer.slice(newlineIndex + 1);
-  
-          if (line.startsWith('data: ')) {
-            if(line === "data: [DONE]") {
-              break;
-            }
-            const jsonData = JSON.parse(line.substring(6)); // Remove 'data: ' prefix and parse JSON
-            if (jsonData.choices && jsonData.choices.length > 0 && jsonData.choices[0].delta.content !== undefined) {
-              this.textBeforeCursor += jsonData.choices[0].delta.content;
-              completeSection.value = this.textBeforeCursor + this.textAfterCursor; // Append the content to the textarea
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Stream processing error:', error);
-    } finally {
-      reader.releaseLock();
-      this.isCompleteing = false;
+    for await (const text of textStream) {
+      this.textBeforeCursor += text;
+      completeSection.value = this.textBeforeCursor + this.textAfterCursor;
     }
+    this.isCompleteing = false;
+    document.getElementById("completeSection").classList.toggle("animate");
+  }
+
+  editNote(note, chunks, embeddings, noteIndex) {
+    document.getElementById("completeSection").value = note;
+    this.chunks = chunks;
+    this.embeddings = embeddings;
+    this.noteIndex = noteIndex;
   }
 }
-
 const noteEditor = new NoteEditor();
 export default noteEditor;

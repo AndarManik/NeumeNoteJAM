@@ -38,26 +38,31 @@ body {
 .header {
   font-weight: 400;
   display: flex;
-  padding-left: 1.3em;
-  height: 5svh;
-}
-
-.header h2 {
-  margin-bottom: 0;
-  margin-top: 0.2em;
+  padding-left: 1em;
+  height: 28px;
 }
 
 .notebody {
   display: flex;
   flex-direction: row;
-  height: calc(95svh - 1px);
+  height: calc(100% - 29px);
   width: 100svw;
   justify-content: center;
   box-sizing: border-box;
   border-top: 1px solid var(--note-border-color);
 }
 
-.noteSection {
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 50svw;
+  max-width: 300px;
+  box-sizing: border-box;
+  border-right: 1px solid var(--note-border-color);
+}
+
+.rightSection {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -70,7 +75,7 @@ textarea {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 15px;
+  font-size: 14px;
   resize: none;
   border: none;
   color: var(--body-text-color);
@@ -88,35 +93,46 @@ textarea::selection {
 }
 
 #completeSection {
-  padding: 1.3em;
+  padding: 1em;
   height: 100%;
-  border-right: 1px solid var(--note-border-color);
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 #searchInputSection {
-  height: 5svh;
+  height: 50px;
   border-bottom: 1px solid var(--note-border-color);
-  padding-top: 1.3em;
-  padding-left: 1.3em;
+  padding: 1em;
+  padding-top: 1em;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 #searchSection {
-  height: calc(100% - 1px);
-  width: calc(100% - 1px);
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   font-family: "Roboto Slab";
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--body-text-color);
   text-decoration-color: var(--body-text-color);
   overflow-y: scroll;
   box-sizing: border-box;
+  position: relative;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 .thought {
   border-bottom: 1px solid var(--note-border-color);
-  padding: 1.3em;
+  padding: 1em;
   position: relative;
+}
+
+.thought:hover {
+  background: var(--textarea-focus-background);
+}
+
+.thought:active {
+  background: var(--scrollbar-thumb-color);
 }
 
 .apiInputContainer {
@@ -127,7 +143,8 @@ textarea::selection {
   transform: translate(-50%, -50%);
   text-align: center;
   border: 1px solid var(--note-border-color);
-  padding: 1.3em;
+  border-radius: 5px;
+  padding: 1em;
 }
 
 .apiInput {
@@ -137,9 +154,9 @@ textarea::selection {
   outline: none;
   border: none;
   box-shadow: none;
-  margin-top: 1.3em;
-  padding-left: 1.3em;
-  padding-right: 1.3em;
+  margin-top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
   width: 30svw;
   height: 3svw;
   border: 1px solid var(--note-border-color);
@@ -157,8 +174,41 @@ textarea::selection {
 
 .distanceIndex {
   position: absolute; /* Absolute positioning relative to parent */
-    bottom: 0; /* Align bottom */
-    left: 0; /* Align left */
-    padding-left: 0.5em; /* Optional, for spacing */
-    font-size: 10px;
+  bottom: 0; /* Align bottom */
+  right: 0; /* Align left */
+  padding-right: 0.5em; /* Optional, for spacing */
+  font-size: 10px;
+  display: flex;
+}
+
+.thoughtEdit {
+  position: absolute; /* Absolute positioning relative to parent */
+  top: 0; /* Align bottom */
+  right: 0; /* Align left */
+  padding-right: 0.5em; /* Optional, for spacing */
+  font-size: 10px;
+}
+
+.distanceColorBox {
+  height: 10px;
+  width: 10px;
+  margin-top: 5px;
+  margin-left: 5px;
+  border-radius: 2px;
+}
+
+.animate {
+  animation: backgroundFade 2s infinite ease-in-out;
+}
+
+@keyframes backgroundFade {
+  0% {
+    background-color: #f4f4f4;
+  }
+  50% {
+    background-color: #ddd;
+  }
+  100% {
+    background-color: #f4f4f4;
+  }
 }

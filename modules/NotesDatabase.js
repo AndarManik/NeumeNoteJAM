@@ -1,7 +1,7 @@
 class NotesDatabase {
   constructor() {
     this.dbName = "NotesDB";
-    this.dbVersion = 2;
+    this.dbVersion = 4;
     this.db = null;
   }
 
@@ -28,6 +28,7 @@ class NotesDatabase {
           notesStore.createIndex("chunks", "chunks", { unique: false });
           notesStore.createIndex("embeddings", "embeddings", { unique: false });
           notesStore.createIndex("chunk2note", "chunk2note", { unique: false });
+          notesStore.createIndex("note2chunk", "note2chunk", { unique: false });
         }
       };
 
@@ -89,7 +90,10 @@ class NotesDatabase {
     store.put({ id: 1, key: apiKey });
   }
 
-  saveNotesData(notes, chunks, embeddings, chunk2note) {
+  saveNotesData(data) {
+    console.log(data);
+    const {notes, chunks, embeddings, chunk2note, note2chunk} = data;
+    console.log({notes, chunks, embeddings, chunk2note, note2chunk});
     const transaction = this.db.transaction(["notesData"], "readwrite");
     const store = transaction.objectStore("notesData");
     store.put({
@@ -98,6 +102,7 @@ class NotesDatabase {
       chunks: chunks,
       embeddings: embeddings,
       chunk2note: chunk2note,
+      note2chunk: note2chunk,
     });
   }
 }

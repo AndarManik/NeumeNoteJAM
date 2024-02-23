@@ -1,3 +1,4 @@
+import ChunkViewer from "./ChunkViewer.js";
 class Notes {
   constructor() {
     this.notes = [];
@@ -6,9 +7,15 @@ class Notes {
     this.chunk2note = [];
     this.note2chunk = [];
     this.isSearching = false;
+    this.chunkViewer = new ChunkViewer(this);
+  }
+
+  linkEditor(noteEditor) {
+    this.editor = noteEditor;
   }
 
   setData(data) {
+    console.log(data);
     if (!data) {
       return;
     }
@@ -19,25 +26,51 @@ class Notes {
     this.note2chunk = data.note2chunk;
   }
 
-  pushNote(note) {
-    this.notes.push(note);
-  }
+  pushNote(note,texts, embeddings) {
+    document.getElementById("searchSection").classList.toggle("animate");
 
-  pushChunks(texts, embeddings) {
     const searchSection = document.getElementById("searchSection");
     searchSection.innerHTML = "";
 
+    this.notes.push(note);
     this.note2chunk.push([texts.length, this.chunks.length]);
     this.chunks.push(...texts);
     this.embeddings.push(...embeddings);
     texts.forEach(() => {this.chunk2note.push(this.notes.length - 1)});
-    this.displayNotes(this.notes.length - 1)
+    this.chunkViewer.displayNotes(this.notes.length - 1)
+  }
+
+  rePushNote(note, texts, embeddings, noteIndex) {
+    document.getElementById("searchSection").classList.toggle("animate");
+
+    const searchSection = document.getElementById("searchSection");
+    searchSection.innerHTML = "";
+
+    const chunkPositions = this.note2chunk[noteIndex];
+    const start = chunkPositions[1]
+    const end = chunkPositions[0];
+
+    this.notes[noteIndex] = note;
+    this.note2chunk[noteIndex][0] = texts.length;
+    this.chunks.splice(start, end,...texts);
+    this.embeddings.splice(start, end,...embeddings);
+    const chunk2note = []
+    texts.forEach(() => {chunk2note.push(noteIndex)});
+    this.chunk2note.splice(start, end, ...chunk2note);
+
+    const lengthDiff = texts.length - end;
+    for(let i = noteIndex + 1; i < this.notes.length; i++){
+      this.note2chunk[i][1] += lengthDiff;
+    }
+    this.chunkViewer.displayNotes(noteIndex)
   }
 
   getSearchText() {
     this.isSearching = true;
+    document.getElementById("searchSection").classList.toggle("animate");
     const searchText = document.getElementById("searchInputSection").value;
     document.getElementById("searchInputSection").value = "";
+    document.getElementById("searchSection").innerHTML = "";
     return searchText;
   }
 
@@ -45,50 +78,10 @@ class Notes {
     const searchSection = document.getElementById("searchSection");
     searchSection.innerHTML = "";
     const nearest = this.nearestNeighbor(embedding, 6);
-
-    nearest.forEach((data) => {
-      const { index, distance } = data;
-      const thoughtDiv = document.createElement("div");
-      thoughtDiv.classList.add("thought");
-      thoughtDiv.textContent = this.chunks[index];
-
-      thoughtDiv.addEventListener("click", (e) => {
-        const noteIndex = this.chunk2note[index];
-        this.displayNotes(noteIndex);
-      });
-
-      const distanceIndex = document.createElement("div");
-      distanceIndex.classList.add("distanceIndex");
-      distanceIndex.textContent = distance.toFixed(3);
-
-      thoughtDiv.appendChild(distanceIndex);
-      searchSection.appendChild(thoughtDiv);
-    });
-
+    this.chunkViewer.displayNNSearch(nearest);
     this.isSearching = false;
-  }
+    document.getElementById("searchSection").classList.remove("animate");
 
-  displayNotes(noteIndex) {
-    const searchSection = document.getElementById("searchSection");
-    searchSection.innerHTML = "";
-    const chunkPositions = this.note2chunk[noteIndex];
-    for (let i = 0; i < chunkPositions[0]; i++) {
-      const index = chunkPositions[1] + i;
-      const thoughtDiv = document.createElement("div");
-      thoughtDiv.classList.add("thought");
-      thoughtDiv.textContent = this.chunks[index];
-
-      thoughtDiv.addEventListener("click", (e) => {
-        this.search(this.embeddings[index]);
-      });
-
-      const distanceIndex = document.createElement("div");
-      distanceIndex.classList.add("distanceIndex");
-      distanceIndex.textContent = i + 1;
-      thoughtDiv.appendChild(distanceIndex);
-
-      searchSection.appendChild(thoughtDiv);
-    }
   }
 
   nearestNeighbor(embedding, N) {

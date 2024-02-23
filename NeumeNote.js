@@ -1,38 +1,28 @@
 import notes from "./modules/Notes.js";
 import openAI from "./modules/OpenAI.js";
 import noteEditor from "./modules/NoteEditor.js";
-import splitEmbed from "./modules/NoteChunker.js";
 import notesDatabase from "./modules/NotesDatabase.js";
+import displayApiInput from "./modules/ApiKeyReader.js";
 import contextListener from "./modules/ContextListener.js";
+import {splitEmbed, reSplitEmbed} from "./modules/NoteChunker.js";
 
 contextListener.setListener();
 notesDatabase.initializeDB().then(async () => {
   notes.setData(await notesDatabase.getNotes());
+
   const apiKey = await notesDatabase.getAPIKey();
   if (apiKey) {
     openAI.setKey(apiKey);
     return;
   }
 
-  const apiInputContainer = document.createElement("div");
-  apiInputContainer.classList.add("apiInputContainer");
-  apiInputContainer.textContent = "Paste your OpenAI API key";
-
-  const apiInput = document.createElement("input");
-  apiInput.classList.add("apiInput");
-  apiInputContainer.appendChild(apiInput);
-
-  document.body.appendChild(apiInputContainer);
-
-  apiInput.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      openAI.setKey(apiInput.value);
-      notesDatabase.saveAPIKey(apiInput.value);
-
-      document.body.removeChild(apiInputContainer);
-    }
+  displayApiInput((apiKey) => {
+    openAI.setKey(apiKey);
+    notesDatabase.saveAPIKey(apiKey);
   });
 });
+
+notes.linkEditor(noteEditor);
 
 document.addEventListener("keydown", async function (e) {
   const shiftEnterPressed = e.shiftKey && e.code === "Enter";
@@ -71,8 +61,14 @@ async function search() {
 }
 
 async function save() {
-  const text = noteEditor.cutText();
-  notes.pushNote(text);
-  const {texts, embeddings} = await splitEmbed(text);
-  notes.pushChunks(texts, embeddings);
+  const data = noteEditor.cutText();
+  if(data.noteIndex == -1) {
+    const { texts, embeddings } = await splitEmbed(data.text);
+    notes.pushNote(data.text, texts, embeddings);
+    notesDatabase.saveNotesData(notes);
+    return;
+  }
+  const { texts, embeddings } = await reSplitEmbed(data.text, data.chunks, data.embeddings);
+  notes.rePushNote(data.text, texts, embeddings, data.noteIndex);
+  notesDatabase.saveNotesData(notes);
 }
