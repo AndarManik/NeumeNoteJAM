@@ -1,6 +1,6 @@
 # Neume Note
 
-Neume Note is a minimal note-taking engine designed to enhance your note-taking experience using the power of ChatGPT. With features like smart complete and smart search, Neume Note transforms your workflow, making note-taking more efficient and intuitive.
+Neume Note is a front-end only note-taking engine designed to enhance your note-taking experience using the power of ChatGPT. With features like smart complete and smart search, Neume Note transforms your workflow, making note-taking more efficient and intuitive.
 
 ## Features
 
@@ -20,7 +20,7 @@ Neume Note is a front-end application that runs directly in your web browser, le
 
 ### Setup
 
-1. Visit [Neume Note's web page]().
+1. Visit [Neume Note's web page](https://andarmanik.github.io/NeumeNoteJAM/).
 2. Enter your OpenAI API key when prompted. This key is stored in your browser for future sessions and can be removed at any time through the app's settings.
 
 ## Usage
