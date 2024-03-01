@@ -61,7 +61,9 @@ class OpenAI {
 
   async smartComplete(
     prompt,
-    system = `Task:
+    system = `Role:
+  You are an editor for a document.
+Task:
   Determine the best text to replace the "[[SmartComplete]]" text in the "User's Message". Infer the desired text based on the intructions in the "User's Message". If no instructions are present, complete the "User's Message".
   Enhance your response by utilizing the information in the"External Context". Infer based on the user's instruction whether to incorporate information from "External Context".
 Format: 

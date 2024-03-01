@@ -8,6 +8,9 @@ class ContextBuilder {
   }
 
   addThought(thought) {
+    if(this.context.indexOf(thought.lastChild.textContent) != -1){
+      return;
+    }
     if (!this.context.length) {
       this.rightSection.append(this.contextBuilder);
     }
