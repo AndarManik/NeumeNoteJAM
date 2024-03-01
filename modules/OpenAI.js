@@ -54,7 +54,7 @@ Format:
             Authorization: `Bearer ${this.apiKey}`,
           },
           body: JSON.stringify({
-            model: "gpt-4-turbo-preview",
+            model: "gpt-3.5-turbo-0125",
             messages: [
               { role: "system", content: system },
               { role: "user", content: prompt },
