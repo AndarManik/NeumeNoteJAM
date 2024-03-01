@@ -357,7 +357,7 @@ class ChunkViewer {
     const newIndex = index + 1;
     const goldenRatio = 1.618033988749895;
     const outerHue = 360 * ((goldenRatio * newIndex) % 1);
-    const innerHue = 360 * ((goldenRatio * 17 * (newIndex + 1)) % 1);
+    const innerHue = 360 * ((goldenRatio * 2 * (newIndex)) % 1);
     return `radial-gradient(circle, hsl(${outerHue}, 100%, 50%) 0%, hsl(${innerHue}, 100%, 50%) 100%)`;
   }
 }
