@@ -13,6 +13,10 @@ class OpenAI {
     }
   }
 
+  deleteData() {
+    this.apiKey = "";
+  }
+
   async autoRequest(apiCall) {
     let retries = 0;
 
@@ -21,52 +25,55 @@ class OpenAI {
         const result = await apiCall();
         return result;
       } catch (error) {
-        this.retryCount++;
+        retries++;
         await new Promise((resolve) =>
           setTimeout(resolve, this.waitTime * Math.pow(2, retries))
         );
         console.error(error);
       }
     }
+    return null;
   }
 
   async smartComplete(
     prompt,
     system = `Task:
-  Determine the best text to replace the [[Smart Complete]] tag in the users message. Infer the desired text based on the intructions in the user's message. If no instructions are present, complete the users message.
-
+  Determine the best text to replace the "[[SmartComplete]]" text in the "User's Message". Infer the desired text based on the intructions in the "User's Message". If no instructions are present, complete the "User's Message".
+  Enhance your response by utilizing the information in the"External Context". Infer based on the user's instruction whether to incorporate information from "External Context".
 Format: 
-  Respond with only the text which would replace the [[Smart Complete]], for a simplified example respond with "dog's" if the user's message is "The man put on his [[Smart Complete]] leash before going for a walk.
-  Include spaces or line breaks at the start and end if needed, for a simplified example respond with " gazelle" if the user's messagge is "The cheetah hunts the[[Smart Complete]]".
+  Respond with only the text which would replace the [[SmartComplete]], for a simplified example respond with "dog's" if the "User's Message" is "The man put on his [[SmartComplete]] leash before going for a walk."
+  Include spaces or line breaks at the start and end if needed, for a simplified example respond with " gazelle" if the "User's Message" is "The cheetah hunts the[[SmartComplete]]".
 `
   ) {
-    try {
-      const response = await fetch(this.completionEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4-turbo-preview",
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: prompt },
-          ],
-          stream: true,
-        }),
-      });
+    return this.autoRequest(async () => {
+      try {
+        const response = await fetch(this.completionEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4-turbo-preview",
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: prompt },
+            ],
+            stream: true,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(
-          `Network response was not ok, status: ${response.status}`
-        );
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok, status: ${response.status}`
+          );
+        }
+
+        return this.streamTextLines(response.body);
+      } catch (error) {
+        console.error("Fetch error:", error);
       }
-
-      return this.streamTextLines(response.body);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
+    });
   }
 
   async partition(
@@ -86,54 +93,60 @@ Example:
 Output Format: 
   The result should be a JSON object that lists the identified delimiters.`
   ) {
-    const completion = await fetch(this.completionEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo-0125",
-        messages: [
-          { role: "system", content: `${system}` },
-          { role: "user", content: `${prompt}` },
-        ],
-        response_format: { type: "json_object" },
-        presence_penalty: -1,
-      }),
-    });
+    return this.autoRequest(async () => {
+      const completion = await fetch(this.completionEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo-0125",
+          messages: [
+            { role: "system", content: `${system}` },
+            { role: "user", content: `${prompt}` },
+          ],
+          response_format: { type: "json_object" },
+          presence_penalty: -1,
+        }),
+      });
 
-    return JSON.parse((await completion.json()).choices[0].message.content);
+      return JSON.parse((await completion.json()).choices[0].message.content);
+    });
   }
 
   async embed(text) {
-    const embedding = await fetch(this.embeddingEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "text-embedding-3-small",
-        input: text,
-      }),
+    return this.autoRequest(async () => {
+      const embedding = await fetch(this.embeddingEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "text-embedding-3-small",
+          input: text,
+        }),
+      });
+      return (await embedding.json()).data[0].embedding;
     });
-    return (await embedding.json()).data[0].embedding;
   }
 
   async embedBatch(texts) {
-    const embeddings = await fetch(this.embeddingEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "text-embedding-3-small",
-        input: texts,
-      }),
+    return this.autoRequest(async () => {
+      const embeddings = await fetch(this.embeddingEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "text-embedding-3-small",
+          input: texts,
+        }),
+      });
+      return (await embeddings.json()).data.map((data) => data.embedding);
     });
-    return (await embeddings.json()).data.map((data) => data.embedding);
   }
 
   // smelly way to turn the stream calls into async iterables
@@ -157,15 +170,15 @@ Output Format:
 
           if (line.startsWith("data: ")) {
             if (line === "data: [DONE]") {
-              return; 
+              return;
             }
-            const jsonData = JSON.parse(line.substring(6)); 
+            const jsonData = JSON.parse(line.substring(6));
             if (
               jsonData.choices &&
               jsonData.choices.length > 0 &&
               jsonData.choices[0].delta.content !== undefined
             ) {
-              yield jsonData.choices[0].delta.content; 
+              yield jsonData.choices[0].delta.content;
             }
           }
         }

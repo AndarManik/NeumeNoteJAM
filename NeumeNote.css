@@ -7,8 +7,12 @@
   --textarea-selection-background: #bbbbbb;
 }
 
+*::selection {
+  background-color: var(--textarea-selection-background);
+}
+
 *::-webkit-scrollbar {
-  width: 1em;
+  width: 0.75em;
 }
 
 *::-webkit-scrollbar-button {
@@ -36,10 +40,51 @@ body {
 }
 
 .header {
+  box-sizing: border-box;
   font-weight: 400;
   display: flex;
-  padding-left: 1em;
+  flex-direction: row;
   height: 28px;
+  width: 100svw;
+}
+
+#leftHeader {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 50svw;
+  max-width: 300px;
+  box-sizing: border-box;
+}
+
+#rightHeader {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.headerButton {
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
+  user-select: none;
+}
+
+.headerButton:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.headerButton:active {
+  background-color: var(--scrollbar-thumb-color);
 }
 
 .notebody {
@@ -52,7 +97,7 @@ body {
   border-top: 1px solid var(--note-border-color);
 }
 
-.leftSection {
+#leftSection {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -62,9 +107,9 @@ body {
   border-right: 1px solid var(--note-border-color);
 }
 
-.rightSection {
+#rightSection {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -94,7 +139,7 @@ textarea::selection {
 
 #completeSection {
   padding: 1em;
-  height: 100%;
+  width: 100%;
   transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 #searchInputSection {
@@ -121,18 +166,111 @@ textarea::selection {
   position: relative;
   transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
+
+#contextBuilder {
+  width: 50svw;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  size: absolute;
+  border-right: 1px solid var(--note-border-color);
+}
+
+.animate {
+  animation: backgroundFade 2s infinite ease-in-out;
+}
+
+@keyframes backgroundFade {
+  0% {
+    background-color: #f4f4f4;
+  }
+  50% {
+    background-color: #ebe7f6;
+  }
+  100% {
+    background-color: #f4f4f4;
+  }
+}
+
+#searchSectionHeader {
+  height: 28px;
+  border-bottom: 1px solid var(--note-border-color);
+  display: flex;
+}
+#searchSectionHeader > :last-child {
+  margin-left: auto;
+}
+.searchSectionButton {
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
+  user-select: none;
+}
+
+.searchSectionButton:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.searchSectionButton:active {
+  background-color: var(--scrollbar-thumb-color);
+}
+
 .thought {
   border-bottom: 1px solid var(--note-border-color);
-  padding: 1em;
+  padding-top: 0;
   position: relative;
 }
 
-.thought:hover {
-  background: var(--textarea-focus-background);
+.thought p {
+  margin: 1em;
+  margin-top: 0;
+  overflow-wrap: break-word;
+  font-size: 14px;
 }
 
-.thought:active {
-  background: var(--scrollbar-thumb-color);
+.thoughtHeader {
+  display: flex;
+}
+
+.thoughtButton {
+  padding: 0.15em;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
+}
+
+.thoughtButton:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.thoughtButton:active {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+.distanceIndex {
+  padding: 0.15em;
+
+  font-size: 12px;
+}
+
+.distanceColorBox {
+  height: 10px;
+  width: 10px;
+  margin-top: 0.4em;
+  margin-left: 0.4em;
+  border-radius: 2px;
 }
 
 .apiInputContainer {
@@ -145,6 +283,58 @@ textarea::selection {
   border: 1px solid var(--note-border-color);
   border-radius: 5px;
   padding: 1em;
+}
+
+.settings {
+  height: 400px;
+  width: 400px;
+  background: #ffffff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--note-border-color);
+  border-radius: 5px;
+  overflow-y: auto;
+}
+
+.settingsSection {
+  border-bottom: 1px solid var(--note-border-color);
+  padding: 1em;
+}
+
+.settingsSectionHeader {
+  font-weight: 600;
+}
+
+.settingsInfo {
+  display:flex;
+}
+
+.settingsText{
+  font-size: 12px;
+  width: 300px;
+}
+
+.settingsInput {
+  font-family: "Roboto Slab";
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  border: 1px solid var(--note-border-color);
+  width: 150px;
+}
+
+.settingsInput:focus {
+  outline: none;
+  box-shadow: none;
+  border: 1px solid var(--note-border-color);
+}
+
+.settingsInput::selection {
+  background-color: var(--textarea-selection-background);
 }
 
 .apiInput {
@@ -172,43 +362,15 @@ textarea::selection {
   background-color: var(--textarea-selection-background);
 }
 
-.distanceIndex {
-  position: absolute; /* Absolute positioning relative to parent */
-  bottom: 0; /* Align bottom */
-  right: 0; /* Align left */
-  padding-right: 0.5em; /* Optional, for spacing */
-  font-size: 10px;
-  display: flex;
+.editorTab {
+  height: 24px;
+  width: 24px;
+  margin: 2px;
+  border-radius: 50%;
+  transition: border-radius 0.125s ease-in-out;
+  cursor: pointer;
 }
 
-.thoughtEdit {
-  position: absolute; /* Absolute positioning relative to parent */
-  top: 0; /* Align bottom */
-  right: 0; /* Align left */
-  padding-right: 0.5em; /* Optional, for spacing */
-  font-size: 10px;
-}
-
-.distanceColorBox {
-  height: 10px;
-  width: 10px;
-  margin-top: 5px;
-  margin-left: 5px;
-  border-radius: 2px;
-}
-
-.animate {
-  animation: backgroundFade 2s infinite ease-in-out;
-}
-
-@keyframes backgroundFade {
-  0% {
-    background-color: #f4f4f4;
-  }
-  50% {
-    background-color: #ddd;
-  }
-  100% {
-    background-color: #f4f4f4;
-  }
+.isActiveTab {
+  border-radius: 4px;
 }

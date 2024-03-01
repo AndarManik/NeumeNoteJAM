@@ -1,4 +1,6 @@
 import ChunkViewer from "./ChunkViewer.js";
+import { splitEmbed, reSplitEmbed } from "./NoteChunker.js";
+
 class Notes {
   constructor() {
     this.notes = [];
@@ -7,7 +9,50 @@ class Notes {
     this.chunk2note = [];
     this.note2chunk = [];
     this.isSearching = false;
-    this.chunkViewer = new ChunkViewer(this);
+    this.chunkViewer = new ChunkViewer();
+  }
+
+  delete(noteIndex) {
+    const numDeleted = this.note2chunk[noteIndex][0];
+    this.notes.splice(noteIndex, 1);
+    this.chunks.splice(
+      this.note2chunk[noteIndex][1],
+      this.note2chunk[noteIndex][0]
+    );
+    this.embeddings.splice(
+      this.note2chunk[noteIndex][1],
+      this.note2chunk[noteIndex][0]
+    );
+    this.chunk2note.splice(
+      this.note2chunk[noteIndex][1],
+      this.note2chunk[noteIndex][0]
+    );
+    this.note2chunk.splice(noteIndex, 1);
+
+    for (let i = 0; i < this.chunk2note.length; i++) {
+      this.chunk2note[i] =
+        this.chunk2note[i] > noteIndex
+          ? this.chunk2note[i] - 1
+          : this.chunk2note[i];
+    }
+
+    for (let i = noteIndex; i < this.note2chunk.length; i++) {
+      this.note2chunk[i][1] -= numDeleted;
+    }
+  }
+
+  getNoteData(noteIndex) {
+    return {
+      note: this.notes[noteIndex],
+      chunks: this.chunks.slice(
+        this.note2chunk[noteIndex][1],
+        this.note2chunk[noteIndex][0] + this.note2chunk[noteIndex][1]
+      ),
+      embeddings: this.embeddings.slice(
+        this.note2chunk[noteIndex][1],
+        this.note2chunk[noteIndex][0] + this.note2chunk[noteIndex][1]
+      ),
+    };
   }
 
   linkEditor(noteEditor) {
@@ -26,62 +71,91 @@ class Notes {
     this.note2chunk = data.note2chunk;
   }
 
-  pushNote(note,texts, embeddings) {
-    document.getElementById("searchSection").classList.toggle("animate");
-
-    const searchSection = document.getElementById("searchSection");
-    searchSection.innerHTML = "";
-
+  async pushNote(note) {
+    document.getElementById("searchSection").classList.add("animate");
+    const { texts, embeddings } = await splitEmbed(note);
     this.notes.push(note);
     this.note2chunk.push([texts.length, this.chunks.length]);
     this.chunks.push(...texts);
     this.embeddings.push(...embeddings);
-    texts.forEach(() => {this.chunk2note.push(this.notes.length - 1)});
-    this.chunkViewer.displayNotes(this.notes.length - 1)
+    texts.forEach(() => {
+      this.chunk2note.push(this.notes.length - 1);
+    });
+    document.getElementById("searchSection").classList.remove("animate");
+    this.chunkViewer.displayNotes(this.notes.length - 1);
   }
 
-  rePushNote(note, texts, embeddings, noteIndex) {
-    document.getElementById("searchSection").classList.toggle("animate");
-
-    const searchSection = document.getElementById("searchSection");
-    searchSection.innerHTML = "";
+  async rePushNote(note, noteIndex) {
+    document.getElementById("searchSection").classList.add("animate");
+    const data = this.getNoteData(noteIndex);
+    console.log("rePushNote after getNoteData:", noteIndex, data);
+    const { texts, embeddings } = await reSplitEmbed(
+      note,
+      data.chunks,
+      data.embeddings
+    );
 
     const chunkPositions = this.note2chunk[noteIndex];
-    const start = chunkPositions[1]
+    const start = chunkPositions[1];
     const end = chunkPositions[0];
 
     this.notes[noteIndex] = note;
     this.note2chunk[noteIndex][0] = texts.length;
-    this.chunks.splice(start, end,...texts);
-    this.embeddings.splice(start, end,...embeddings);
-    const chunk2note = []
-    texts.forEach(() => {chunk2note.push(noteIndex)});
+    this.chunks.splice(start, end, ...texts);
+    this.embeddings.splice(start, end, ...embeddings);
+    const chunk2note = [];
+    texts.forEach(() => {
+      chunk2note.push(noteIndex);
+    });
     this.chunk2note.splice(start, end, ...chunk2note);
 
     const lengthDiff = texts.length - end;
-    for(let i = noteIndex + 1; i < this.notes.length; i++){
+    for (let i = noteIndex + 1; i < this.notes.length; i++) {
       this.note2chunk[i][1] += lengthDiff;
     }
-    this.chunkViewer.displayNotes(noteIndex)
+
+    this.chunkViewer.displayNotes(noteIndex) 
+    document.getElementById("searchSection").classList.remove("animate");
+  }
+
+  async reChunk(noteIndex) {
+    document.getElementById("searchSection").classList.add("animate");
+
+    const { texts, embeddings } = await splitEmbed(this.notes[noteIndex]);
+    const chunkPositions = this.note2chunk[noteIndex];
+    const start = chunkPositions[1];
+    const end = chunkPositions[0];
+
+    this.note2chunk[noteIndex][0] = texts.length;
+    this.chunks.splice(start, end, ...texts);
+    this.embeddings.splice(start, end, ...embeddings);
+    const chunk2note = [];
+    texts.forEach(() => {
+      chunk2note.push(noteIndex);
+    });
+    this.chunk2note.splice(start, end, ...chunk2note);
+
+    const lengthDiff = texts.length - end;
+    for (let i = noteIndex + 1; i < this.notes.length; i++) {
+      this.note2chunk[i][1] += lengthDiff;
+    }
+    document.getElementById("searchSection").classList.remove("animate");
   }
 
   getSearchText() {
-    this.isSearching = true;
-    document.getElementById("searchSection").classList.toggle("animate");
+    document.getElementById("searchSection").classList.add("animate");
     const searchText = document.getElementById("searchInputSection").value;
     document.getElementById("searchInputSection").value = "";
-    document.getElementById("searchSection").innerHTML = "";
     return searchText;
   }
 
   search(embedding) {
-    const searchSection = document.getElementById("searchSection");
-    searchSection.innerHTML = "";
-    const nearest = this.nearestNeighbor(embedding, 6);
-    this.chunkViewer.displayNNSearch(nearest);
+    this.notes.isSearching = true;
+    document.getElementById("searchSection").classList.add("animate");
+    const nearest = this.nearestNeighbor(embedding, 10);
     this.isSearching = false;
     document.getElementById("searchSection").classList.remove("animate");
-
+    this.chunkViewer.displayNNSearch(nearest);
   }
 
   nearestNeighbor(embedding, N) {
@@ -94,7 +168,15 @@ class Notes {
     });
 
     distances.sort((a, b) => a.distance - b.distance);
-    return distances.slice(0, N);
+    return { embedding, data: distances.slice(0, N) };
+  }
+
+  deleteData(){
+    this.notes = [];
+    this.chunks = [];
+    this.embeddings = [];
+    this.chunk2note = [];
+    this.note2chunk = [];
   }
 }
 

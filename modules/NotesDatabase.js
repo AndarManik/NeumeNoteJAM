@@ -58,7 +58,7 @@ class NotesDatabase {
       return result;
     } catch (error) {
       if (error.name !== "NotFoundError") {
-        console.error("An error occurred while setting notes data:", error);
+        console.error("IndexedDB error for Notes", error);
       }
       return null;
     }
@@ -78,7 +78,7 @@ class NotesDatabase {
       return result.key;
     } catch (error) {
       if (error.name !== "NotFoundError") {
-        console.error("An error occurred while setting notes data:", error);
+        console.error("IndexedDB error for ApiKey", error);
       }
       return null;
     }
@@ -104,6 +104,26 @@ class NotesDatabase {
       chunk2note: chunk2note,
       note2chunk: note2chunk,
     });
+  }
+
+  async deleteData() {
+    try {
+      const transaction = this.db.transaction(["apiKey", "notesData"], "readwrite");
+  
+      await Promise.all([
+        transaction.objectStore("apiKey").clear(),
+        transaction.objectStore("notesData").clear(),
+      ]);
+  
+      await new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve(true);
+        transaction.onerror = (event) => reject(event.target.error);
+      });
+  
+      return true;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
 

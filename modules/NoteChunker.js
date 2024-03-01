@@ -7,40 +7,46 @@ import openAI from "./OpenAI.js";
 */
 
 async function reSplitEmbed(text, chunks, embeddings) {
-  const { modifiedTexts, modifiedIndexes, chunkIndexes } = reSplit(text, chunks);
-  console.log({ modifiedTexts, modifiedIndexes, chunkIndexes });
-  if(modifiedTexts.length == 0){
-    return {texts: chunks, embeddings};
-  }
-  const chunkedModifiedTexts = await parallelChunk(modifiedTexts);
-  console.log(chunkedModifiedTexts);
-  const flattened = chunkedModifiedTexts.flat();
-  console.log(flattened);
-  const flattenedEmbeddings = await openAI.embedBatch(flattened);
-  const deflattenedEmbeddings = [];
-  chunkedModifiedTexts.forEach((chunkedText, index) => {
-    deflattenedEmbeddings[index] = flattenedEmbeddings.splice(0, chunkedText.length);
-  })
-
-  console.log(deflattenedEmbeddings);
+  const { modifiedTexts, modifiedIndexes, chunkIndexes } = reSplit(
+    text,
+    chunks
+  );
+  console.log("result of reSplit in reSplitEmbed:", { text, chunks, embeddings, modifiedTexts, modifiedIndexes, chunkIndexes });
 
   const combinedChunks = [];
   const combinedEmbeddings = [];
-  for(let i = 0; i < chunkedModifiedTexts.length; i++){
-    combinedChunks[modifiedIndexes[i]] = chunkedModifiedTexts[i];
-    combinedEmbeddings[modifiedIndexes[i]] = deflattenedEmbeddings[i];
+
+  if(modifiedTexts.length) {
+    const modifiedData = await splitEmbedBatch(modifiedTexts);
+    console.log(modifiedData);
+    
+    for (let i = 0; i < modifiedData.texts.length; i++) {
+      combinedChunks[modifiedIndexes[i]] = modifiedData.texts[i];
+      combinedEmbeddings[modifiedIndexes[i]] = modifiedData.embeddings[i];
+    }
   }
+  
 
-  chunkIndexes.forEach((chunk,chunkIndex) => {
-    chunk.forEach(index => {
-      combinedChunks[index] = chunks[chunkIndex]
+  chunkIndexes.forEach((chunk, chunkIndex) => {
+    chunk.forEach((index) => {
+      combinedChunks[index] = chunks[chunkIndex];
       combinedEmbeddings[index] = embeddings[chunkIndex];
-    })
-  })
+    });
+  });
 
-  console.log({chunks: combinedChunks.flat(), embeddings: combinedEmbeddings.flatMap(item => Array.isArray(item[0]) ? item : [item])});
+  console.log({
+    chunks: combinedChunks.flat(),
+    embeddings: combinedEmbeddings.flatMap((item) =>
+      Array.isArray(item[0]) ? item : [item]
+    ),
+  });
 
-  return {texts: combinedChunks.flat(), embeddings: combinedEmbeddings.flatMap(item => Array.isArray(item[0]) ? item : [item])};
+  return {
+    texts: combinedChunks.flat(),
+    embeddings: combinedEmbeddings.flatMap((item) =>
+      Array.isArray(item[0]) ? item : [item]
+    ),
+  };
 }
 
 function reSplit(text, chunks) {
@@ -52,6 +58,10 @@ function reSplit(text, chunks) {
   const splitTexts = text
     .split(splitRegex)
     .filter((element) => element.trim() !== "");
+
+  splitTexts
+    .map((text) => (chunks.indexOf(text) == -1 ? initialSplit(text) : text))
+    .flat();
 
   const modifiedTexts = [];
   const modifiedIndexes = [];
@@ -69,6 +79,26 @@ function reSplit(text, chunks) {
   });
 
   return { modifiedTexts, modifiedIndexes, chunkIndexes };
+}
+
+async function splitEmbedBatch(texts) {
+  const textList = await Promise.all(texts.map(async (text) => {
+    const initialChunks = initialSplit(text);
+    const parallelChunksResult = await parallelChunk(initialChunks);
+    return combineChunks(parallelChunksResult);
+  }));
+
+  const flatEmbeddings = await openAI.embedBatch(textList.flat());
+  const embeddings = [];
+
+  textList.forEach((text, index) => {
+    embeddings[index] = flatEmbeddings.splice(
+      0,
+      text.length
+);
+  });
+  
+  return {texts: textList, embeddings};
 }
 
 async function splitEmbed(text) {
@@ -101,12 +131,12 @@ async function parallelChunk(initialChunks) {
   await Promise.all(
     initialChunks.map(async (chunk, index) => {
       const partition = await openAI.partition(chunk);
-      console.log(partition);
+      console.log("parallelChunk",{chunk,  partition});
       const subParition = [];
       var tail = chunk;
       partition.delimiters.forEach((delimiter) => {
         const indexOf = tail.indexOf(delimiter);
-        if(indexOf == -1) {
+        if (indexOf == -1) {
           return;
         }
         const lengthOfHead = indexOf + delimiter.length;
