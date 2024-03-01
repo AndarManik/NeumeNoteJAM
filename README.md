@@ -10,25 +10,15 @@ Triggered in the editor, Smart Complete intelligently infers from the context of
 ### Smart Search
 Initiated from the search bar, Smart Search revolutionizes how you find information in your notes. By accepting natural language queries, it displays relevant sections from your notes that match the query. Clicking on these sections reveals the full notes, allowing you to navigate through your notes via an automatically generated network of related information.
 
-## Installation
-
-Neume Note is a front-end application that runs directly in your web browser, leveraging the client's browser for data storage. The application communicates with OpenAI's API using the user's API key to provide its intelligent features.
-
 ### Requirements
 
 - An OpenAI API key is required for the application to function.
 
-### Setup
+## Usage
 
 1. Visit [Neume Note's web page](https://andarmanik.github.io/NeumeNoteJAM/).
 2. Enter your OpenAI API key when prompted. This key is stored in your browser for future sessions and can be removed at any time through the app's settings.
 
-## Usage
-
-Simply start by opening Neume Note in your browser and providing your OpenAI API key. Once set up, you're ready to explore the smart features designed to enhance your note-taking:
-
-- Use the designated hotkey to activate Smart Complete while editing.
-- To search, place the cursor in the search bar, type your query, and let Smart Search find related sections in your notes.
 
 ## Contributions
 
