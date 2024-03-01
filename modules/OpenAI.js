@@ -1,15 +1,39 @@
 class OpenAI {
   constructor() {
     this.apiKey = "";
+    this.model = "";
     this.completionEndpoint = "https://api.openai.com/v1/chat/completions";
     this.embeddingEndpoint = "https://api.openai.com/v1/embeddings";
+    this.modelsEndpoint = "https://api.openai.com/v1/models"
     this.maxRetries = 5;
-    this.waitTime = 250;
+    this.waitTime = 500;
   }
 
-  setKey(apiKey) {
+  async setKey(apiKey) {
     if (apiKey) {
       this.apiKey = apiKey;
+      const response = await fetch(this.modelsEndpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Network response was not ok, status: ${response.status}`
+        );
+      }
+
+      const models = await response.json();
+      this.model = "gpt-3.5-turbo-0125";
+      models.data.forEach(model => {
+        if(model.id == "gpt-4-turbo-preview") {
+          this.model = "gpt-4-turbo-preview";
+        }
+      })
+
+      console.log(this.model);
     }
   }
 
@@ -54,7 +78,7 @@ Format:
             Authorization: `Bearer ${this.apiKey}`,
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo-0125",
+            model: this.model,
             messages: [
               { role: "system", content: system },
               { role: "user", content: prompt },
