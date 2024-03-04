@@ -20,15 +20,10 @@ class NotesDatabase {
         }
 
         if (!this.db.objectStoreNames.contains("notesData")) {
-          const notesStore = this.db.createObjectStore("notesData", {
+          this.db.createObjectStore("notesData", {
             keyPath: "id",
             autoIncrement: true,
           });
-          notesStore.createIndex("notes", "notes", { unique: false });
-          notesStore.createIndex("chunks", "chunks", { unique: false });
-          notesStore.createIndex("embeddings", "embeddings", { unique: false });
-          notesStore.createIndex("chunk2note", "chunk2note", { unique: false });
-          notesStore.createIndex("note2chunk", "note2chunk", { unique: false });
         }
       };
 
@@ -55,7 +50,7 @@ class NotesDatabase {
         request.onerror = () => reject(request.error);
       });
 
-      return result;
+      return result.data;
     } catch (error) {
       if (error.name !== "NotFoundError") {
         console.error("IndexedDB error for Notes", error);
@@ -90,36 +85,50 @@ class NotesDatabase {
     store.put({ id: 1, key: apiKey });
   }
 
-  saveNotesData(data) {
-    console.log(data);
-    const {notes, chunks, embeddings, chunk2note, note2chunk} = data;
-    console.log({notes, chunks, embeddings, chunk2note, note2chunk});
+  async saveNotesData(notes) {
+    const colorCounter = notes.notes.length
+      ? notes.notes.reduce(
+          (max, note) => (note.colorCounter > max ? note.colorCounter : max),
+          notes.notes[0].colorCounter
+        )
+      : 0;
+
+    notes = notes.notes.map((note) => {
+      return {
+        colorCounter: note.colorCounter,
+        text: note.text,
+        chunks: note.chunks,
+        embeddings: note.embeddings,
+      };
+    });
+
+    const data = { colorCounter, notes };
     const transaction = this.db.transaction(["notesData"], "readwrite");
     const store = transaction.objectStore("notesData");
+    await transaction.done;
     store.put({
       id: 1,
-      notes: notes,
-      chunks: chunks,
-      embeddings: embeddings,
-      chunk2note: chunk2note,
-      note2chunk: note2chunk,
+      data,
     });
   }
 
   async deleteData() {
     try {
-      const transaction = this.db.transaction(["apiKey", "notesData"], "readwrite");
-  
+      const transaction = this.db.transaction(
+        ["apiKey", "notesData"],
+        "readwrite"
+      );
+
       await Promise.all([
         transaction.objectStore("apiKey").clear(),
         transaction.objectStore("notesData").clear(),
       ]);
-  
+
       await new Promise((resolve, reject) => {
         transaction.oncomplete = () => resolve(true);
         transaction.onerror = (event) => reject(event.target.error);
       });
-  
+
       return true;
     } catch (error) {
       throw new Error(error.message);

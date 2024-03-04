@@ -6,11 +6,12 @@ import HeaderUtility from "./modules/HeaderUtility.js";
 import displayApiInput from "./modules/ApiKeyReader.js";
 import contextListener from "./modules/ContextListener.js";
 
-
+new HeaderUtility();
 contextListener.setListener();
+
 notesDatabase.initializeDB().then(async () => {
   notes.setData(await notesDatabase.getNotes());
-
+  notes.linkEditor(noteEditor);
   const apiKey = await notesDatabase.getAPIKey();
   if (apiKey) {
     openAI.setKey(apiKey);
@@ -23,21 +24,22 @@ notesDatabase.initializeDB().then(async () => {
   });
 });
 
-notes.linkEditor(noteEditor);
-
-new HeaderUtility();
+window.addEventListener("beforeunload", async (e) => {
+  await notes.finishedProcessing();
+  await notesDatabase.saveNotesData(notes);
+});
 
 document.addEventListener("keydown", async function (e) {
-  if(!openAI.apiKey){
+  if (!openAI.apiKey) {
     return;
   }
   const shiftEnterPressed = e.shiftKey && e.code === "Enter";
   const controlSPressed = e.ctrlKey && e.code === "KeyS";
   const completeAvailable =
-    contextListener.isCompleteActive && !noteEditor.isCompleteing;
+    contextListener.isCompleteActive && noteEditor.canComplete();
   const searchAvailable =
     contextListener.isSearchInputActive && !notes.isSearching;
-
+  const escapePressed = e.code === "Escape";
   if (shiftEnterPressed && completeAvailable) {
     e.preventDefault();
     await complete();
@@ -48,12 +50,18 @@ document.addEventListener("keydown", async function (e) {
     await search();
   }
 
-  if (controlSPressed && noteEditor.hasText()) {
-    e.preventDefault();
-    await save();
+  if (escapePressed) {
+    noteEditor.stopComplete()
   }
 
-  if(e.code === "Tab" && completeAvailable) {
+  if (controlSPressed) {
+    e.preventDefault();
+    if (noteEditor.hasText()) {
+      await save();
+    }
+  }
+
+  if (e.code === "Tab" && completeAvailable) {
     e.preventDefault();
     console.log("tab");
     noteEditor.insertTab();
@@ -63,11 +71,11 @@ document.addEventListener("keydown", async function (e) {
 async function complete() {
   const textWithSmartTag = noteEditor.getTextWithSmartTag();
   const textStream = await openAI.smartComplete(textWithSmartTag);
-  if(!textStream) {
-    noteEditor.setIsCompleting(false);
+  if (!textStream) {
+    noteEditor.streamFailed();
     return;
   }
-  await noteEditor.streamTextToNote(textStream);
+  noteEditor.streamTextToTab(textStream);
 }
 
 async function search() {
@@ -78,12 +86,10 @@ async function search() {
 
 //TODO: add some buffering here so that the user can save multiple text quickly without breaking this, since it's async.
 async function save() {
-  const data = noteEditor.cutText();
-  if(data.noteIndex == -1) {
-    await notes.pushNote(data.text);
-    notesDatabase.saveNotesData(notes);
-    return;
+  const { note, type } = await noteEditor.saveText();
+  if (type == "new") {
+    notes.addNote(note);
+  } else {
+    notes.updateNote(note);
   }
-  await notes.rePushNote(data.text, data.noteIndex);
-  notesDatabase.saveNotesData(notes);
 }

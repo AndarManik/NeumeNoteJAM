@@ -52,10 +52,7 @@ class Settings {
             openAI.deleteData();
             await notesDatabase.deleteData();
             this.toggle();
-            displayApiInput((apiKey) => {
-                openAI.setKey(apiKey);
-                notesDatabase.saveAPIKey(apiKey);
-            });
+            location.reload();
           }
           input.value = "";
         }

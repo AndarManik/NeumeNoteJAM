@@ -13,9 +13,6 @@ function displayApiInput(valueCallback) {
   apiInput.classList.add("apiInput");
   apiInputContainer.appendChild(apiInput);
 
-  
-
-
   document.body.appendChild(apiInputContainer);
 
   apiInput.addEventListener("keypress", function (event) {

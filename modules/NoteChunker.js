@@ -11,14 +11,12 @@ async function reSplitEmbed(text, chunks, embeddings) {
     text,
     chunks
   );
-  console.log("result of reSplit in reSplitEmbed:", { text, chunks, embeddings, modifiedTexts, modifiedIndexes, chunkIndexes });
 
   const combinedChunks = [];
   const combinedEmbeddings = [];
 
   if(modifiedTexts.length) {
     const modifiedData = await splitEmbedBatch(modifiedTexts);
-    console.log(modifiedData);
     
     for (let i = 0; i < modifiedData.texts.length; i++) {
       combinedChunks[modifiedIndexes[i]] = modifiedData.texts[i];
@@ -34,12 +32,7 @@ async function reSplitEmbed(text, chunks, embeddings) {
     });
   });
 
-  console.log({
-    chunks: combinedChunks.flat(),
-    embeddings: combinedEmbeddings.flatMap((item) =>
-      Array.isArray(item[0]) ? item : [item]
-    ),
-  });
+
 
   return {
     texts: combinedChunks.flat(),
@@ -131,7 +124,6 @@ async function parallelChunk(initialChunks) {
   await Promise.all(
     initialChunks.map(async (chunk, index) => {
       const partition = await openAI.partition(chunk);
-      console.log("parallelChunk",{chunk,  partition});
       const subParition = [];
       var tail = chunk;
       partition.delimiters.forEach((delimiter) => {

@@ -39,7 +39,9 @@ class HeaderUtility {
 
     toggleContext(){
         const contextBuilder = document.getElementById("contextBuilder");
-
+        if(!contextBuilder){
+            return;
+        }
         if(contextBuilder.style.display == "none") {
             contextBuilder.style.display = "flex";
         }

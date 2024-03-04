@@ -1,4 +1,5 @@
 import ContextBuilder from "./ContextBuilder.js";
+import EditorTab from "./EditorTab.js";
 
 class NoteEditor {
   constructor() {
@@ -6,73 +7,109 @@ class NoteEditor {
     this.textBeforeCursor = "";
     this.isCompleteing = false;
     this.tabs = [];
-    this.tabTexts = [];
-    this.tabNoteIndexs = [];
-    this.currentIndex = -1;
+    this.currentTab = null;
     this.contextBuilder = new ContextBuilder();
   }
 
-  cutText() {
-    const completeSection = document.getElementById("completeSection");
-    const text = completeSection.value;
-    completeSection.value = "";
-
-    if (this.currentIndex == -1) {
-      return { text, noteIndex: -1 };
-    }
-
-    this.tabs.splice(this.currentIndex, 1);
-    this.tabTexts.splice(this.currentIndex, 1);
-    const noteIndex = this.tabNoteIndexs[this.currentIndex];
-    this.tabNoteIndexs.splice(this.currentIndex, 1);
-
-    this.currentIndex--;
-
-    if (this.currentIndex < 0) {
-      if (this.tabs.length) {
-        this.currentIndex = 0;
-      } else {
-        document.getElementById("rightHeader").innerHTML = "";
-        return { text, noteIndex };
-      }
-    }
-
-    this.tabs[this.currentIndex].classList.add("isActiveTab");
-    document.getElementById("rightHeader").innerHTML = "";
-    document.getElementById("rightHeader").append(...this.tabs);
-    completeSection.value = this.tabTexts[this.currentIndex];
-    return { text, noteIndex };
+  initializeTabs(){
+    this.addMakeNewtabButton();
+    this.addBlankTab();
   }
 
-  deleteTab(noteIndex){
-    if(this.tabNoteIndexs.length && this.tabNoteIndexs[this.currentIndex] == noteIndex){
-      this.cutText();
+  addMakeNewtabButton() {
+    const newTabButton = document.createElement("div");
+    newTabButton.classList.add("makeNewTabButton");
+    newTabButton.addEventListener("click", e => {
+      this.addBlankTab();
+    })
+    document.getElementById("rightHeader").append(newTabButton);
+  }
+
+  addBlankTab() {
+    const blankTab = new EditorTab(null, (tab) => {
+      this.setActiveTab(tab);
+    });
+
+    this.tabs.push(blankTab);
+    this.setActiveTab(blankTab);
+  }
+
+  editNote(note) {
+    const newTab = new EditorTab(note, (tab) => {
+      this.setActiveTab(tab);
+    });
+
+    this.tabs.push(newTab);
+    this.setActiveTab(newTab);
+  }
+
+  setActiveTab(tab) {
+    if (tab == this.currentTab) {
+      return;
+    }
+    if (this.currentTab) {
+      this.currentTab.deactivate();
+    }
+    this.currentTab = tab;
+
+    tab.activate();
+  }
+
+  async saveText() {
+    const completeSection = document.getElementById("completeSection");
+    const text = completeSection.value;
+    const note = this.currentTab.note;
+    const type = this.currentTab.type;
+    const index = this.tabs.indexOf(this.currentTab);
+
+    note.addRechunkAnimation("searchSection");
+
+
+    completeSection.value = "";
+    this.tabs.splice(index, 1)[0].icon.remove();
+
+    if(this.tabs.length == 0){
+      console.log("saveText addBlankTab");
+      this.addBlankTab();
+    }
+    else {
+      console.log("saveText setActiveTab");
+
+      const newIndex = Math.max(index - 1, 0);
+      this.setActiveTab(this.tabs[newIndex]);
+    }
+
+    if (type == "new") {
+      await note.chunkText(text);
+    } else {
+      await note.reChunkText(text);
+    }
+
+    return {note, type};
+  }
+
+  deleteTab(note) {
+    if (this.tabs.length && this.currentTab.note == note) {
+      this.saveText();
       return;
     }
 
-    const tabIndex = this.tabNoteIndexs.indexOf(noteIndex);
-    if(tabIndex == -1){
+    const tabIndex = this.tabs.map((tab) => tab.note).indexOf(note);
+    if (tabIndex == -1) {
       return;
     }
-    this.tabs.splice(tabIndex, 1)[0].remove();
-    this.tabTexts.splice(tabIndex, 1);
-    this.tabNoteIndexs.splice(tabIndex, 1);
-    
-    if(tabIndex < this.currentIndex) {
-      this.currentIndex--;
-    }
+
+    this.tabs.splice(tabIndex, 1)[0].icon.remove();
+  }
+
+  canComplete() {
+    return !this.currentTab.isCompleteing;
   }
 
   getTextWithSmartTag() {
-    this.setIsCompleting(true);
-    const { value: text, selectionStart: cursorPosition } =
-      document.getElementById("completeSection");
-    this.textBeforeCursor = text.substring(0, cursorPosition);
-    this.textAfterCursor = text.substring(cursorPosition);
-
+    const smartTag = this.currentTab.getTextWithSmartTag();
     const context = this.contextBuilder.getContextPrompt();
-
-    return `${context}\nUser's Message: "${this.textBeforeCursor}[[SmartComplete]]${this.textAfterCursor}"`;
+    return `${context}\n${smartTag}"`;
   }
 
   hasText() {
@@ -80,71 +117,22 @@ class NoteEditor {
     return Boolean(text);
   }
 
-  async streamTextToNote(textStream) {
-    const completeSection = document.getElementById("completeSection");
-    for await (const text of textStream) {
-      this.textBeforeCursor += text;
-      completeSection.value = this.textBeforeCursor + this.textAfterCursor;
-    }
-    this.setIsCompleting(false);
-    document
-      .getElementById("completeSection")
-      .setSelectionRange(
-        this.textBeforeCursor.length,
-        this.textBeforeCursor.length
-      );
+  streamTextToTab(textStream) {
+    this.currentTab.streamTextToNote(textStream);
   }
 
-  setIsCompleting(value) {
-    this.isCompleteing = value;
-    document.getElementById("completeSection").classList.toggle("animate");
+  streamFailed() {
+    this.currentTab.streamFailed();
   }
 
-  editNote(note, noteIndex, uniqueColor) {
-    document.getElementById("completeSection").value = note;
-
-    const editorTab = document.createElement("div");
-    editorTab.classList.add("editorTab");
-    editorTab.classList.add("isActiveTab");
-    editorTab.style.background = uniqueColor;
-
-    if (this.currentIndex != -1) {
-      this.tabs[this.currentIndex].classList.remove("isActiveTab");
-    }
-
-    editorTab.addEventListener("click", (e) => {
-      const tabIndex = this.tabNoteIndexs.indexOf(noteIndex);
-      if (this.currentIndex != tabIndex) {
-        this.tabs[this.currentIndex].classList.remove("isActiveTab");
-        this.tabs[tabIndex].classList.add("isActiveTab");
-
-        this.tabTexts[this.currentIndex] =
-          document.getElementById("completeSection").value;
-        document.getElementById("completeSection").value =
-          this.tabTexts[tabIndex];
-        this.currentIndex = tabIndex;
-      }
-    });
-    document.getElementById("rightHeader").append(editorTab);
-
-    this.tabs.push(editorTab);
-    this.tabNoteIndexs.push(noteIndex);
-    this.tabTexts.push(note);
-    this.currentIndex = this.tabs.length - 1;
+  has(note) {
+    return this.tabs.map((tab) => tab.note).indexOf(note) != -1;
   }
 
-  insertTab() {
-    const { value: text, selectionStart: cursorPosition } =
-      document.getElementById("completeSection");
-    this.textBeforeCursor = text.substring(0, cursorPosition);
-    this.textAfterCursor = text.substring(cursorPosition);
-    document.getElementById(
-      "completeSection"
-    ).value = `${this.textBeforeCursor}    ${this.textAfterCursor}`;
-    document
-      .getElementById("completeSection")
-      .setSelectionRange(cursorPosition + 4, cursorPosition + 4);
+  stopComplete(){
+    this.currentTab.stopComplete = true;
   }
 }
+
 const noteEditor = new NoteEditor();
 export default noteEditor;

@@ -1,3 +1,4 @@
+import Thought from "./chunkviewercomponents/Thought.js"
 class ContextBuilder {
   constructor() {
     this.context = [];
@@ -5,40 +6,26 @@ class ContextBuilder {
     this.rightSection = document.getElementById("rightSection");
     this.contextBuilder = document.createElement("div");
     this.contextBuilder.id = "contextBuilder";
+
+    const callbacks = {
+      removeContext: this.removeContext.bind(this)
+    }
+    this.thought = new Thought(callbacks);
   }
 
-  addThought(thought) {
-    if(this.context.indexOf(thought.lastChild.textContent) != -1){
+  addThought(note, index) {
+    if(this.context.indexOf(note.chunks[index]) != -1){
       return;
     }
     if (!this.context.length) {
       this.rightSection.append(this.contextBuilder);
     }
 
-    const text = thought.lastChild.textContent;
+    const text = note.chunks[index];
     this.context.push(text);
 
-    const thoughtClone = thought.cloneNode(true);
-    thoughtClone.classList.add("contextThought");
-    const thoughtHeader = thoughtClone.firstChild;
-    thoughtHeader.innerHTML = "";
-
-    const removeButton = document.createElement("div");
-    removeButton.classList.add("thoughtButton");
-    removeButton.innerText = "Remove";
-    removeButton.addEventListener("click", (e) => {
-        const index = this.context.indexOf(text);
-        console.log("addThought", index);
-
-        this.context.splice(index,1);
-        this.contextThoughts.splice(index, 1)[0].remove();
-
-        if(!this.context.length){
-            this.contextBuilder.remove();
-        }
-    });
-    thoughtHeader.appendChild(removeButton);
-
+    const thoughtClone = this.thought.buildContextthought(note, index);
+    
     this.contextThoughts.push(thoughtClone);
     this.contextBuilder.append(thoughtClone);
   }
@@ -50,6 +37,18 @@ class ContextBuilder {
     });
     contextPrompt += "}";
     return contextPrompt;
+  }
+
+  removeContext(text){
+    const index = this.context.indexOf(text);
+        console.log("addThought", index);
+
+        this.context.splice(index,1);
+        this.contextThoughts.splice(index, 1)[0].remove();
+
+        if(!this.context.length){
+            this.contextBuilder.remove();
+        }
   }
 }
 

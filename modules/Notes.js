@@ -1,145 +1,59 @@
 import ChunkViewer from "./ChunkViewer.js";
-import { splitEmbed, reSplitEmbed } from "./NoteChunker.js";
-
+import Note from "./Note.js";
 class Notes {
   constructor() {
+    this.colorCounter = 0;
     this.notes = [];
-    this.chunks = [];
-    this.embeddings = [];
-    this.chunk2note = [];
-    this.note2chunk = [];
     this.isSearching = false;
     this.chunkViewer = new ChunkViewer();
   }
 
-  delete(noteIndex) {
-    const numDeleted = this.note2chunk[noteIndex][0];
-    this.notes.splice(noteIndex, 1);
-    this.chunks.splice(
-      this.note2chunk[noteIndex][1],
-      this.note2chunk[noteIndex][0]
-    );
-    this.embeddings.splice(
-      this.note2chunk[noteIndex][1],
-      this.note2chunk[noteIndex][0]
-    );
-    this.chunk2note.splice(
-      this.note2chunk[noteIndex][1],
-      this.note2chunk[noteIndex][0]
-    );
-    this.note2chunk.splice(noteIndex, 1);
-
-    for (let i = 0; i < this.chunk2note.length; i++) {
-      this.chunk2note[i] =
-        this.chunk2note[i] > noteIndex
-          ? this.chunk2note[i] - 1
-          : this.chunk2note[i];
-    }
-
-    for (let i = noteIndex; i < this.note2chunk.length; i++) {
-      this.note2chunk[i][1] -= numDeleted;
-    }
-  }
-
-  getNoteData(noteIndex) {
-    return {
-      note: this.notes[noteIndex],
-      chunks: this.chunks.slice(
-        this.note2chunk[noteIndex][1],
-        this.note2chunk[noteIndex][0] + this.note2chunk[noteIndex][1]
-      ),
-      embeddings: this.embeddings.slice(
-        this.note2chunk[noteIndex][1],
-        this.note2chunk[noteIndex][0] + this.note2chunk[noteIndex][1]
-      ),
-    };
-  }
-
   linkEditor(noteEditor) {
     this.editor = noteEditor;
+    this.editor.initializeTabs();
   }
 
   setData(data) {
-    console.log(data);
+    console.log("setData", data);
     if (!data) {
       return;
     }
-    this.notes = data.notes;
-    this.chunks = data.chunks;
-    this.embeddings = data.embeddings;
-    this.chunk2note = data.chunk2note;
-    this.note2chunk = data.note2chunk;
+    
+    this.colorCounter = data.colorCounter;
+    this.notes = data.notes.map(noteData => {
+      return new Note(noteData.colorCounter, noteData.text, noteData.chunks, noteData.embeddings);
+    });
   }
 
-  async pushNote(note) {
-    document.getElementById("searchSection").classList.add("animate");
-    const { texts, embeddings } = await splitEmbed(note);
+  newBlankNote() {
+    this.colorCounter++;
+    console.log("colorCounter",this.colorCounter);
+    return new Note(this.colorCounter);
+  }
+
+  addNote(note){
     this.notes.push(note);
-    this.note2chunk.push([texts.length, this.chunks.length]);
-    this.chunks.push(...texts);
-    this.embeddings.push(...embeddings);
-    texts.forEach(() => {
-      this.chunk2note.push(this.notes.length - 1);
-    });
-    document.getElementById("searchSection").classList.remove("animate");
-    this.chunkViewer.displayNotes(this.notes.length - 1);
+    document.getElementById("searchSection").classList.remove('rechunkAnimation');
+    this.chunkViewer.handleRechunk(note);
+    this.chunkViewer.displayNotes(note);
   }
 
-  async rePushNote(note, noteIndex) {
-    document.getElementById("searchSection").classList.add("animate");
-    const data = this.getNoteData(noteIndex);
-    console.log("rePushNote after getNoteData:", noteIndex, data);
-    const { texts, embeddings } = await reSplitEmbed(
-      note,
-      data.chunks,
-      data.embeddings
-    );
-
-    const chunkPositions = this.note2chunk[noteIndex];
-    const start = chunkPositions[1];
-    const end = chunkPositions[0];
-
-    this.notes[noteIndex] = note;
-    this.note2chunk[noteIndex][0] = texts.length;
-    this.chunks.splice(start, end, ...texts);
-    this.embeddings.splice(start, end, ...embeddings);
-    const chunk2note = [];
-    texts.forEach(() => {
-      chunk2note.push(noteIndex);
-    });
-    this.chunk2note.splice(start, end, ...chunk2note);
-
-    const lengthDiff = texts.length - end;
-    for (let i = noteIndex + 1; i < this.notes.length; i++) {
-      this.note2chunk[i][1] += lengthDiff;
+  updateNote(note){
+    document.getElementById("searchSection").classList.remove('rechunkAnimation');
+    this.chunkViewer.handleRechunk(note);
+    if(!this.chunkViewer.isCurrentHistory(note)){
+      this.chunkViewer.displayNotes(note);
     }
-
-    this.chunkViewer.displayNotes(noteIndex) 
-    document.getElementById("searchSection").classList.remove("animate");
+    else {
+      this.chunkViewer.setNoteSearchSection(note);
+    }
   }
 
-  async reChunk(noteIndex) {
-    document.getElementById("searchSection").classList.add("animate");
-
-    const { texts, embeddings } = await splitEmbed(this.notes[noteIndex]);
-    const chunkPositions = this.note2chunk[noteIndex];
-    const start = chunkPositions[1];
-    const end = chunkPositions[0];
-
-    this.note2chunk[noteIndex][0] = texts.length;
-    this.chunks.splice(start, end, ...texts);
-    this.embeddings.splice(start, end, ...embeddings);
-    const chunk2note = [];
-    texts.forEach(() => {
-      chunk2note.push(noteIndex);
-    });
-    this.chunk2note.splice(start, end, ...chunk2note);
-
-    const lengthDiff = texts.length - end;
-    for (let i = noteIndex + 1; i < this.notes.length; i++) {
-      this.note2chunk[i][1] += lengthDiff;
+  delete(note) {
+    const noteIndex = this.notes.findIndex((n) => n === note);
+    if (noteIndex !== -1) {
+      this.notes.splice(noteIndex, 1);
     }
-    document.getElementById("searchSection").classList.remove("animate");
   }
 
   getSearchText() {
@@ -155,28 +69,36 @@ class Notes {
     const nearest = this.nearestNeighbor(embedding, 10);
     this.isSearching = false;
     document.getElementById("searchSection").classList.remove("animate");
-    this.chunkViewer.displayNNSearch(nearest);
+    this.chunkViewer.displayNearestSearch(nearest);
   }
 
   nearestNeighbor(embedding, N) {
-    const distances = this.embeddings.map((e, i) => {
-      let sum = 0;
-      for (let j = 0; j < embedding.length; j++) {
-        sum += (e[j] - embedding[j]) ** 2;
-      }
-      return { index: i, distance: sum };
-    });
-
+    const distances = this.notes
+      .map((note) => {
+        return note.embeddings.map((e, index) => {
+          let distance = 0;
+          for (let j = 0; j < embedding.length; j++) {
+            distance += (e[j] - embedding[j]) ** 2;
+          }
+          return { note, index, distance };
+        });
+      })
+      .flat();
+    console.log("distances",distances);
     distances.sort((a, b) => a.distance - b.distance);
     return { embedding, data: distances.slice(0, N) };
   }
 
-  deleteData(){
+  deleteData() {
     this.notes = [];
-    this.chunks = [];
-    this.embeddings = [];
-    this.chunk2note = [];
-    this.note2chunk = [];
+    this.colorCounter = 0;
+  }
+
+  async finishedProcessing(){
+    while (this.notes.some(note => note.isProcessing)) {
+      await new Promise(resolve => setTimeout(resolve, 100)); // Check every 100ms
+    }
+    return;
   }
 }
 
