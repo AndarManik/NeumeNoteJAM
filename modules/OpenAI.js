@@ -116,7 +116,7 @@ Example:
   Given the message "If dogs are mammals, then dogs breathe air. The sun is a star.", an appropriate output would be 
   {"delimiters": ["dogs breath air.", "a star."]}.
     
-Output Format: 
+Format: 
   The result should be a JSON object that lists the identified delimiters.`
   ) {
     return this.autoRequest(async () => {
