@@ -3,9 +3,6 @@ import EditorTab from "./EditorTab.js";
 
 class NoteEditor {
   constructor() {
-    this.textAfterCursor = "";
-    this.textBeforeCursor = "";
-    this.isCompleteing = false;
     this.tabs = [];
     this.currentTab = null;
     this.contextBuilder = new ContextBuilder();
@@ -102,6 +99,8 @@ class NoteEditor {
     this.tabs.splice(tabIndex, 1)[0].icon.remove();
   }
 
+  
+
   canComplete() {
     return !this.currentTab.isCompleteing;
   }
@@ -131,6 +130,11 @@ class NoteEditor {
 
   stopComplete(){
     this.currentTab.stopComplete = true;
+  }
+
+  insertTab(){
+    console.log("insert tab");
+    this.currentTab.insertTab();
   }
 }
 
