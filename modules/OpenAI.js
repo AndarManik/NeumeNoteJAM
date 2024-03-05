@@ -105,7 +105,7 @@ Format:
   async partition(
     prompt,
     system = `Task:
-  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity.
+  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity with high granularity.
     
 Requirements:
   Delimiters should be extracted from the end of each segment.
