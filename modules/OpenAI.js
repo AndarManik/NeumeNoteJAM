@@ -113,7 +113,7 @@ Requirements:
   The output should be formatted as a JSON object with a single key delimiters, associated with a list of identified delimiters.
     
 Example: 
-  Given the message "If dogs are mammals, then dogs breath air. The sun is a star.", an appropriate output would be 
+  Given the message "If dogs are mammals, then dogs breathe air. The sun is a star.", an appropriate output would be 
   {"delimiters": ["dogs breath air.", "a star."]}.
     
 Output Format: 
