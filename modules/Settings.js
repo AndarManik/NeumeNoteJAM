@@ -1,7 +1,6 @@
 import notes from "./Notes.js";
 import openAI from "./OpenAI.js";
 import notesDatabase from "./NotesDatabase.js";
-import displayApiInput from "./ApiKeyReader.js";
 
 class Settings {
   constructor() {
@@ -10,6 +9,7 @@ class Settings {
     this.settings.style.display = "none";
 
     this.settings.append(this.deleteDataSection());
+    this.settings.append(this.setOpenAIKeySection());
 
     document.body.appendChild(this.settings);
   }
@@ -53,6 +53,40 @@ class Settings {
             await notesDatabase.deleteData();
             this.toggle();
             location.reload();
+          }
+          input.value = "";
+        }
+      });
+
+    return section;
+  }
+
+  setOpenAIKeySection(){
+    const section = document.createElement("div");
+    section.classList.add("settingsSection");
+    
+    const header = document.createElement("div");
+    header.classList.add("settingsSectionHeader");
+    header.innerText = "Update API key"
+    section.appendChild(header);
+
+    const info = document.createElement("div");
+    info.classList.add("settingsInfo");
+    section.appendChild(info);
+
+    const text = document.createElement("div");
+    text.classList.add("settingsText");
+    text.innerText = `Paste you API key in the text field to update your API key`
+    info.appendChild(text);
+
+    const input = document.createElement("input");
+    input.classList.add("settingsInput");
+    info.append(input);
+
+    input.addEventListener("keypress", async (event) => {
+        if (event.key === "Enter" && document.activeElement == input) {
+          if(input.value != ""){
+            openAI.setKey(input.value);
           }
           input.value = "";
         }
