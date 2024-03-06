@@ -115,7 +115,7 @@ class ChunkViewer {
       if(viewHistory.notes.includes(note)){
         if (viewHistory.type == "nearest") {
           const embedding = viewHistory.embedding;
-          const nearest = notes.nearestNeighbor(embedding, 10);
+          const nearest = instances.notes.nearestNeighbor(embedding, 10);
           this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
         }
         else {

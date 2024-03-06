@@ -10,6 +10,9 @@ import chunkViewer from "./modules/ChunkViewer.js"
 notesDatabase.initialize().then(async () => {
   await notes.initialize();
   await openAI.initialize();
+  while (!openAI.validKey) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
   noteEditor.initialize();
 });
 

@@ -10,6 +10,7 @@ class OpenAI {
     this.modelsEndpoint = "https://api.openai.com/v1/models"
     this.maxRetries = 5;
     this.waitTime = 500;
+    this.validKey = false;
   }
 
   async initialize(){
@@ -53,6 +54,8 @@ class OpenAI {
           this.model = "gpt-4-turbo-preview";
         }
       })
+
+      this.validKey = true;
 
       console.log(this.model);
     }
