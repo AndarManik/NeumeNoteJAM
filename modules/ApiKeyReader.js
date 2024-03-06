@@ -1,7 +1,7 @@
-function displayApiInput(valueCallback) {
+function displayApiInput(valueCallback, text = "Paste your OpenAI ") {
   const apiInputContainer = document.createElement("div");
   apiInputContainer.classList.add("apiInputContainer");
-  apiInputContainer.textContent = "Paste your OpenAI ";
+  apiInputContainer.textContent = text;
 
   const link = document.createElement("a");
   link.textContent = "API Key";

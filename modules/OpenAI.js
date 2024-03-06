@@ -25,6 +25,13 @@ class OpenAI {
     });
   }
 
+  async retryinitialize() {
+    displayApiInput(async (apiKey) => {
+      await this.setKey(apiKey);
+      instances.notesDatabase.saveAPIKey(apiKey);
+    }, "Invalid ");
+  }
+
   async setKey(apiKey) {
     if (apiKey) {
       this.apiKey = apiKey;
@@ -36,9 +43,7 @@ class OpenAI {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `Network response was not ok, status: ${response.status}`
-        );
+        await this.retryinitialize();
       }
 
       const models = await response.json();

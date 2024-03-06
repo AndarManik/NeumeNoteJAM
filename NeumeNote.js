@@ -77,4 +77,5 @@ async function save() {
 window.addEventListener("beforeunload", async (e) => {
   await notes.finishedProcessing();
   await notesDatabase.saveNotesData(notes);
+  await notesDatabase.saveAPIKey(openAI.apiKey);
 });

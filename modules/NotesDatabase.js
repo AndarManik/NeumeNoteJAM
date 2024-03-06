@@ -80,9 +80,10 @@ class NotesDatabase {
     }
   }
 
-  saveAPIKey(apiKey) {
+  async saveAPIKey(apiKey) {
     const transaction = this.db.transaction(["apiKey"], "readwrite");
     const store = transaction.objectStore("apiKey");
+    await transaction.done;
     store.put({ id: 1, key: apiKey });
   }
 
