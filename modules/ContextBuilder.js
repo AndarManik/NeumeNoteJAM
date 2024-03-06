@@ -1,4 +1,5 @@
 import Thought from "./chunkviewercomponents/Thought.js"
+import instances from "./NeumeEngine.js";
 class ContextBuilder {
   constructor() {
     this.context = [];
@@ -51,5 +52,7 @@ class ContextBuilder {
         }
   }
 }
+const contextBuilder = new ContextBuilder();
+instances.contextBuilder = contextBuilder;
 
-export default ContextBuilder;
+export default contextBuilder;

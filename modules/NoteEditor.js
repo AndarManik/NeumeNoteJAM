@@ -1,14 +1,13 @@
-import ContextBuilder from "./ContextBuilder.js";
 import EditorTab from "./EditorTab.js";
+import instances from "./NeumeEngine.js";
 
 class NoteEditor {
   constructor() {
     this.tabs = [];
     this.currentTab = null;
-    this.contextBuilder = new ContextBuilder();
   }
 
-  initializeTabs(){
+  initialize(){
     this.addMakeNewtabButton();
     this.addBlankTab();
   }
@@ -102,12 +101,12 @@ class NoteEditor {
   
 
   canComplete() {
-    return !this.currentTab.isCompleteing;
+    return !this.currentTab.isCompleteing && document.activeElement ==  document.getElementById("completeSection");
   }
 
   getTextWithSmartTag() {
     const smartTag = this.currentTab.getTextWithSmartTag();
-    const context = this.contextBuilder.getContextPrompt();
+    const context = instances.contextBuilder.getContextPrompt();
     return `${context}\n${smartTag}"`;
   }
 
@@ -139,4 +138,5 @@ class NoteEditor {
 }
 
 const noteEditor = new NoteEditor();
+instances.noteEditor = noteEditor;
 export default noteEditor;

@@ -2,31 +2,15 @@ import notes from "./modules/Notes.js";
 import openAI from "./modules/OpenAI.js";
 import noteEditor from "./modules/NoteEditor.js";
 import notesDatabase from "./modules/NotesDatabase.js";
-import HeaderUtility from "./modules/HeaderUtility.js";
-import displayApiInput from "./modules/ApiKeyReader.js";
-import contextListener from "./modules/ContextListener.js";
+import contextBuilder from "./modules/ContextBuilder.js";
+import headerUtility from "./modules/HeaderUtility.js";
+import chunkViewer from "./modules/ChunkViewer.js"
 
-new HeaderUtility();
-contextListener.setListener();
 
-notesDatabase.initializeDB().then(async () => {
-  notes.setData(await notesDatabase.getNotes());
-  notes.linkEditor(noteEditor);
-  const apiKey = await notesDatabase.getAPIKey();
-  if (apiKey) {
-    openAI.setKey(apiKey);
-    return;
-  }
-
-  displayApiInput((apiKey) => {
-    openAI.setKey(apiKey);
-    notesDatabase.saveAPIKey(apiKey);
-  });
-});
-
-window.addEventListener("beforeunload", async (e) => {
-  await notes.finishedProcessing();
-  await notesDatabase.saveNotesData(notes);
+notesDatabase.initialize().then(async () => {
+  await notes.initialize();
+  await openAI.initialize();
+  noteEditor.initialize();
 });
 
 document.addEventListener("keydown", async function (e) {
@@ -34,27 +18,23 @@ document.addEventListener("keydown", async function (e) {
     return;
   }
   const shiftEnterPressed = e.shiftKey && e.code === "Enter";
-  const controlSPressed = e.ctrlKey && e.code === "KeyS";
-  const completeAvailable =
-    contextListener.isCompleteActive && noteEditor.canComplete();
-  const searchAvailable =
-    contextListener.isSearchInputActive && !notes.isSearching;
-  const escapePressed = e.code === "Escape";
-  if (shiftEnterPressed && completeAvailable) {
+  if (shiftEnterPressed && noteEditor.canComplete()) {
     e.preventDefault();
     await complete();
   }
 
-  if (shiftEnterPressed && searchAvailable) {
+  if (shiftEnterPressed && notes.canSearch()) {
     e.preventDefault();
     await search();
   }
 
-  if (escapePressed) {
-    noteEditor.stopComplete()
+  if (e.code === "Escape") {
+    e.preventDefault();
+
+    noteEditor.stopComplete();
   }
 
-  if (controlSPressed) {
+  if ( e.ctrlKey && e.code === "KeyS") {
     e.preventDefault();
     if (noteEditor.hasText()) {
       await save();
@@ -93,3 +73,8 @@ async function save() {
     notes.updateNote(note);
   }
 }
+
+window.addEventListener("beforeunload", async (e) => {
+  await notes.finishedProcessing();
+  await notesDatabase.saveNotesData(notes);
+});

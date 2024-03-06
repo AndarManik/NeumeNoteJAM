@@ -1,5 +1,5 @@
 import notes from "../Notes.js";
-import noteEditor from "../NoteEditor.js";
+import contextBuilder from "../ContextBuilder.js";
 class ThoughtHeader {
   constructor(callbacks) {
     this.callbacks = callbacks;
@@ -21,7 +21,7 @@ class ThoughtHeader {
     useButton.classList.add("thoughtButton");
     useButton.innerText = "Use";
     useButton.addEventListener("click", (e) => {
-      noteEditor.contextBuilder.addThought(note, index);
+      contextBuilder.addThought(note, index);
     });
     thoughtHeader.appendChild(useButton);
 
@@ -62,7 +62,7 @@ class ThoughtHeader {
     useButton.classList.add("thoughtButton");
     useButton.innerText = "Use";
     useButton.addEventListener("click", (e) => {
-      noteEditor.contextBuilder.addThought(note,index);
+      contextBuilder.addThought(note,index);
     });
     thoughtHeader.appendChild(useButton);
 

@@ -1,20 +1,15 @@
-import ChunkViewer from "./ChunkViewer.js";
+import instances from "./NeumeEngine.js";
 import Note from "./Note.js";
 class Notes {
   constructor() {
     this.colorCounter = 0;
     this.notes = [];
     this.isSearching = false;
-    this.chunkViewer = new ChunkViewer();
   }
 
-  linkEditor(noteEditor) {
-    this.editor = noteEditor;
-    this.editor.initializeTabs();
-  }
-
-  setData(data) {
-    console.log("setData", data);
+  async initialize() {
+    const data = await instances.notesDatabase.getNotes();
+    
     if (!data) {
       return;
     }
@@ -34,18 +29,18 @@ class Notes {
   addNote(note){
     this.notes.push(note);
     document.getElementById("searchSection").classList.remove('rechunkAnimation');
-    this.chunkViewer.handleRechunk(note);
-    this.chunkViewer.displayNotes(note);
+    instances.chunkViewer.handleRechunk(note);
+    instances.chunkViewer.displayNotes(note);
   }
 
   updateNote(note){
     document.getElementById("searchSection").classList.remove('rechunkAnimation');
-    this.chunkViewer.handleRechunk(note);
-    if(!this.chunkViewer.isCurrentHistory(note)){
-      this.chunkViewer.displayNotes(note);
+    instances.chunkViewer.handleRechunk(note);
+    if(!instances.chunkViewer.isCurrentHistory(note)){
+      instances.chunkViewer.displayNotes(note);
     }
     else {
-      this.chunkViewer.setNoteSearchSection(note);
+      instances.chunkViewer.setNoteSearchSection(note);
     }
   }
 
@@ -54,6 +49,10 @@ class Notes {
     if (noteIndex !== -1) {
       this.notes.splice(noteIndex, 1);
     }
+  }
+
+  canSearch(){
+    return !this.isSearching && document.activeElement ==  document.getElementById("searchInputSection");
   }
 
   getSearchText() {
@@ -69,7 +68,7 @@ class Notes {
     const nearest = this.nearestNeighbor(embedding, 10);
     this.isSearching = false;
     document.getElementById("searchSection").classList.remove("animate");
-    this.chunkViewer.displayNearestSearch(nearest);
+    instances.chunkViewer.displayNearestSearch(nearest);
   }
 
   nearestNeighbor(embedding, N) {
@@ -103,4 +102,5 @@ class Notes {
 }
 
 const notes = new Notes();
+instances.notes = notes;
 export default notes;

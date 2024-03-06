@@ -1,4 +1,4 @@
-import notes from "./Notes.js";
+import instances from "./NeumeEngine.js";
 import ViewHistory from "./chunkviewercomponents/ViewHistory.js";
 
 class ChunkViewer {
@@ -77,7 +77,7 @@ class ChunkViewer {
     this.history.forEach((viewHistory, index) => {
       if (viewHistory.type == "nearest" && viewHistory.notes.includes(note)) {
         const embedding = viewHistory.embedding;
-        const nearest = notes.nearestNeighbor(embedding, 10);
+        const nearest = instances.notes.nearestNeighbor(embedding, 10);
         this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
       }
     });
@@ -131,4 +131,7 @@ class ChunkViewer {
   }
 }
 
-export default ChunkViewer;
+const chunkViewer = new ChunkViewer();
+instances.chunkViewer = chunkViewer;
+
+export default chunkViewer;

@@ -50,5 +50,6 @@ class HeaderUtility {
         }
     }
 }
+const headerUtility = new HeaderUtility();
 
-export default HeaderUtility;
+export default headerUtility;

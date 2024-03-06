@@ -1,3 +1,6 @@
+import instances from "./NeumeEngine.js";
+import displayApiInput from "./ApiKeyReader.js";
+
 class OpenAI {
   constructor() {
     this.apiKey = "";
@@ -7,6 +10,19 @@ class OpenAI {
     this.modelsEndpoint = "https://api.openai.com/v1/models"
     this.maxRetries = 5;
     this.waitTime = 500;
+  }
+
+  async initialize(){
+    const apiKey = await instances.notesDatabase.getAPIKey();
+    if (apiKey) {
+      await this.setKey(apiKey);
+      return;
+    }
+  
+    displayApiInput(async (apiKey) => {
+      await this.setKey(apiKey);
+      instances.notesDatabase.saveAPIKey(apiKey);
+    });
   }
 
   async setKey(apiKey) {
@@ -218,4 +234,5 @@ Format:
 }
 
 const openAI = new OpenAI();
+instances.openAI = openAI;
 export default openAI;

@@ -15,9 +15,9 @@ function displayApiInput(valueCallback) {
 
   document.body.appendChild(apiInputContainer);
 
-  apiInput.addEventListener("keypress", function (event) {
+  apiInput.addEventListener("keypress", async (event) => {
     if (event.key === "Enter") {
-      valueCallback(apiInput.value);
+      await valueCallback(apiInput.value);
 
       document.body.removeChild(apiInputContainer);
     }

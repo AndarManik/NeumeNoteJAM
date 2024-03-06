@@ -1,3 +1,4 @@
+import instances from "./NeumeEngine.js";
 class NotesDatabase {
   constructor() {
     this.dbName = "NotesDB";
@@ -5,7 +6,7 @@ class NotesDatabase {
     this.db = null;
   }
 
-  initializeDB() {
+  initialize() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
 
@@ -137,4 +138,5 @@ class NotesDatabase {
 }
 
 const notesDatabase = new NotesDatabase();
+instances.notesDatabase = notesDatabase;
 export default notesDatabase;
