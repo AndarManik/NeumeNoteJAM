@@ -1,5 +1,7 @@
 import notes from "../Notes.js";
 import contextBuilder from "../ContextBuilder.js";
+import iconReader from "../IconReader.js";
+
 class ThoughtHeader {
   constructor(callbacks) {
     this.callbacks = callbacks;
@@ -11,18 +13,20 @@ class ThoughtHeader {
 
     const searchButton = document.createElement("div");
     searchButton.classList.add("thoughtButton");
-    searchButton.innerText = "Search";
+    searchButton.append(iconReader.newIcon("search", 16));
     searchButton.addEventListener("click", (e) => {
       notes.search(note.embeddings[index]);
     });
+    searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
 
     const useButton = document.createElement("div");
     useButton.classList.add("thoughtButton");
-    useButton.innerText = "Use";
+    useButton.append(iconReader.newIcon("stack", 16));
     useButton.addEventListener("click", (e) => {
       contextBuilder.addThought(note, index);
     });
+    useButton.setAttribute("title", "Add to context");
     thoughtHeader.appendChild(useButton);
 
     return thoughtHeader;
@@ -44,26 +48,29 @@ class ThoughtHeader {
 
     const searchButton = document.createElement("div");
     searchButton.classList.add("thoughtButton");
-    searchButton.innerText = "Search";
+    searchButton.append(iconReader.newIcon("search", 16));
     searchButton.addEventListener("click", (e) => {
       notes.search(note.embeddings[index]);
     });
+    searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
 
     const readButton = document.createElement("div");
     readButton.classList.add("thoughtButton");
-    readButton.textContent = "Read";
+    readButton.append(iconReader.newIcon("file", 16));
     readButton.addEventListener("click", (e) => {
       this.callbacks.displayNotes(note);
     });
+    readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
 
     const useButton = document.createElement("div");
     useButton.classList.add("thoughtButton");
-    useButton.innerText = "Use";
+    useButton.append(iconReader.newIcon("stack", 16));
     useButton.addEventListener("click", (e) => {
       contextBuilder.addThought(note,index);
     });
+    useButton.setAttribute("title", "Add to context");
     thoughtHeader.appendChild(useButton);
 
     const noteIdentifier = this.newNoteIdentifier(note);
@@ -78,10 +85,11 @@ class ThoughtHeader {
 
     const removeButton = document.createElement("div");
     removeButton.classList.add("thoughtButton");
-    removeButton.innerText = "Remove";
+    removeButton.append(iconReader.newIcon("backspace", 16));
     removeButton.addEventListener("click", (e) => {
       this.callbacks.removeContext(note.chunks[index]);
     });
+    removeButton.setAttribute("title", "Remove");
     thoughtHeader.appendChild(removeButton);
 
     const noteIdentifier = this.newNoteIdentifier(note);
@@ -95,7 +103,6 @@ class ThoughtHeader {
     noteIdentifier.classList.add("distanceColorBox");
     noteIdentifier.style.background = note.color;
     noteIdentifier.style.marginLeft = "auto";
-    noteIdentifier.style.marginRight = "0.2em";
     return noteIdentifier;
   }
 

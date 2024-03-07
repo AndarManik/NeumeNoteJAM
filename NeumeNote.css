@@ -211,6 +211,7 @@ textarea::selection {
   height: 28px;
   border-bottom: 1px solid var(--note-border-color);
   display: flex;
+  align-items: center;
 }
 #searchSectionHeader > :last-child {
   margin-left: auto;
@@ -252,6 +253,7 @@ textarea::selection {
 
 .thoughtHeader {
   display: flex;
+  align-items: center;
 }
 
 .thoughtButton {
@@ -280,10 +282,8 @@ textarea::selection {
 }
 
 .distanceColorBox {
-  height: 10px;
-  width: 10px;
-  margin-top: 0.4em;
-  margin-left: 0.4em;
+  height: 16px;
+  width: 16px;
   border-radius: 2px;
 }
 

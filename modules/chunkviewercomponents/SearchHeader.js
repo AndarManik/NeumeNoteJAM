@@ -1,3 +1,4 @@
+import iconReader from "../IconReader.js";
 import SearchHeaderButton from "./SearchHeaderButton.js";
 class SearchHeader {
     constructor(callbacks){
@@ -26,14 +27,14 @@ class SearchHeader {
     
         const leftArrow = document.createElement("div");
         leftArrow.classList.add("searchSectionButton");
-        leftArrow.innerText = "<";
+        leftArrow.append(iconReader.newIcon("chevronLeft", 22));
         leftArrow.addEventListener("click", (e) => {
           this.callbacks.goBack();
         });
     
         const rightArrow = document.createElement("div");
         rightArrow.classList.add("searchSectionButton");
-        rightArrow.innerText = ">";
+        rightArrow.append(iconReader.newIcon("chevronRight", 22));
         rightArrow.addEventListener("click", (e) => {
             this.callbacks.goForward();
         });

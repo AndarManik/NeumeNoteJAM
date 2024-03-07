@@ -4,15 +4,21 @@ import noteEditor from "./modules/NoteEditor.js";
 import notesDatabase from "./modules/NotesDatabase.js";
 import contextBuilder from "./modules/ContextBuilder.js";
 import headerUtility from "./modules/HeaderUtility.js";
-import chunkViewer from "./modules/ChunkViewer.js"
-
+import chunkViewer from "./modules/ChunkViewer.js";
+import iconReader from "./modules/IconReader.js";
 
 notesDatabase.initialize().then(async () => {
+  await iconReader.initialize();
   await notes.initialize();
   await openAI.initialize();
   while (!openAI.validKey) {
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
+  window.addEventListener("beforeunload", async (e) => {
+    await notes.finishedProcessing();
+    await notesDatabase.saveNotesData(notes);
+    await notesDatabase.saveAPIKey(openAI.apiKey);
+  });
   noteEditor.initialize();
 });
 
@@ -37,7 +43,7 @@ document.addEventListener("keydown", async function (e) {
     noteEditor.stopComplete();
   }
 
-  if ( e.ctrlKey && e.code === "KeyS") {
+  if (e.ctrlKey && e.code === "KeyS") {
     e.preventDefault();
     if (noteEditor.hasText()) {
       await save();
@@ -68,16 +74,10 @@ async function search() {
 }
 
 async function save() {
-  const { note, type } = noteEditor.saveText();
+  const { note, type } = await noteEditor.saveText();
   if (type == "new") {
     notes.addNote(note);
   } else {
     notes.updateNote(note);
   }
 }
-
-window.addEventListener("beforeunload", async (e) => {
-  await notes.finishedProcessing();
-  await notesDatabase.saveNotesData(notes);
-  await notesDatabase.saveAPIKey(openAI.apiKey);
-});

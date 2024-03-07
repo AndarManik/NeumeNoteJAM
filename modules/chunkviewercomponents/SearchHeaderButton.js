@@ -1,6 +1,6 @@
 import notes from "../Notes.js";
 import noteEditor from "../NoteEditor.js";
-
+import iconReader from "../IconReader.js";
 class SearchHeaderButton {
   constructor(callbacks) {
     this.callbacks = callbacks;
@@ -9,7 +9,7 @@ class SearchHeaderButton {
   buildEditButton(note) {
     const editButton = document.createElement("div");
     editButton.classList.add("searchSectionButton");
-    editButton.textContent = "Edit";
+    editButton.append(iconReader.newIcon("pencil", 22));
     editButton.addEventListener("click", (e) => {
       if (noteEditor.has(note)) {
         return;
@@ -23,12 +23,12 @@ class SearchHeaderButton {
   buildRechunkButton(note) {
     const reChunkButton = document.createElement("div");
     reChunkButton.classList.add("searchSectionButton");
-    reChunkButton.textContent = "Rechunk";
+    reChunkButton.append(iconReader.newIcon("refresh", 22));
     reChunkButton.addEventListener("click", async (e) => {
       note.addRechunkAnimation("searchSection");
       await note.chunkText(note.text);
-      this.callbacks.handleRechunk(note);
-      this.callbacks.setDisplay(note);
+      await this.callbacks.handleRechunk(note);
+      await this.callbacks.setDisplay(note);
     });
     return reChunkButton;
   }
@@ -36,7 +36,7 @@ class SearchHeaderButton {
   buildDeleteButton(note) {
     const deleteButton = document.createElement("div");
     deleteButton.classList.add("searchSectionButton");
-    deleteButton.textContent = "Delete";
+    deleteButton.append(iconReader.newIcon("trash", 22));
     deleteButton.addEventListener("click", (e) => {
       notes.delete(note);
       noteEditor.deleteTab(note);

@@ -51,7 +51,7 @@ class NoteEditor {
     tab.activate();
   }
 
-  saveText() {
+  async saveText() {
     const completeSection = document.getElementById("completeSection");
     const text = completeSection.value;
     const note = this.currentTab.note;
@@ -76,9 +76,9 @@ class NoteEditor {
     }
 
     if (type == "new") {
-      note.chunkText(text);
+      await note.chunkText(text);
     } else {
-      note.reChunkText(text);
+      await note.reChunkText(text);
     }
 
     return {note, type};
