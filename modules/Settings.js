@@ -1,5 +1,5 @@
 import SettingsData from "./SettingsData.js";
-
+import iconReader from "./IconReader.js";
 class Settings {
   constructor() {
     this.settings = document.createElement("div");
@@ -13,7 +13,24 @@ class Settings {
 
   displayChildren(){
     this.settings.innerHTML = "";
+    this.settings.append(this.header());
     this.settings.append(this.settingsData.getDisplay());
+  }
+
+  header() {
+    const header = document.createElement("div");
+    header.classList.add("settingsHeader");
+    
+    const leave = document.createElement("div");
+    leave.classList.add("settingsLeave");
+    leave.append(iconReader.newIcon("close", 16));
+    leave.addEventListener("click", (e) => {
+      this.settings.style.display = "none";
+    });
+
+    header.append(leave);
+
+    return header;
   }
 
   toggle(){

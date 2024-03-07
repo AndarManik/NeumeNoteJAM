@@ -20,6 +20,7 @@ notesDatabase.initialize().then(async () => {
     await notesDatabase.saveAPIKey(openAI.apiKey);
   });
   noteEditor.initialize();
+  headerUtility.initialize();
 });
 
 document.addEventListener("keydown", async function (e) {

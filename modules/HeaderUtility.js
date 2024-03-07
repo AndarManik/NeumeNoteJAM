@@ -1,7 +1,6 @@
 import Settings from "./Settings.js";
 class HeaderUtility {
     constructor(){
-        this.settings = new Settings();
         const settings = document.createElement("div");
         settings.classList.add("headerButton");
         settings.innerText = "Settings";
@@ -20,6 +19,10 @@ class HeaderUtility {
         toggleContext.innerText = "Toggle Context";
         toggleContext.addEventListener("click" , e => this.toggleContext());
         document.getElementById("leftHeader").append(toggleContext);
+    }
+
+    initialize() {
+        this.settings = new Settings();
     }
 
     toggleSettings(){

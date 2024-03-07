@@ -327,10 +327,26 @@ textarea::selection {
   cursor: pointer;
 }
 
-.settingsBack {
-  font-weight: 600;
-  padding-left: 0.5em;
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  height: 28px;
   border-bottom: 1px solid var(--note-border-color);
+}
+
+.settingsHeader > :last-child {
+  margin-left: auto;
+}
+
+.settingsBack {
+  padding-left: 0.3em;
+  padding-top: 0.3em;
+  cursor: pointer;
+}
+
+.settingsLeave {
+  padding-right: 0.3em;
+  padding-top: 0.3em;
   cursor: pointer;
 }
 

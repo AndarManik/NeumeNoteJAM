@@ -21,6 +21,7 @@ class IconReader {
     this.file = await this.fetchSvg("file-r.svg");
     this.stack = await this.fetchSvg("stack-r.svg");
     this.backspace = await this.fetchSvg("backspace-r.svg");
+    this.close = await this.fetchSvg("close-r.svg");
   }
   
 

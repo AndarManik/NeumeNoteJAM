@@ -1,6 +1,7 @@
 import notes from "./Notes.js";
 import openAI from "./OpenAI.js";
 import notesDatabase from "./NotesDatabase.js";
+import iconReader from "./IconReader.js";
 
 class SettingsData {
   constructor(settings, displayParent) {
@@ -34,19 +35,33 @@ class SettingsData {
 
   displayChildren() {
     this.settings.innerHTML = "";
-    this.settings.append(this.backButton());
+    this.settings.append(this.header());
     this.settings.append(this.deleteDataSection());
     this.settings.append(this.setOpenAIKeySection());
   }
 
-  backButton() {
+  header() {
+    const header = document.createElement("div");
+    header.classList.add("settingsHeader");
+
     const leftArrow = document.createElement("div");
     leftArrow.classList.add("settingsBack");
-    leftArrow.innerText = "<";
+    leftArrow.append(iconReader.newIcon("chevronLeft", 16));
     leftArrow.addEventListener("click", (e) => {
       this.displayParent();
     });
-    return leftArrow;
+    
+    const leave = document.createElement("div");
+    leave.classList.add("settingsLeave");
+    leave.append(iconReader.newIcon("close", 16));
+    leave.addEventListener("click", (e) => {
+      this.settings.style.display = "none";
+    });
+
+    header.append(leftArrow);
+    header.append(leave);
+
+    return header;
   }
 
   deleteDataSection() {
