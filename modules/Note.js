@@ -1,10 +1,9 @@
 import { splitEmbed, reSplitEmbed } from "./NoteChunker.js";
 class Note {
   constructor(colorCounter, text = "", chunks = [], embeddings = []) {
-    const newIndex = colorCounter + 1;
     const goldenRatio = 1.618033988749895;
-    this.outerHue = 360 * ((goldenRatio * newIndex) % 1);
-    this.innerHue = 360 * ((goldenRatio * 2 * newIndex) % 1);
+    this.outerHue = 360 * ((goldenRatio * -0.09 * colorCounter) % 1);
+    this.innerHue = 360 * ((goldenRatio * 0.01 * colorCounter) % 1);
     this.color =  `radial-gradient(circle, hsl(${this.outerHue}, 100%, 50%) 0%, hsl(${this.innerHue}, 100%, 50%) 100%)`;
     this.colorCounter = colorCounter;
     this.text = text;

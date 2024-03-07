@@ -44,7 +44,7 @@ document.addEventListener("keydown", async function (e) {
     }
   }
 
-  if (e.code === "Tab" && completeAvailable) {
+  if (e.code === "Tab" && noteEditor.canComplete()) {
     e.preventDefault();
     console.log("tab");
     noteEditor.insertTab();
