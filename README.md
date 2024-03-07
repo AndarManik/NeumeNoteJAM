@@ -16,11 +16,6 @@ Initiated from the search bar, Smart Search revolutionizes how you find informat
 
 - An OpenAI API key is required for the application to function.
 
-## What's cooking?
-- Graph View: A view showing how notes relate using a graph of nodes and edges.
-- Selection Complete: A smart complete action which will replace text within the users selection.
-- Theme Editor: A tool for selecting colors for the sites interface.
-
 ## Usage
 
 1. Visit [Neume Note's web page](https://andarmanik.github.io/NeumeNoteJAM/).
@@ -30,6 +25,12 @@ Initiated from the search bar, Smart Search revolutionizes how you find informat
 ## Contributions
 
 Contributions are welcome! If you're interested in improving Neume Note or adding new features, please feel free to fork the repository, make your changes, and submit a pull request.
+
+## What's cooking?
+These are few bigger changes which are in the works.
+- Graph View: A view showing how notes relate using a graph of nodes and edges.
+- Selection Complete: A smart complete action which will replace text within the users selection.
+- Theme Editor: A tool for selecting colors for the sites interface.
 
 ## Contact
 
