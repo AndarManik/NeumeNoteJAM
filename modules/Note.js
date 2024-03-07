@@ -3,7 +3,7 @@ class Note {
   constructor(colorCounter, text = "", chunks = [], embeddings = []) {
     const goldenRatio = 1.618033988749895;
     this.outerHue = 360 * ((goldenRatio * -0.09 * colorCounter) % 1);
-    this.innerHue = 360 * ((goldenRatio * 0.01 * colorCounter) % 1);
+    this.innerHue = 360 * ((goldenRatio * 0.012 * colorCounter) % 1);
     this.color =  `radial-gradient(circle, hsl(${this.outerHue}, 100%, 50%) 0%, hsl(${this.innerHue}, 100%, 50%) 100%)`;
     this.colorCounter = colorCounter;
     this.text = text;

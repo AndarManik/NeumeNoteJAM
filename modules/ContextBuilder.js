@@ -4,7 +4,7 @@ class ContextBuilder {
   constructor() {
     this.context = [];
     this.contextThoughts = [];
-    this.rightSection = document.getElementById("rightSection");
+    this.rightSection = document.getElementById("rightSectionBody");
     this.contextBuilder = document.createElement("div");
     this.contextBuilder.id = "contextBuilder";
 
