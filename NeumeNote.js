@@ -67,9 +67,8 @@ async function search() {
   notes.search(embedding);
 }
 
-//TODO: add some buffering here so that the user can save multiple text quickly without breaking this, since it's async.
 async function save() {
-  const { note, type } = await noteEditor.saveText();
+  const { note, type } = noteEditor.saveText();
   if (type == "new") {
     notes.addNote(note);
   } else {
