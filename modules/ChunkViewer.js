@@ -17,6 +17,10 @@ class ChunkViewer {
     this.viewHistory = new ViewHistory(callbacks);
   }
 
+  initialize() {
+    this.displayAllNotes();
+  }
+
   goBack() {
     this.index = Math.max(this.index - 1, 0);
     this.setDisplay(
@@ -29,6 +33,17 @@ class ChunkViewer {
     this.setDisplay(
       this.history[this.index]
     );
+  }
+
+  displayAllNotes(){
+    if(this.history.length && this.history[this.index].type == "all") {
+      return;
+    }
+    const allNotesDisplay = this.viewHistory.buildAllNotesDisplay();
+    this.index++;
+    this.setDisplay(allNotesDisplay);
+    this.history[this.index] = allNotesDisplay;
+    this.history.length = this.index + 1;
   }
 
   displayNotes(note) {
@@ -118,11 +133,10 @@ class ChunkViewer {
           const nearest = instances.notes.nearestNeighbor(embedding, 10);
           this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
         }
-        else {
+        else if(viewHistory.type == "note"){
           this.history[index] = this.viewHistory.buildNoteDisplay(note);
         }
       }
-      
     });
   }
 

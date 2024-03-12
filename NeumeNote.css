@@ -1,14 +1,15 @@
 :root {
-  --scrollbar-thumb-color: #ddd;
+  --editor: hsl(0, 15%, 84%);
+  --search: hsl(0, 12%, 88%);
+  --left: hsl(0, 15%, 91%);
+  --text: hsl(0, 0%, 7%);
+  --highlight: hsl(0, 9%, 76%);
+  --active: hsl(0, 9%, 70%);
   --scrollbar-track-color: transparent;
-  --body-text-color: #333;
-  --note-border-color: #ddd;
-  --textarea-focus-background: #f7f7f7;
-  --textarea-selection-background: #bbbbbb;
 }
 
 *::selection {
-  background-color: var(--textarea-selection-background);
+  background-color: var(--highlight);
 }
 
 *::-webkit-scrollbar {
@@ -24,7 +25,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-color);
+  background: var(--highlight);
 }
 
 body {
@@ -34,30 +35,30 @@ body {
   display: flex;
   justify-content: center;
   flex-direction: column;
-  color: var(--body-text-color);
+  color: var(--text);
   font-family: "Roboto Slab";
   box-sizing: border-box;
 }
 
 .header {
+  background-color: var(--search);
   box-sizing: border-box;
   font-weight: 400;
   display: flex;
   flex-direction: row;
-  height: 28px;
+  height: 36px;
   width: 100svw;
 }
 
-#leftHeader {
+#header {
   display: flex;
   flex-direction: row;
   height: 100%;
-  width: 50svw;
-  max-width: 300px;
   box-sizing: border-box;
 }
 
 #rightHeader {
+  background-color: var(--editor);
   display: flex;
   align-items: center;
   height: 28px;
@@ -69,11 +70,31 @@ body {
 
 #rightHeader::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
+} 
+
+.leftHeaderbutton {
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  transition: background-color 0.25s ease-in-out; /* Transition effect */
+  user-select: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.leftHeaderbutton:hover {
+  background-color: var(--highlight);
+  cursor: pointer;
+}
+
+.leftHeaderbutton:active {
+  background-color: var(--active);
 }
 
 .headerButton {
   display: flex; /* Enable Flexbox */
   justify-content: center; /* Center horizontally */
+  align-items: center;
   align-items: center;
   padding-left: 1em;
   padding-right: 1em;
@@ -85,32 +106,38 @@ body {
 }
 
 .headerButton:hover {
-  background-color: #eee;
+  background-color: var(--highlight);
   cursor: pointer;
 }
 
 .headerButton:active {
-  background-color: var(--scrollbar-thumb-color);
+  background-color: var(--active);
 }
 
 .notebody {
   display: flex;
   flex-direction: row;
-  height: calc(100% - 29px);
-  width: 100svw;
-  justify-content: center;
-  box-sizing: border-box;
-  border-top: 1px solid var(--note-border-color);
+  height: calc(100% - 37px);
+  width: 100%;
+  border-top: 1px solid var(--left);
+}
+
+#leftHeader {
+  flex-shrink: 0;
+  width: 42px;
+  border-right: 1px solid var(--left);
+  background-color: var(--left);
 }
 
 #leftSection {
+  background-color: var(--search);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 50svw;
-  max-width: 300px;
+  width: 300px;
   box-sizing: border-box;
-  border-right: 1px solid var(--note-border-color);
+  border-right: 1px solid var(--left);
 }
 
 #rightSectionBody {
@@ -134,34 +161,43 @@ textarea {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 14px;
+  font-size: 16px;
   resize: none;
   border: none;
-  color: var(--body-text-color);
-  text-decoration-color: var(--body-text-color);
+  background-color: var(--editor);
+  color: var(--text);
+  text-decoration-color: var(--text);
+}
+
+textarea::placeholder {
+  color: var(--text); /* Replace 'var(--placeholder)' with your desired placeholder text color */
 }
 textarea:focus {
   outline: none;
   border: none;
   box-shadow: none;
-  background: var(--textarea-focus-background);
+  background: var(--editor);
 }
 
 textarea::selection {
-  background-color: var(--textarea-selection-background);
+  background-color: var(--highlight);
+}
+
+#settingsHeader {
+  width: 28px;
+  border-right: 1px solid var(--left);
 }
 
 #completeSection {
   padding: 1em;
   width: 100%;
-  transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 #searchInputSection {
+  background-color: var(--search);
   height: 56px;
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
   padding: 1em;
   padding-top: 1em;
-  transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 #searchSection {
   height: 100%;
@@ -172,9 +208,9 @@ textarea::selection {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 14px;
-  color: var(--body-text-color);
-  text-decoration-color: var(--body-text-color);
+  font-size: 16px;
+  color: var(--text);
+  text-decoration-color: var(--text);
   overflow-y: scroll;
   box-sizing: border-box;
   position: relative;
@@ -182,13 +218,14 @@ textarea::selection {
 }
 
 #contextBuilder {
-  width: 50svw;
-  max-width: 300px;
+  background-color: var(--search);
+  height: 100%;
+  width: 300px;
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  size: absolute;
-  border-right: 1px solid var(--note-border-color);
+  flex-shrink: 0;
+  border-right: 1px solid var(--left);
 }
 
 .animate {
@@ -197,19 +234,19 @@ textarea::selection {
 
 @keyframes backgroundFade {
   0% {
-    background-color: #f4f4f4;
+    background-color: var(--search);
   }
   50% {
-    background-color: #ebe7f6;
+    background-color: var(--editor);
   }
   100% {
-    background-color: #f4f4f4;
+    background-color: var(--search);
   }
 }
 
 #searchSectionHeader {
   height: 28px;
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
   display: flex;
   align-items: center;
 }
@@ -219,6 +256,7 @@ textarea::selection {
 .searchSectionButton {
   display: flex; /* Enable Flexbox */
   justify-content: center; /* Center horizontally */
+  height: 100%;
   align-items: center;
   padding-left: 1em;
   padding-right: 1em;
@@ -230,23 +268,22 @@ textarea::selection {
 }
 
 .searchSectionButton:hover {
-  background-color: #eee;
+  background-color: var(--highlight);
   cursor: pointer;
 }
 
 .searchSectionButton:active {
-  background-color: var(--scrollbar-thumb-color);
+  background-color: var(--active);
 }
 
 .thought {
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
   padding-top: 0;
-  position: relative;
 }
 
 .thought p {
   margin: 1em;
-  margin-top: 0;
+  margin-top: 0.25em;
   overflow-wrap: break-word;
   font-size: 14px;
 }
@@ -254,30 +291,35 @@ textarea::selection {
 .thoughtHeader {
   display: flex;
   align-items: center;
+  padding-left: 1em;
+  padding-right: 0.25em;
+  padding-top: 0.25em;
+  height: 1em;
 }
 
 .thoughtButton {
+  height:100%;
   padding: 0.15em;
   padding-left: 1em;
   padding-right: 1em;
   font-size: 12px;
   font-weight: 600;
   display: flex;
+  align-items: center;
   transition: background-color 0.25s ease-in-out; /* Transition effect */
 }
 
 .thoughtButton:hover {
-  background-color: #eee;
+  background-color: var(--highlight);
   cursor: pointer;
 }
 
 .thoughtButton:active {
-  background-color: var(--scrollbar-thumb-color);
+  background-color: var(--active);
 }
 
 .distanceIndex {
   padding: 0.15em;
-
   font-size: 12px;
 }
 
@@ -294,36 +336,36 @@ textarea::selection {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
   border-radius: 5px;
   padding: 1em;
 }
 
 .settings {
+  background-color: var(--search);
   height: 400px;
   width: 400px;
-  background: #ffffff;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
   border-radius: 5px;
   overflow-y: auto;
 }
 
 .settingsSection {
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
   padding: 1em;
 }
 
 .settingsNode {
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
   padding: 1em;
 }
 
 .settingsNode:hover {
-  background-color: var(--textarea-focus-background);
+  background-color: var(--highlight);
   cursor: pointer;
 }
 
@@ -331,7 +373,8 @@ textarea::selection {
   display: flex;
   align-items: center;
   height: 28px;
-  border-bottom: 1px solid var(--note-border-color);
+  border-bottom: 1px solid var(--left);
+  background-color: var(--left);
 }
 
 .settingsHeader > :last-child {
@@ -363,6 +406,45 @@ textarea::selection {
   width: 300px;
 }
 
+input[type=range] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 200px; /* Specific width is required for Firefox. */
+  background: var(--editor); /* Otherwise white in Chrome */
+  border-radius: 1px solid var(--left);
+}
+
+input[type=range]::-webkit-slider-thumb {
+  height: 14px;
+  width: 14px;
+  background: var(--active);
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+
+
+.settingsButton {
+  font-family: "Roboto Slab";
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  border: 1px solid var(--left);
+  padding: 7px;
+  margin: 7px;
+  background-color: var(--editor);
+  color: var(--text);
+}
+
+.settingsButton:hover {
+  background-color: var(--highlight);
+}
+
+.settingsButton:active {
+  background-color: var(--active);
+}
+
 .settingsInput {
   font-family: "Roboto Slab";
   display: flex;
@@ -370,18 +452,22 @@ textarea::selection {
   outline: none;
   border: none;
   box-shadow: none;
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
   width: 150px;
+  background-color: var(--editor);
+  color: var(--text);
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 
 .settingsInput:focus {
   outline: none;
   box-shadow: none;
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
 }
 
 .settingsInput::selection {
-  background-color: var(--textarea-selection-background);
+  background-color: var(--highlight);
 }
 
 .apiInput {
@@ -396,17 +482,17 @@ textarea::selection {
   padding-right: 1em;
   width: 30svw;
   height: 3svw;
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
 }
 
 .apiInput:focus {
   outline: none;
   box-shadow: none;
-  border: 1px solid var(--note-border-color);
+  border: 1px solid var(--left);
 }
 
 .apiInput::selection {
-  background-color: var(--textarea-selection-background);
+  background-color: var(--highlight);
 }
 
 .editorTab {
@@ -426,6 +512,6 @@ textarea::selection {
   height: 20px;
   width: 20px;
   border-radius: 4px;
-  border: 2px dotted var(--note-border-color);
+  border: 2px dotted var(--text);
   cursor: pointer;
 }

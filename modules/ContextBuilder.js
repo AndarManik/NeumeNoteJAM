@@ -4,7 +4,7 @@ class ContextBuilder {
   constructor() {
     this.context = [];
     this.contextThoughts = [];
-    this.rightSection = document.getElementById("rightSectionBody");
+    this.middleSection = document.getElementById("middleSection");
     this.contextBuilder = document.createElement("div");
     this.contextBuilder.id = "contextBuilder";
 
@@ -19,7 +19,7 @@ class ContextBuilder {
       return;
     }
     if (!this.context.length) {
-      this.rightSection.append(this.contextBuilder);
+      this.middleSection.append(this.contextBuilder);
     }
 
     const text = note.chunks[index];

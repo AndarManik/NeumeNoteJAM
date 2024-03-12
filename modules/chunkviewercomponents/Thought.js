@@ -5,6 +5,18 @@ class Thought {
     this.thoughtHeader = new ThoughtHeader(callbacks);
   }
 
+  buildAllNoteThought(note) {
+    const thoughtDiv = document.createElement("div");
+    thoughtDiv.classList.add("thought");
+    const header = this.thoughtHeader.buildAllNoteHeader(note);
+    thoughtDiv.append(header);
+
+    const text = document.createElement("p");
+    text.textContent += note.title;
+    thoughtDiv.appendChild(text);
+    return thoughtDiv;
+  }
+
   buildNoteThought(note, index) {
     const thoughtDiv = document.createElement("div");
     thoughtDiv.classList.add("thought");

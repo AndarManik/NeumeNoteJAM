@@ -1,7 +1,7 @@
-import notes from "./Notes.js";
-import openAI from "./OpenAI.js";
-import notesDatabase from "./NotesDatabase.js";
-import iconReader from "./IconReader.js";
+import notes from "../Notes.js";
+import openAI from "../OpenAI.js";
+import notesDatabase from "../NotesDatabase.js";
+import iconReader from "../IconReader.js";
 
 class SettingsData {
   constructor(settings, displayParent) {
@@ -14,7 +14,7 @@ class SettingsData {
 
     const header = document.createElement("div");
     header.classList.add("settingsSectionHeader");
-    header.innerText = "Data settings";
+    header.innerText = "Data";
     section.appendChild(header);
 
     const info = document.createElement("div");
@@ -92,7 +92,6 @@ class SettingsData {
           notes.deleteData();
           openAI.deleteData();
           await notesDatabase.deleteData();
-          this.toggle();
           location.reload();
         }
         input.value = "";

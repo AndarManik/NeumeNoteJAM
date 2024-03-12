@@ -1,8 +1,22 @@
 import Thought from "./Thought.js";
+import notes from "../Notes.js";
+
 class SearchSection {
   constructor(callbacks) {
     this.callbacks = callbacks;
     this.thought = new Thought(callbacks);
+  }
+
+  buildAllNotesSearchSection(){
+    const searchSection = document.createElement("div");
+    searchSection.id = "searchSection";
+
+    notes.notes.forEach(note => {
+      const thought = this.thought.buildAllNoteThought(note);
+        searchSection.append(thought);
+    })
+
+    return searchSection;
   }
 
   buildNoteSearchSection(note) {

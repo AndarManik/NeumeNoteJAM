@@ -1,3 +1,4 @@
+//this import order is kinda
 import notes from "./modules/Notes.js";
 import openAI from "./modules/OpenAI.js";
 import noteEditor from "./modules/NoteEditor.js";
@@ -6,21 +7,27 @@ import contextBuilder from "./modules/ContextBuilder.js";
 import headerUtility from "./modules/HeaderUtility.js";
 import chunkViewer from "./modules/ChunkViewer.js";
 import iconReader from "./modules/IconReader.js";
+import leftUtility from "./modules/LeftUtility.js";
+import themeEditor from "./modules/settingscomponents/ThemeEditor.js";
 
 notesDatabase.initialize().then(async () => {
   await iconReader.initialize();
-  await notes.initialize();
+  await  themeEditor.initialize();
   await openAI.initialize();
   while (!openAI.validKey) {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
+  await notes.initialize();
+  noteEditor.initialize();
+  headerUtility.initialize();
+  leftUtility.initialize();
+  chunkViewer.initialize();
   window.addEventListener("beforeunload", async (e) => {
     await notes.finishedProcessing();
     await notesDatabase.saveNotesData(notes);
     await notesDatabase.saveAPIKey(openAI.apiKey);
+    await notesDatabase.saveThemeData(themeEditor.getTheme());
   });
-  noteEditor.initialize();
-  headerUtility.initialize();
 });
 
 document.addEventListener("keydown", async function (e) {
@@ -76,6 +83,7 @@ async function search() {
 
 async function save() {
   const { note, type } = await noteEditor.saveText();
+  await notes.finishedAdding();
   if (type == "new") {
     notes.addNote(note);
   } else {

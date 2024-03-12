@@ -7,19 +7,19 @@ class OpenAI {
     this.model = "";
     this.completionEndpoint = "https://api.openai.com/v1/chat/completions";
     this.embeddingEndpoint = "https://api.openai.com/v1/embeddings";
-    this.modelsEndpoint = "https://api.openai.com/v1/models"
+    this.modelsEndpoint = "https://api.openai.com/v1/models";
     this.maxRetries = 5;
     this.waitTime = 500;
     this.validKey = false;
   }
 
-  async initialize(){
+  async initialize() {
     const apiKey = await instances.notesDatabase.getAPIKey();
     if (apiKey) {
       await this.setKey(apiKey);
       return;
     }
-  
+
     displayApiInput(async (apiKey) => {
       await this.setKey(apiKey);
       instances.notesDatabase.saveAPIKey(apiKey);
@@ -48,12 +48,11 @@ class OpenAI {
       }
 
       const models = await response.json();
-      this.model = "gpt-3.5-turbo-0125";
-      models.data.forEach(model => {
-        if(model.id == "gpt-4-turbo-preview") {
-          this.model = "gpt-4-turbo-preview";
-        }
-      })
+      this.model = models.data.some(
+        (model) => model.id == "gpt-4-turbo-preview"
+      )
+        ? "gpt-4-turbo-preview"
+        : "gpt-3.5-turbo-0125";
 
       this.validKey = true;
 
@@ -81,6 +80,45 @@ class OpenAI {
       }
     }
     return null;
+  }
+
+  async titleComplete(
+    prompt,
+    system = `Role:
+  You are a title generator for the document.
+Task:
+  Determine a simple title which summarizes the contents of the document provided in the users message.
+Format: 
+  You should only respond with the title only using alphabetic characters, do not use special characters.`
+  ) {
+    return this.autoRequest(async () => {
+      try {
+        const response = await fetch(this.completionEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: this.model,
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: prompt },
+            ],
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok, status: ${response.status}`
+          );
+        }
+
+        return (await response.json()).choices[0].message.content;
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    });
   }
 
   async smartComplete(

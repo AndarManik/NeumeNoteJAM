@@ -4,12 +4,33 @@ import iconReader from "../IconReader.js";
 class SearchHeaderButton {
   constructor(callbacks) {
     this.callbacks = callbacks;
+    this.iconSize = 16;
+  }
+
+  buildLeft() {
+    const leftArrow = document.createElement("div");
+    leftArrow.classList.add("searchSectionButton");
+    leftArrow.append(iconReader.newIcon("chevronLeft", this.iconSize));
+    leftArrow.addEventListener("click", (e) => {
+      this.callbacks.goBack();
+    });
+    return leftArrow;
+  }
+
+  buildRight() {
+    const rightArrow = document.createElement("div");
+    rightArrow.classList.add("searchSectionButton");
+    rightArrow.append(iconReader.newIcon("chevronRight", this.iconSize));
+    rightArrow.addEventListener("click", (e) => {
+      this.callbacks.goForward();
+    });
+    return rightArrow;
   }
 
   buildEditButton(note) {
     const editButton = document.createElement("div");
     editButton.classList.add("searchSectionButton");
-    editButton.append(iconReader.newIcon("pencil", 22));
+    editButton.append(iconReader.newIcon("pencil", this.iconSize));
     editButton.addEventListener("click", (e) => {
       if (noteEditor.has(note)) {
         return;
@@ -23,7 +44,7 @@ class SearchHeaderButton {
   buildRechunkButton(note) {
     const reChunkButton = document.createElement("div");
     reChunkButton.classList.add("searchSectionButton");
-    reChunkButton.append(iconReader.newIcon("refresh", 22));
+    reChunkButton.append(iconReader.newIcon("refresh", this.iconSize));
     reChunkButton.addEventListener("click", async (e) => {
       note.addRechunkAnimation("searchSection");
       await note.chunkText(note.text);
@@ -36,7 +57,7 @@ class SearchHeaderButton {
   buildDeleteButton(note) {
     const deleteButton = document.createElement("div");
     deleteButton.classList.add("searchSectionButton");
-    deleteButton.append(iconReader.newIcon("trash", 22));
+    deleteButton.append(iconReader.newIcon("trash", this.iconSize));
     deleteButton.addEventListener("click", (e) => {
       notes.delete(note);
       noteEditor.deleteTab(note);

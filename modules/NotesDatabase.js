@@ -2,7 +2,7 @@ import instances from "./NeumeEngine.js";
 class NotesDatabase {
   constructor() {
     this.dbName = "NotesDB";
-    this.dbVersion = 4;
+    this.dbVersion = 5;
     this.db = null;
   }
 
@@ -22,6 +22,13 @@ class NotesDatabase {
 
         if (!this.db.objectStoreNames.contains("notesData")) {
           this.db.createObjectStore("notesData", {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+        }
+
+        if (!this.db.objectStoreNames.contains("themeData")) {
+          this.db.createObjectStore("themeData", {
             keyPath: "id",
             autoIncrement: true,
           });
@@ -80,6 +87,26 @@ class NotesDatabase {
     }
   }
 
+  async getTheme() {
+    try {
+      const transaction = this.db.transaction(["themeData"], "readonly");
+      const store = transaction.objectStore("themeData");
+      const request = store.get(1);
+
+      const result = await new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+
+      return result.theme;
+    } catch (error) {
+      if (error.name !== "NotFoundError") {
+        console.error("IndexedDB error for ApiKey", error);
+      }
+      return null;
+    }
+  }
+
   async saveAPIKey(apiKey) {
     const transaction = this.db.transaction(["apiKey"], "readwrite");
     const store = transaction.objectStore("apiKey");
@@ -101,6 +128,7 @@ class NotesDatabase {
         text: note.text,
         chunks: note.chunks,
         embeddings: note.embeddings,
+        title: note.title,
       };
     });
 
@@ -111,6 +139,16 @@ class NotesDatabase {
     store.put({
       id: 1,
       data,
+    });
+  }
+
+  async saveThemeData(theme) {
+    const transaction = this.db.transaction(["themeData"], "readwrite");
+    const store = transaction.objectStore("themeData");
+    await transaction.done;
+    store.put({
+      id: 1,
+      theme,
     });
   }
 
@@ -136,6 +174,8 @@ class NotesDatabase {
       throw new Error(error.message);
     }
   }
+
+  
 }
 
 const notesDatabase = new NotesDatabase();

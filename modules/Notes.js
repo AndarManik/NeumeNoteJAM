@@ -5,43 +5,60 @@ class Notes {
     this.colorCounter = 0;
     this.notes = [];
     this.isSearching = false;
+    this.isAdding = false;
   }
 
   async initialize() {
     const data = await instances.notesDatabase.getNotes();
-    
+
+    console.log(data);
+
     if (!data) {
       return;
     }
-    
+
     this.colorCounter = data.colorCounter;
-    this.notes = data.notes.map(noteData => {
-      return new Note(noteData.colorCounter, noteData.text, noteData.chunks, noteData.embeddings);
+    this.notes = data.notes.map((noteData) => {
+      return new Note(
+        noteData.colorCounter,
+        noteData.text,
+        noteData.chunks,
+        noteData.embeddings,
+        noteData.title
+      );
     });
   }
 
   newBlankNote() {
     this.colorCounter++;
-    console.log("colorCounter",this.colorCounter);
+    console.log("colorCounter", this.colorCounter);
     return new Note(this.colorCounter);
   }
 
-  addNote(note){
+  addNote(note) {
+    this.isAdding = true;
     this.notes.push(note);
-    document.getElementById("searchSection").classList.remove('rechunkAnimation');
+    document
+      .getElementById("searchSection")
+      .classList.remove("rechunkAnimation");
     instances.chunkViewer.handleRechunk(note);
     instances.chunkViewer.displayNotes(note);
+    this.isAdding = false;
   }
 
-  updateNote(note){
-    document.getElementById("searchSection").classList.remove('rechunkAnimation');
+  updateNote(note) {
+    this.isAdding = true;
+
+    document
+      .getElementById("searchSection")
+      .classList.remove("rechunkAnimation");
     instances.chunkViewer.handleRechunk(note);
-    if(!instances.chunkViewer.isCurrentHistory(note)){
+    if (!instances.chunkViewer.isCurrentHistory(note)) {
       instances.chunkViewer.displayNotes(note);
-    }
-    else {
+    } else {
       instances.chunkViewer.setNoteSearchSection(note);
     }
+    this.isAdding = false;
   }
 
   delete(note) {
@@ -51,8 +68,11 @@ class Notes {
     }
   }
 
-  canSearch(){
-    return !this.isSearching && document.activeElement ==  document.getElementById("searchInputSection");
+  canSearch() {
+    return (
+      !this.isSearching &&
+      document.activeElement == document.getElementById("searchInputSection")
+    );
   }
 
   getSearchText() {
@@ -83,7 +103,7 @@ class Notes {
         });
       })
       .flat();
-    console.log("distances",distances);
+    console.log("distances", distances);
     distances.sort((a, b) => a.distance - b.distance);
     return { embedding, data: distances.slice(0, N) };
   }
@@ -93,9 +113,16 @@ class Notes {
     this.colorCounter = 0;
   }
 
-  async finishedProcessing(){
-    while (this.notes.some(note => note.isProcessing)) {
-      await new Promise(resolve => setTimeout(resolve, 100)); // Check every 100ms
+  async finishedProcessing() {
+    while (this.notes.some((note) => note.isProcessing)) {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Check every 100ms
+    }
+    return;
+  }
+
+  async finishedAdding() {
+    while (this.isAdding) {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Check every 100ms
     }
     return;
   }

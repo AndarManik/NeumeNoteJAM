@@ -22,6 +22,10 @@ class IconReader {
     this.stack = await this.fetchSvg("stack-r.svg");
     this.backspace = await this.fetchSvg("backspace-r.svg");
     this.close = await this.fetchSvg("close-r.svg");
+    this.moon = await this.fetchSvg("moon-r.svg");
+    this.sun = await this.fetchSvg("sun-r.svg");
+    this.eye = await this.fetchSvg("eye-r.svg");
+    this.eyeclosed = await this.fetchSvg("eye-closed-r.svg");
   }
   
 
@@ -31,7 +35,7 @@ class IconReader {
       var data = await response.text();
       data = data.replace(/<script.*?<\/script>/gs, '');
       data = data.replace(/(<!--.*?-->)/gs, '');
-      console.log("fetchSvg", data);
+      data = data.replace(/fill=".*?"/g, 'fill="var(--text)"');
       return new DOMParser().parseFromString(data, "image/svg+xml")
         .documentElement;
     } catch (error) {
