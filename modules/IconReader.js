@@ -1,7 +1,5 @@
 import instances from "./NeumeEngine.js";
 class IconReader {
-  constructor() {
-  }
 
   newIcon(name, size){
     const clone = this[name].cloneNode(true);
@@ -12,13 +10,14 @@ class IconReader {
 
   async initialize(){
     this.folderPath = "/Icons";
-    
-    try {
-      await this.fetchSvg("pencil-r.svg");
+
+    const test = await this.fetchSvg("pencil-r.svg")
+
+    console.log(test);
+    if(!test) {
+      this.folderPath = "/NeumeNoteJAM/Icons"
     }
-    catch (e) {
-      this.folderPath = "/NeumeNoteJam/Icons"
-    }
+
 
     this.pencil = await this.fetchSvg("pencil-r.svg");
     this.refresh = await this.fetchSvg("refresh-r.svg");
@@ -44,10 +43,13 @@ class IconReader {
       data = data.replace(/<script.*?<\/script>/gs, '');
       data = data.replace(/(<!--.*?-->)/gs, '');
       data = data.replace(/fill=".*?"/g, 'fill="var(--text)"');
-      return new DOMParser().parseFromString(data, "image/svg+xml")
-        .documentElement;
+      const doc = new DOMParser().parseFromString(data, "image/svg+xml");
+      if (doc.documentElement.getElementsByTagName("parsererror").length > 0) {
+        return null; 
+      }
+      return doc.documentElement;
     } catch (error) {
-      console.error("Failed to fetch SVG:", error);
+      return null;
     }
   }
 

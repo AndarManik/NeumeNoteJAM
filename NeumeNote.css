@@ -509,9 +509,9 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 4px;
 }
 .makeNewTabButton {
-  height: 20px;
-  width: 20px;
+  height: 19px;
+  width: 19px;
   border-radius: 4px;
-  border: 2px dotted var(--text);
+  border: 2px dashed var(--text);
   cursor: pointer;
 }
