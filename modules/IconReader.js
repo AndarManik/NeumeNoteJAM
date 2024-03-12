@@ -1,7 +1,6 @@
 import instances from "./NeumeEngine.js";
 class IconReader {
   constructor() {
-    this.folderPath = "/Icons";
   }
 
   newIcon(name, size){
@@ -12,6 +11,15 @@ class IconReader {
   }
 
   async initialize(){
+    this.folderPath = "/Icons";
+    
+    try {
+      await this.fetchSvg("pencil-r.svg");
+    }
+    catch (e) {
+      this.folderPath = "/NeumeNoteJam/Icons"
+    }
+
     this.pencil = await this.fetchSvg("pencil-r.svg");
     this.refresh = await this.fetchSvg("refresh-r.svg");
     this.trash = await this.fetchSvg("trash-r.svg");
