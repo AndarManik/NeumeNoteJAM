@@ -1,7 +1,7 @@
 import instances from "./NeumeEngine.js";
 class IconReader {
   constructor() {
-    this.folderPath = "../Icons";
+    this.folderPath = "/Icons";
   }
 
   newIcon(name, size){
