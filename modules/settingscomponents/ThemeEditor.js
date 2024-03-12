@@ -6,6 +6,7 @@ class ThemeEditor {
     if(!themes) {
         this.setLightMode();
         this.setColor(0);
+        this.setGreyScale();
         return;
     }
     this.setColor(themes.hue);
