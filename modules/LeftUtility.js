@@ -8,18 +8,21 @@ class LeftUtility {
     toggleReader.classList.add("leftHeaderbutton");
     toggleReader.append(iconReader.newIcon("file", iconSize));
     toggleReader.addEventListener("click", (e) => this.displayAllNotes());
+    toggleReader.setAttribute("title", "Show all notes");
     document.getElementById("leftHeader").append(toggleReader);
 
     const toggleSearch = document.createElement("div");
     toggleSearch.classList.add("leftHeaderbutton");
     toggleSearch.append(iconReader.newIcon("search", iconSize));
     toggleSearch.addEventListener("click", (e) => this.toggleSearch());
+    toggleSearch.setAttribute("title", "Toggle search section");
     document.getElementById("leftHeader").append(toggleSearch);
 
     const toggleContext = document.createElement("div");
     toggleContext.classList.add("leftHeaderbutton");
     toggleContext.append(iconReader.newIcon("stack", iconSize));
     toggleContext.addEventListener("click", (e) => this.toggleContext());
+    toggleContext.setAttribute("title", "Toggle context builder");
     document.getElementById("leftHeader").append(toggleContext);
   }
   toggleSearch() {

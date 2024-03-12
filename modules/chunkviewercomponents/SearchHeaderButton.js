@@ -14,6 +14,8 @@ class SearchHeaderButton {
     leftArrow.addEventListener("click", (e) => {
       this.callbacks.goBack();
     });
+    leftArrow.setAttribute("title", "Go back");
+
     return leftArrow;
   }
 
@@ -24,6 +26,7 @@ class SearchHeaderButton {
     rightArrow.addEventListener("click", (e) => {
       this.callbacks.goForward();
     });
+    rightArrow.setAttribute("title", "Go forward");
     return rightArrow;
   }
 
@@ -38,6 +41,8 @@ class SearchHeaderButton {
 
       noteEditor.editNote(note);
     });
+    editButton.setAttribute("title", "Edit note");
+
     return editButton;
   }
 
@@ -51,6 +56,8 @@ class SearchHeaderButton {
       await this.callbacks.handleRechunk(note);
       await this.callbacks.setDisplay(note);
     });
+    reChunkButton.setAttribute("title", "Rechunk note");
+
     return reChunkButton;
   }
 
@@ -63,6 +70,7 @@ class SearchHeaderButton {
       noteEditor.deleteTab(note);
       this.callbacks.handleDelete(note);
     });
+    deleteButton.setAttribute("title", "Delete note");
     return deleteButton;
   }
 

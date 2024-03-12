@@ -5,8 +5,7 @@ class ThemeEditor {
     console.log(themes);
     if(!themes) {
         this.setLightMode();
-        this.setColor(0);
-        this.setGreyScale();
+        this.setColor(240);
         return;
     }
     this.setColor(themes.hue);
