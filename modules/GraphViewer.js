@@ -56,7 +56,6 @@ class GraphViewer {
       [minX, minY] = [minY, minX];
       [maxX, maxY] = [maxY, maxX];
     }
-
     rightSection.innerHTML = "";
 
     const graphSection = document.createElement("div");
@@ -67,23 +66,44 @@ class GraphViewer {
       point.classList.add("editorTab");
       point.style.position = "absolute";
 
-      const x = ((datum[0] - minX) / (maxX - minX)) * 90;
-      const y = ((datum[1] - minY) / (maxY - minY)) * 90;
+      const x = (datum[0] - minX) / (maxX - minX);
+      const y = (datum[1] - minY) / (maxY - minY);
 
-      point.style.left = `calc(${x + 5}% - 11px)`;
-      point.style.top = `calc(${y + 5}% - 11px)`;
+      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
+      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
       point.style.background = noteThought[index].color;
-      const thought = this.thought.buildContextthought(
+      const thought = this.thought.buildGraphthought(
         noteThought[index],
         indexes[index]
       );
 
+      thought.classList.remove("thought");
+      thought.classList.add("graphThought");
+      thought.style.position = "absolute";
+      point.style.zIndex = "10";
+
+      if (x > 0.5) {
+        thought.style.right = `50%`;
+      } else {
+        thought.style.left = `50%`;
+      }
+
+      if (y > 0.5) {
+        thought.style.bottom = `50%`;
+      } else {
+        thought.style.top = `50%`;
+      }
+
+      thought.style.display = "none";
+
       point.addEventListener("mouseover", (e) => {
         thought.style.display = "block";
+        point.style.zIndex = "1000";
       });
 
       point.addEventListener("mouseout", (e) => {
         thought.style.display = "none";
+        point.style.zIndex = "10";
       });
 
       point.append(thought);
