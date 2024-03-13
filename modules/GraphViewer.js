@@ -42,8 +42,9 @@ class GraphViewer {
     });
 
     const rightSection = document.getElementById("rightSection");
-    const sectionWidth = rightSection.clientWidth
-    const sectionHeight = rightSection.clientHeight;
+    const graphSection = document.getElementById("graphSection");
+    const sectionWidth = graphSection.clientWidth
+    const sectionHeight = graphSection.clientHeight;
     const elementRatio = sectionWidth / sectionHeight;
     const dataRatio = (maxX - minX) / (maxY - minY);
 
@@ -57,10 +58,10 @@ class GraphViewer {
       [minX, minY] = [minY, minX];
       [maxX, maxY] = [maxY, maxX];
     }
-    rightSection.innerHTML = "";
 
-    const graphSection = document.createElement("div");
-    graphSection.id = "graphSection";
+    graphSection.innerHTML = "";
+
+
 
     data.forEach((datum, index) => {
       const point = document.createElement("div");
@@ -70,8 +71,8 @@ class GraphViewer {
       const x = (datum[0] - minX) / (maxX - minX);
       const y = (datum[1] - minY) / (maxY - minY);
 
-      point.style.left = `calc(${sectionWidth * (x * 80 + 10) - 11}px)`;
-      point.style.top = `calc(${sectionHeight * (y * 80 + 10) - 11}px)`;
+      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
+      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
       point.style.background = noteThought[index].color;
       const thought = this.thought.buildGraphthought(
         noteThought[index],
