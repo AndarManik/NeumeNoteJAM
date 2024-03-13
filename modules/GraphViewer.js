@@ -9,8 +9,8 @@ class GraphViewer {
   }
 
   updateGraph(n = 100) {
-    if(!notes.notes.length){
-        return;
+    if (!notes.notes.length) {
+      return;
     }
     const embeddings = [];
     const noteThought = [];
@@ -42,6 +42,21 @@ class GraphViewer {
     });
 
     const rightSection = document.getElementById("rightSection");
+
+    const elementRatio = rightSection.clientWidth / rightSection.clientHeight;
+    const dataRatio = (maxX - minX) / (maxY - minY);
+
+    if (
+      (elementRatio < 1 && dataRatio > 1) ||
+      (elementRatio > 1 && dataRatio < 1)
+    ) {
+      data.forEach((point) => {
+        [point[0], point[1]] = [point[1], point[0]];
+      });
+      [minX, minY] = [minY, minX];
+      [maxX, maxY] = [maxY, maxX];
+    }
+
     rightSection.innerHTML = "";
 
     const graphSection = document.createElement("div");
@@ -52,11 +67,11 @@ class GraphViewer {
       point.classList.add("editorTab");
       point.style.position = "absolute";
 
-      const x = ((datum[0] - minX) / (maxX - minX)) * 60;
-      const y = ((datum[1] - minY) / (maxY - minY)) * 60;
+      const x = ((datum[0] - minX) / (maxX - minX)) * 90;
+      const y = ((datum[1] - minY) / (maxY - minY)) * 90;
 
-      point.style.left = `calc(${x + 20}% - 11px)`;
-      point.style.top = `calc(${y + 20}% - 11px)`;
+      point.style.left = `calc(${x + 5}% - 11px)`;
+      point.style.top = `calc(${y + 5}% - 11px)`;
       point.style.background = noteThought[index].color;
       const thought = this.thought.buildContextthought(
         noteThought[index],
@@ -116,6 +131,21 @@ class GraphViewer {
     });
 
     const rightSection = document.getElementById("rightSection");
+
+    const elementRatio = rightSection.clientWidth / rightSection.clientHeight;
+    const dataRatio = (maxX - minX) / (maxY - minY);
+
+    if (
+      (elementRatio < 1 && dataRatio > 1) ||
+      (elementRatio > 1 && dataRatio < 1)
+    ) {
+      data.forEach((point) => {
+        [point[0], point[1]] = [point[1], point[0]];
+      });
+      [minX, minY] = [minY, minX];
+      [maxX, maxY] = [maxY, maxX];
+    }
+
     this.editor = [...rightSection.children];
     rightSection.innerHTML = "";
 
@@ -130,8 +160,8 @@ class GraphViewer {
       const x = (datum[0] - minX) / (maxX - minX);
       const y = (datum[1] - minY) / (maxY - minY);
 
-      point.style.left = `calc(${x * 60 + 20}% - 11px)`;
-      point.style.top = `calc(${y * 60 + 20}% - 11px)`;
+      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
+      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
       point.style.background = noteThought[index].color;
       const thought = this.thought.buildGraphthought(
         noteThought[index],
