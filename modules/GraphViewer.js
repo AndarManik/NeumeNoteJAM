@@ -82,7 +82,7 @@ class GraphViewer {
       thought.classList.remove("thought");
       thought.classList.add("graphThought");
       thought.style.position = "absolute";
-      point.style.zIndex = "10";
+      point.style.zIndex = "0";
 
       if (x > 0.5) {
         thought.style.right = `50%`;
@@ -105,7 +105,7 @@ class GraphViewer {
 
       point.addEventListener("mouseout", (e) => {
         thought.style.display = "none";
-        point.style.zIndex = "10";
+        point.style.zIndex = "0";
       });
 
       point.append(thought);
@@ -193,7 +193,7 @@ class GraphViewer {
       thought.classList.remove("thought");
       thought.classList.add("graphThought");
       thought.style.position = "absolute";
-      point.style.zIndex = "10";
+      point.style.zIndex = "0";
 
       if (x > 0.5) {
         thought.style.right = `50%`;
@@ -216,7 +216,7 @@ class GraphViewer {
 
       point.addEventListener("mouseout", (e) => {
         thought.style.display = "none";
-        point.style.zIndex = "10";
+        point.style.zIndex = "0";
       });
 
       point.append(thought);
