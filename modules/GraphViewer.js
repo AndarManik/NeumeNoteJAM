@@ -2,6 +2,7 @@ import instances from "./NeumeEngine.js";
 import notes from "./Notes.js";
 import projectToTopTwoPCA from "./PCA.js";
 import Thought from "./chunkviewercomponents/Thought.js";
+import nearestNeighborGraph from "./NearestNeighborGraph.js";
 class GraphViewer {
   constructor() {
     this.state = "editor";
@@ -43,7 +44,7 @@ class GraphViewer {
 
     const rightSection = document.getElementById("rightSection");
     const graphSection = document.getElementById("graphSection");
-    const sectionWidth = graphSection.clientWidth
+    const sectionWidth = graphSection.clientWidth;
     const sectionHeight = graphSection.clientHeight;
     const elementRatio = sectionWidth / sectionHeight;
     const dataRatio = (maxX - minX) / (maxY - minY);
@@ -60,8 +61,6 @@ class GraphViewer {
     }
 
     graphSection.innerHTML = "";
-
-
 
     data.forEach((datum, index) => {
       const point = document.createElement("div");
@@ -116,7 +115,114 @@ class GraphViewer {
     rightSection.append(graphSection);
   }
 
-  displayGraph(n = 100) {
+  async displayGraph() {
+    if (this.state == "graph" || !notes.notes.length) {
+      return;
+    }
+
+    this.state = "graph";
+
+    nearestNeighborGraph.loadInitialData();
+
+    const noteThought = [];
+    const indexes = [];
+    notes.notes.forEach((note) => {
+      note.embeddings.forEach((embedding, index) => {
+        noteThought.push(note);
+        indexes.push(index);
+      });
+    });
+
+    const rightSection = document.getElementById("rightSection");
+
+    this.editor = [...rightSection.children];
+    rightSection.innerHTML = "";
+
+    const graphSection = document.createElement("div");
+    graphSection.id = "graphSection";
+
+    nearestNeighborGraph.positions.forEach((position, index) => {
+      const point = document.createElement("div");
+      point.classList.add("editorTab");
+      point.style.position = "absolute";
+
+      const x = position[0];
+      const y = position[1];
+
+      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
+      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
+      point.style.background = noteThought[index].color;
+      const thought = this.thought.buildGraphthought(
+        noteThought[index],
+        indexes[index]
+      );
+
+      thought.classList.remove("thought");
+      thought.classList.add("graphThought");
+      thought.style.position = "absolute";
+      point.style.zIndex = "0";
+
+      if (x > 0.5) {
+        thought.style.right = `50%`;
+      } else {
+        thought.style.left = `50%`;
+      }
+
+      if (y > 0.5) {
+        thought.style.bottom = `50%`;
+      } else {
+        thought.style.top = `50%`;
+      }
+
+      thought.style.display = "none";
+
+      point.addEventListener("mouseover", (e) => {
+        thought.style.display = "block";
+        point.style.zIndex = "1000";
+      });
+
+      point.addEventListener("mouseout", (e) => {
+        thought.style.display = "none";
+        point.style.zIndex = "0";
+      });
+
+      point.append(thought);
+      graphSection.appendChild(point);
+    });
+    rightSection.append(graphSection);
+
+    for (let index = 0; index < 1000; index++) {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      console.log("loop");
+      nearestNeighborGraph.update(5, index);
+      graphSection.childNodes.forEach((child, childIndex) => {
+        const x = nearestNeighborGraph.scaledPositions[childIndex][0];
+        const y = nearestNeighborGraph.scaledPositions[childIndex][1];
+
+        child.style.left = `calc(${x * 80 + 10}% - 11px)`;
+        child.style.top = `calc(${y * 80 + 10}% - 11px)`;
+      });
+    }
+
+    graphSection.childNodes.forEach((child, childIndex) => {
+        const x = nearestNeighborGraph.scaledPositions[childIndex][0];
+        const y = nearestNeighborGraph.scaledPositions[childIndex][1];
+
+        if (x > 0.5) {
+            child.firstChild.style.right = `50%`;
+          } else {
+            child.firstChild.style.left = `50%`;
+          }
+    
+          if (y > 0.5) {
+            child.firstChild.style.bottom = `50%`;
+          } else {
+            child.firstChild.style.top = `50%`;
+          }
+      });
+  }
+
+  displayGraphf(n = 100) {
     if (this.state == "graph" || !notes.notes.length) {
       return;
     }
