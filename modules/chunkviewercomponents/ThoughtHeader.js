@@ -1,6 +1,7 @@
 import notes from "../Notes.js";
 import contextBuilder from "../ContextBuilder.js";
 import iconReader from "../IconReader.js";
+import instances from "../NeumeEngine.js";
 
 class ThoughtHeader {
   constructor(callbacks) {
@@ -16,7 +17,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      this.callbacks.displayNotes(note);
+      instances.chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
@@ -79,7 +80,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      this.callbacks.displayNotes(note);
+      instances.chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
@@ -99,6 +100,34 @@ class ThoughtHeader {
     return thoughtHeader;
   }
 
+  buildGraphHeader(note, index) {
+    const thoughtHeader = document.createElement("div");
+    thoughtHeader.classList.add("thoughtHeader");
+
+    const searchButton = document.createElement("div");
+    searchButton.classList.add("thoughtButton");
+    searchButton.append(iconReader.newIcon("search", this.iconSize));
+    searchButton.addEventListener("click", (e) => {
+      notes.search(note.embeddings[index]);
+    });
+    searchButton.setAttribute("title", "Search");
+    thoughtHeader.appendChild(searchButton);
+
+    const readButton = document.createElement("div");
+    readButton.classList.add("thoughtButton");
+    readButton.append(iconReader.newIcon("file", this.iconSize));
+    readButton.addEventListener("click", (e) => {
+      instances.chunkViewer.displayNotes(note);
+    });
+    readButton.setAttribute("title", "Read note");
+    thoughtHeader.appendChild(readButton);
+
+    const noteIdentifier = this.newNoteIdentifier(note);
+    thoughtHeader.appendChild(noteIdentifier);
+
+    return thoughtHeader;
+  }
+
   buildContextHeader(note, index) {
     const thoughtHeader = document.createElement("div");
     thoughtHeader.classList.add("thoughtHeader");
@@ -107,10 +136,28 @@ class ThoughtHeader {
     removeButton.classList.add("thoughtButton");
     removeButton.append(iconReader.newIcon("backspace", this.iconSize));
     removeButton.addEventListener("click", (e) => {
-      this.callbacks.removeContext(note.chunks[index]);
+      instances.contextBuilder.removeContext(note.chunks[index]);
     });
     removeButton.setAttribute("title", "Remove");
     thoughtHeader.appendChild(removeButton);
+
+    const searchButton = document.createElement("div");
+    searchButton.classList.add("thoughtButton");
+    searchButton.append(iconReader.newIcon("search", this.iconSize));
+    searchButton.addEventListener("click", (e) => {
+      notes.search(note.embeddings[index]);
+    });
+    searchButton.setAttribute("title", "Search");
+    thoughtHeader.appendChild(searchButton);
+
+    const readButton = document.createElement("div");
+    readButton.classList.add("thoughtButton");
+    readButton.append(iconReader.newIcon("file", this.iconSize));
+    readButton.addEventListener("click", (e) => {
+      instances.chunkViewer.displayNotes(note);
+    });
+    readButton.setAttribute("title", "Read note");
+    thoughtHeader.appendChild(readButton);
 
     const noteIdentifier = this.newNoteIdentifier(note);
     thoughtHeader.appendChild(noteIdentifier);

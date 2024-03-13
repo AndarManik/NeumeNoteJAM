@@ -1,6 +1,7 @@
 import notes from "../Notes.js";
 import noteEditor from "../NoteEditor.js";
 import iconReader from "../IconReader.js";
+import chunkViewer from "../ChunkViewer.js";
 class SearchHeaderButton {
   constructor(callbacks) {
     this.callbacks = callbacks;
@@ -12,7 +13,7 @@ class SearchHeaderButton {
     leftArrow.classList.add("searchSectionButton");
     leftArrow.append(iconReader.newIcon("chevronLeft", this.iconSize));
     leftArrow.addEventListener("click", (e) => {
-      this.callbacks.goBack();
+      chunkViewer.goBack();
     });
     leftArrow.setAttribute("title", "Go back");
 
@@ -24,7 +25,7 @@ class SearchHeaderButton {
     rightArrow.classList.add("searchSectionButton");
     rightArrow.append(iconReader.newIcon("chevronRight", this.iconSize));
     rightArrow.addEventListener("click", (e) => {
-      this.callbacks.goForward();
+      chunkViewer.goForward();
     });
     rightArrow.setAttribute("title", "Go forward");
     return rightArrow;
@@ -53,8 +54,8 @@ class SearchHeaderButton {
     reChunkButton.addEventListener("click", async (e) => {
       note.addRechunkAnimation("searchSection");
       await note.chunkText(note.text);
-      await this.callbacks.handleRechunk(note);
-      await this.callbacks.setDisplay(note);
+      chunkViewer.handleRechunk(note);
+      chunkViewer.setNoteSearchSection(note);
     });
     reChunkButton.setAttribute("title", "Rechunk note");
 
@@ -68,7 +69,7 @@ class SearchHeaderButton {
     deleteButton.addEventListener("click", (e) => {
       notes.delete(note);
       noteEditor.deleteTab(note);
-      this.callbacks.handleDelete(note);
+      chunkViewer.handleDelete(note);
     });
     deleteButton.setAttribute("title", "Delete note");
     return deleteButton;

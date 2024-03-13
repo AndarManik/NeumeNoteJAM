@@ -52,5 +52,17 @@ class Thought {
     thoughtDiv.appendChild(text);
     return thoughtDiv;
   }
+
+  buildGraphthought(note, index) {
+    const thoughtDiv = document.createElement("div");
+    thoughtDiv.classList.add("thought");
+    const header = this.thoughtHeader.buildGraphHeader(note, index);
+    thoughtDiv.append(header);
+
+    const text = document.createElement("p");
+    text.textContent += note.chunks[index];
+    thoughtDiv.appendChild(text);
+    return thoughtDiv;
+  }
 }
 export default Thought;

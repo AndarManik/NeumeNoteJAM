@@ -281,6 +281,25 @@ textarea::selection {
   padding-top: 0;
 }
 
+.graphThought {
+  width: 300px;
+  background-color: var(--search);
+  font-family: "Roboto Slab";
+  font-weight: 500;
+  word-spacing: 0.2em;
+  line-height: 1.4em;
+  font-size: 16px;
+  color: var(--text);
+  border-radius: 5px;
+}
+
+.graphThought p {
+  padding-right: 1em;
+  padding-left: 1em;
+  overflow-wrap: break-word;
+  font-size: 14px;
+}
+
 .thought p {
   margin: 1em;
   margin-top: 0.25em;
@@ -503,6 +522,7 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 50%;
   transition: border-radius 0.125s ease-in-out;
   cursor: pointer;
+  position: relative;
 }
 
 .isActiveTab {
@@ -514,4 +534,11 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 4px;
   border: 2px dashed var(--text);
   cursor: pointer;
+}
+
+#graphSection {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background-color: var(--editor);
 }

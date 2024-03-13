@@ -1,4 +1,3 @@
-import iconReader from "../IconReader.js";
 import SearchHeaderButton from "./SearchHeaderButton.js";
 class SearchHeader {
   constructor(callbacks) {
@@ -30,7 +29,6 @@ class SearchHeader {
     leftSection.insertBefore(header, searchSection);
 
     const leftArrow = this.searchHeaderButton.buildLeft();
-
     const rightArrow = this.searchHeaderButton.buildRight();
 
     header.appendChild(leftArrow);

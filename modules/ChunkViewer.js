@@ -1,5 +1,7 @@
+import graphViewer from "./GraphViewer.js";
 import instances from "./NeumeEngine.js";
 import ViewHistory from "./chunkviewercomponents/ViewHistory.js";
+
 
 class ChunkViewer {
   constructor() {
@@ -89,11 +91,16 @@ class ChunkViewer {
   }
 
   handleDelete(note) {
+    const allNoteCache = this.viewHistory.buildAllNotesDisplay();
     this.history.forEach((viewHistory, index) => {
       if (viewHistory.type == "nearest" && viewHistory.notes.includes(note)) {
         const embedding = viewHistory.embedding;
         const nearest = instances.notes.nearestNeighbor(embedding, 10);
         this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
+      }
+
+      if(viewHistory.type == "all") {
+        this.history[index] = allNoteCache;
       }
     });
 
@@ -126,6 +133,7 @@ class ChunkViewer {
   }
 
   handleRechunk(note){
+    const allNoteCache = this.viewHistory.buildAllNotesDisplay();
     this.history.forEach((viewHistory, index) => {
       if(viewHistory.notes.includes(note)){
         if (viewHistory.type == "nearest") {
@@ -136,8 +144,15 @@ class ChunkViewer {
         else if(viewHistory.type == "note"){
           this.history[index] = this.viewHistory.buildNoteDisplay(note);
         }
+        else if(viewHistory.type = "all") {
+          this.history[index] = allNoteCache;
+        }
       }
     });
+
+    if(graphViewer.state == "graph") {
+      graphViewer.updateGraph();
+    }
   }
 
   isCurrentHistory(note){

@@ -1,5 +1,6 @@
 import chunkViewer from "./ChunkViewer.js";
 import iconReader from "./IconReader.js";
+import graphViewer from "./GraphViewer.js";
 class LeftUtility {
   initialize() {
     const iconSize = 22
@@ -24,6 +25,13 @@ class LeftUtility {
     toggleContext.addEventListener("click", (e) => this.toggleContext());
     toggleContext.setAttribute("title", "Toggle context builder");
     document.getElementById("leftHeader").append(toggleContext);
+
+    const toggleGraph = document.createElement("div");
+    toggleGraph.classList.add("leftHeaderbutton");
+    toggleGraph.append(iconReader.newIcon("sitemap", iconSize));
+    toggleGraph.addEventListener("click", (e) => this.toggleGraph());
+    toggleGraph.setAttribute("title", "Toggle graph view");
+    document.getElementById("leftHeader").append(toggleGraph);
   }
   toggleSearch() {
     const leftSection = document.getElementById("leftSection");
@@ -52,6 +60,10 @@ class LeftUtility {
     } else {
       contextBuilder.style.display = "none";
     }
+  }
+
+  toggleGraph() {
+    graphViewer.toggle();
   }
 }
 const leftUtility = new LeftUtility();

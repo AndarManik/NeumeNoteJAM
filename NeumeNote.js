@@ -9,6 +9,7 @@ import chunkViewer from "./modules/ChunkViewer.js";
 import iconReader from "./modules/IconReader.js";
 import leftUtility from "./modules/LeftUtility.js";
 import themeEditor from "./modules/settingscomponents/ThemeEditor.js";
+import graphViewer from "./modules/GraphViewer.js";
 
 notesDatabase.initialize().then(async () => {
   await iconReader.initialize();
@@ -18,10 +19,12 @@ notesDatabase.initialize().then(async () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   await notes.initialize();
+
   noteEditor.initialize();
   headerUtility.initialize();
   leftUtility.initialize();
   chunkViewer.initialize();
+  
   window.addEventListener("beforeunload", async (e) => {
     await notes.finishedProcessing();
     await notesDatabase.saveNotesData(notes);

@@ -33,6 +33,7 @@ class IconReader {
     this.sun = await this.fetchSvg("sun-r.svg");
     this.eye = await this.fetchSvg("eye-r.svg");
     this.eyeclosed = await this.fetchSvg("eye-closed-r.svg");
+    this.sitemap = await this.fetchSvg("sitemap-r.svg");
   }
   
 
