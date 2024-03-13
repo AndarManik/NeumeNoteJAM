@@ -42,8 +42,9 @@ class GraphViewer {
     });
 
     const rightSection = document.getElementById("rightSection");
-
-    const elementRatio = rightSection.clientWidth / rightSection.clientHeight;
+    const sectionWidth = rightSection.clientWidth
+    const sectionHeight = rightSection.clientHeight;
+    const elementRatio = sectionWidth / sectionHeight;
     const dataRatio = (maxX - minX) / (maxY - minY);
 
     if (
@@ -69,8 +70,8 @@ class GraphViewer {
       const x = (datum[0] - minX) / (maxX - minX);
       const y = (datum[1] - minY) / (maxY - minY);
 
-      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
-      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
+      point.style.left = `calc(${sectionWidth * (x * 80 + 10) - 11}px)`;
+      point.style.top = `calc(${sectionHeight * (y * 80 + 10) - 11}px)`;
       point.style.background = noteThought[index].color;
       const thought = this.thought.buildGraphthought(
         noteThought[index],
