@@ -36,10 +36,6 @@ class SearchHeaderButton {
     editButton.classList.add("searchSectionButton");
     editButton.append(iconReader.newIcon("pencil", this.iconSize));
     editButton.addEventListener("click", (e) => {
-      if (noteEditor.has(note)) {
-        return;
-      }
-
       noteEditor.editNote(note);
     });
     editButton.setAttribute("title", "Edit note");

@@ -31,6 +31,17 @@ class NoteEditor {
   }
 
   editNote(note) {
+    if(instances.graphViewer.state == "graph") {
+      instances.graphViewer.displayEditor();
+    }
+
+    const noteIndex = this.has(note);
+
+    if (noteIndex != -1) {
+      this.setActiveTab(this.tabs[noteIndex]);
+      return;
+    }
+
     const newTab = new EditorTab(note, (tab) => {
       this.setActiveTab(tab);
     });
@@ -124,7 +135,7 @@ class NoteEditor {
   }
 
   has(note) {
-    return this.tabs.map((tab) => tab.note).indexOf(note) != -1;
+    return this.tabs.map((tab) => tab.note).indexOf(note);
   }
 
   stopComplete(){

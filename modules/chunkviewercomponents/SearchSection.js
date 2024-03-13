@@ -11,10 +11,10 @@ class SearchSection {
     const searchSection = document.createElement("div");
     searchSection.id = "searchSection";
 
-    notes.notes.forEach(note => {
+    notes.notes.slice().reverse().forEach(note => {
       const thought = this.thought.buildAllNoteThought(note);
         searchSection.append(thought);
-    })
+    });
 
     return searchSection;
   }
