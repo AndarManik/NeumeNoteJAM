@@ -29,6 +29,22 @@ class Notes {
     });
   }
 
+  loadNewData(data){
+    this.colorCounter = 0;
+    this.notes = data.map((noteData) => {
+      if(this.colorCounter < noteData.colorCounter) {
+        this.colorCounter = noteData.colorCounter;
+      }
+      return new Note(
+        noteData.colorCounter,
+        noteData.text,
+        noteData.chunks,
+        noteData.embeddings,
+        noteData.title
+      );
+    });
+  }
+
   newBlankNote() {
     this.colorCounter++;
     console.log("colorCounter", this.colorCounter);

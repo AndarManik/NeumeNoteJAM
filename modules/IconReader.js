@@ -34,6 +34,9 @@ class IconReader {
     this.eye = await this.fetchSvg("eye-r.svg");
     this.eyeclosed = await this.fetchSvg("eye-closed-r.svg");
     this.sitemap = await this.fetchSvg("sitemap-r.svg");
+    this.download = await this.fetchSvg("download-r.svg");
+    this.upload = await this.fetchSvg("upload-r.svg");
+
   }
   
 

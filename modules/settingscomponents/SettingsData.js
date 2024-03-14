@@ -2,6 +2,8 @@ import notes from "../Notes.js";
 import openAI from "../OpenAI.js";
 import notesDatabase from "../NotesDatabase.js";
 import iconReader from "../IconReader.js";
+import dataFileHandler from "./DataFileHandler.js";
+import nearestNeighborGraph from "../NearestNeighborGraph.js";
 
 class SettingsData {
   constructor(settings, displayParent) {
@@ -38,6 +40,8 @@ class SettingsData {
     this.settings.append(this.header());
     this.settings.append(this.deleteDataSection());
     this.settings.append(this.setOpenAIKeySection());
+    this.settings.append(this.downloadNotes());
+    this.settings.append(this.loadNotes());
   }
 
   header() {
@@ -50,7 +54,7 @@ class SettingsData {
     leftArrow.addEventListener("click", (e) => {
       this.displayParent();
     });
-    
+
     const leave = document.createElement("div");
     leave.classList.add("settingsLeave");
     leave.append(iconReader.newIcon("close", 16));
@@ -130,6 +134,123 @@ class SettingsData {
         }
         input.value = "";
       }
+    });
+
+    return section;
+  }
+
+  downloadNotes() {
+    const section = document.createElement("div");
+    section.classList.add("settingsSection");
+
+    const header = document.createElement("div");
+    header.classList.add("settingsSectionHeader");
+    header.innerText = "Download notes";
+    section.appendChild(header);
+
+    const info = document.createElement("div");
+    info.classList.add("settingsInfo");
+    section.appendChild(info);
+
+    const text = document.createElement("div");
+    text.classList.add("settingsText");
+    text.innerText = `Press to download all of your notes.`;
+    info.appendChild(text);
+
+    const button = document.createElement("button");
+    button.classList.add("settingsButton");
+    button.append(iconReader.newIcon("download", 45));
+    button.addEventListener("click", (e) => {
+      dataFileHandler.getNotesZip();
+    });
+    info.append(button);
+
+    return section;
+  }
+
+  downloadNotes() {
+    const section = document.createElement("div");
+    section.classList.add("settingsSection");
+
+    const header = document.createElement("div");
+    header.classList.add("settingsSectionHeader");
+    header.innerText = "Download notes";
+    section.appendChild(header);
+
+    const info = document.createElement("div");
+    info.classList.add("settingsInfo");
+    section.appendChild(info);
+
+    const text = document.createElement("div");
+    text.classList.add("settingsText");
+    text.innerText = `Press to download all of your notes.`;
+    info.appendChild(text);
+
+    const button = document.createElement("button");
+    button.classList.add("settingsButton");
+    button.append(iconReader.newIcon("download", 45));
+    button.addEventListener("click", (e) => {
+      dataFileHandler.getNotesZip();
+    });
+    info.append(button);
+
+    return section;
+  }
+
+  loadNotes() {
+    const section = document.createElement("div");
+    section.classList.add("settingsSection");
+
+    const header = document.createElement("div");
+    header.classList.add("settingsSectionHeader");
+    header.innerText = "Download notes";
+    section.appendChild(header);
+
+    const info = document.createElement("div");
+    info.classList.add("settingsInfo");
+    section.appendChild(info);
+
+    const text = document.createElement("div");
+    text.classList.add("settingsText");
+    text.innerText = `Drag and drop your files here to load your notes.`;
+    info.appendChild(text);
+
+    const dropArea = document.createElement("div");
+    dropArea.classList.add("drop-area");
+    dropArea.append(iconReader.newIcon("upload", 45));
+
+    info.appendChild(dropArea);
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+      dropArea.addEventListener(
+        eventName,
+        () => dropArea.classList.add("highlight"),
+        false
+      );
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+      dropArea.addEventListener(
+        eventName,
+        () => dropArea.classList.remove("highlight"),
+        false
+      );
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+      let dt = e.dataTransfer;
+      let files = dt.files;
+      dataFileHandler.loadNotesZip(files[0]);
+      location.reload();
     });
 
     return section;

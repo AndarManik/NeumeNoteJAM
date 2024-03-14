@@ -349,7 +349,7 @@ textarea::selection {
 }
 
 .apiInputContainer {
-  background: #ffffff;
+  background: var(--search);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -358,6 +358,10 @@ textarea::selection {
   border: 1px solid var(--left);
   border-radius: 5px;
   padding: 1em;
+}
+
+.apiInputContainer a{
+  color: var(--highlight);
 }
 
 .settings {
@@ -502,6 +506,8 @@ input[type=range]::-webkit-slider-thumb {
   width: 30svw;
   height: 3svw;
   border: 1px solid var(--left);
+  background-color: var(--editor);
+  color: var(--text);
 }
 
 .apiInput:focus {

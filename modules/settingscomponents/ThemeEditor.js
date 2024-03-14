@@ -123,6 +123,18 @@ class ThemeEditor {
     const theme = {hue: this.hue, state: this.state, monochrome: this.monochrome};
     return theme;
   }
+
+  setTheme(data){
+    this.state = data.state;
+    this.setColorScale();
+
+    if(data.monochrome){
+      this.setGreyScale();
+    }
+    else {
+      this.setColor(data.hue);
+    }
+  }
 }
 
 const themeEditor = new ThemeEditor();

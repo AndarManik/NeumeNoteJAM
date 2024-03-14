@@ -116,7 +116,7 @@ class GraphViewer {
   }
 
   async displayGraph() {
-    const n = 10;
+    const n = 6;
     if (this.state == "graph" || !notes.notes.length) {
       return;
     }
@@ -203,7 +203,7 @@ class GraphViewer {
 
     rightSection.append(graphSection);
 
-    for (let index = 0; index < 100000; index++) {
+    for (let index = 0; index < 300; index++) {
       await new Promise((resolve) => setTimeout(resolve, 1));
       console.log("loop");
       nearestNeighborGraph.update(n, index);
