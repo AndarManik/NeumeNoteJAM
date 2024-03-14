@@ -548,3 +548,10 @@ input[type=range]::-webkit-slider-thumb {
   width: 100%;
   background-color: var(--editor);
 }
+
+.drop-area {
+  background-color: var(--editor);
+  border: 1px solid var(--left);
+  padding: 7px;
+  margin: 7px;
+}
