@@ -13,7 +13,7 @@ class NearestNeighborGraph {
       this.nearestIndexes(embedding, embeddings)
     );
     this.positions = embeddings.map((e) => {
-      return [Math.random(), Math.random()];
+      return [Math.random() * 50, Math.random() * 50];
     });
     this.velocities = embeddings.map((e) => {
       return [0, 0];
@@ -33,8 +33,8 @@ class NearestNeighborGraph {
     const max = [this.positions[0][0], this.positions[0][1]];
 
     forces.forEach((force, index) => {
-      this.positions[index][0] += force[0] * 0.99 ** k;
-      this.positions[index][1] += force[1] * 0.99 ** k;
+      this.positions[index][0] += force[0] * 1000 * 0.99**k;
+      this.positions[index][1] += force[1] * 1000 * 0.99**k;
 
       if (this.positions[index][0] < min[0]) {
         min[0] = this.positions[index][0];
@@ -66,9 +66,7 @@ class NearestNeighborGraph {
     const forces = [];
     this.nearestMatrix.forEach((nearest, nearestIndex) => {
       const force = [0, 0];
-      const restLength = 0.5; // This value can be adjusted based on your simulation needs.
-      const springConstant = 0.1; // This value determines the stiffness of the spring.
-      const repulsiveConstant = 0.01;
+      const restLength = 100; // This value can be adjusted based on your simulation needs.
 
       nearest.forEach((near, index) => {
         const xDiff = this.positions[near][0] - this.positions[nearestIndex][0];
@@ -78,21 +76,14 @@ class NearestNeighborGraph {
           return;
         }
         const distance = Math.sqrt(xDiff ** 2 + yDiff ** 2);
-        // Apply Hooke's Law for the strength calculation
-        const displacement = Math.log(distance / restLength);
-        const springForce = springConstant * displacement;
+        const direction = [xDiff / distance, yDiff / distance];
 
-        const norm = Math.sqrt(xDiff ** 2 + yDiff ** 2);
-        const direction = [xDiff / norm, yDiff / norm];
-
-        if (index > n) {
-          force[0] += (-repulsiveConstant * direction[0]) / distance ** 2;
-          force[1] += (-repulsiveConstant * direction[1]) / distance ** 2;
-          return;
+        if (index < n) {
+          force[0] += (direction[0] * distance) / restLength ** 2;
+          force[1] += (direction[1] * distance) / restLength ** 2;
         }
-
-        force[0] += direction[0] * springForce;
-        force[1] += direction[1] * springForce;
+        force[0] -= (direction[0] * restLength) / distance ** 2;
+        force[1] -= (direction[1] * restLength) / distance ** 2;
       });
       console.log("force", force);
       forces.push(force);
