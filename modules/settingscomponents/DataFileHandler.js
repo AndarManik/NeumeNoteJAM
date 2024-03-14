@@ -9,9 +9,10 @@ class DataFileHandler {
     dataToSave.notes = notes.notes.map((note) => {
       return {
         colorCounter: note.colorCounter,
+        text: note.text,
         title: note.title,
         chunks: note.chunks,
-        embeddings: note.emebddings,
+        embeddings: note.embeddings,
       };
     });
 
@@ -51,7 +52,7 @@ class DataFileHandler {
     newZip.loadAsync(file).then(function (zip) {
       zip.forEach((relativePath, zipEntry) => {
         zipEntry.async("text").then((content) => {
-          if (flag) {
+          if (relativePath != "data") {
             return;
           }
           const data = JSON.parse(content);
@@ -61,6 +62,7 @@ class DataFileHandler {
           flag = true;
         });
       });
+      location.reload();
     });
   }
 }

@@ -250,7 +250,7 @@ class SettingsData {
       let dt = e.dataTransfer;
       let files = dt.files;
       dataFileHandler.loadNotesZip(files[0]);
-      location.reload();
+      
     });
 
     return section;
