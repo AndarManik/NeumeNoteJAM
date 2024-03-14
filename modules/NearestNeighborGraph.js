@@ -66,10 +66,9 @@ class NearestNeighborGraph {
     const forces = [];
     this.nearestMatrix.forEach((nearest, nearestIndex) => {
       const force = [0, 0];
-      const restLength = 1; // This value can be adjusted based on your simulation needs.
-      const springConstant = 1; // This value determines the stiffness of the spring.
-      const repulsiveConstant = 2;
-      const dampingCoefficient = 0; // This value can be fine-tuned for your simulation.
+      const restLength = 0.5; // This value can be adjusted based on your simulation needs.
+      const springConstant = 0.1; // This value determines the stiffness of the spring.
+      const repulsiveConstant = 0.01;
 
       nearest.forEach((near, index) => {
         const xDiff = this.positions[near][0] - this.positions[nearestIndex][0];
