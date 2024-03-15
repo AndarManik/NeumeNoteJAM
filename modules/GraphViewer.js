@@ -158,7 +158,7 @@ class GraphViewer {
   }
 
   async displayGraph() {
-    const n = 7;
+    const n = 6;
     if (this.state == "graph" || !notes.notes.length) {
       return;
     }
@@ -360,11 +360,11 @@ class GraphViewer {
         const [r, g, b] = lastColor.match(/\d+/g);
         console.log(r);
         if(themeEditor.state == "light"){
-          return `#${parseInt(255 - (255 - r)/3.5)
+          return `#${parseInt(255 - (255 - r)/2.5)
           .toString(16)
-          .padStart(2, "0")}${parseInt(255 - (255 - g)/3.5)
+          .padStart(2, "0")}${parseInt(255 - (255 - g)/2.5)
           .toString(16)
-          .padStart(2, "0")}${parseInt(255 - (255 - b)/3.5)
+          .padStart(2, "0")}${parseInt(255 - (255 - b)/2.5)
           .toString(16)
           .padStart(2, "0")}`;
         }
