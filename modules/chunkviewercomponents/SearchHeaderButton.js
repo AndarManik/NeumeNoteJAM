@@ -74,7 +74,7 @@ class SearchHeaderButton {
   buildNoteIdentifier(note) {
     const noteIdentifier = document.createElement("div");
     noteIdentifier.classList.add("distanceColorBox");
-    noteIdentifier.style.background = note.color;
+    noteIdentifier.style.background = note.getColor();
     noteIdentifier.style.marginLeft = "auto";
     noteIdentifier.style.marginRight = "0.2em";
     return noteIdentifier;

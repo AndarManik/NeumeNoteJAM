@@ -122,9 +122,6 @@ class ThoughtHeader {
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
 
-    const noteIdentifier = this.newNoteIdentifier(note);
-    thoughtHeader.appendChild(noteIdentifier);
-
     return thoughtHeader;
   }
 
@@ -168,7 +165,7 @@ class ThoughtHeader {
   newNoteIdentifier(note) {
     const noteIdentifier = document.createElement("div");
     noteIdentifier.classList.add("distanceColorBox");
-    noteIdentifier.style.background = note.color;
+    noteIdentifier.style.background = note.getColor();
     noteIdentifier.style.marginLeft = "auto";
     return noteIdentifier;
   }

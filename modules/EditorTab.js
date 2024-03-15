@@ -23,7 +23,7 @@ class EditorTab {
     const icon = document.createElement("div");
     icon.classList.add("editorTab");
     icon.classList.add("isActiveTab");
-    icon.style.background = this.note.color;
+    icon.style.background = this.note.getColor();
 
     icon.addEventListener("click", (e) => {
       handleClick(this);

@@ -300,8 +300,7 @@ textarea::selection {
   line-height: 1.4em;
   font-size: 16px;
   color: var(--text);
-  border-radius: 5px;
-  
+  border-radius: 10px;
 }
 
 .graphThought p {
@@ -309,6 +308,8 @@ textarea::selection {
   padding-left: 1em;
   overflow-wrap: break-word;
   font-size: 14px;
+  max-height: 250px;
+  overflow-y: scroll;
 }
 
 .thought p {
@@ -543,12 +544,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .graphTab {
-  height: 16px;
-  width: 16px;
+  height: 19px;
+  width: 19px;
   min-width: 0;
-  margin: 2px;
   border-radius: 50%;
-  position: relative;
   z-index: 1;
 }
 
@@ -568,6 +567,7 @@ input[type="range"]::-webkit-slider-thumb {
   height: 100%;
   width: 100%;
   background-color: var(--editor);
+  overflow: hidden;
 }
 
 .drop-area {

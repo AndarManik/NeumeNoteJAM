@@ -1,17 +1,26 @@
 import { splitEmbed, reSplitEmbed } from "./NoteChunker.js";
 import openAI from "./OpenAI.js";
+import themeEditor from "./settingscomponents/ThemeEditor.js";
 class Note {
   constructor(colorCounter,text = "", chunks = [], embeddings = [], title = "") {
     const goldenRatio = 1.618033988749895;
     this.outerHue = 360 * ((goldenRatio * -0.09 * colorCounter) % 1);
     this.innerHue = 360 * ((goldenRatio * 0.012 * colorCounter) % 1);
-    this.color =  `radial-gradient(circle, hsl(${this.outerHue}, 100%, 50%) 0%, hsl(${this.innerHue}, 100%, 50%) 100%)`;
     this.colorCounter = colorCounter;
     this.text = text;
     this.chunks = chunks;
     this.embeddings = embeddings;
     this.title = title;
     this.isProcessing = false;
+  }
+
+  getColor(){
+    if(themeEditor.state == "light"){
+      return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 55%) 0%, hsl(${this.innerHue}, 85%, 55%) 100%)`;
+    }
+    else {
+      return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 66%) 0%, hsl(${this.innerHue}, 85%, 66%) 100%)`;
+    }
   }
 
   async chunkText(text) {

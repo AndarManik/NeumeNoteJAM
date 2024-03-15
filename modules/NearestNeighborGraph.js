@@ -3,6 +3,7 @@ import notes from "./Notes.js";
 import projectToTopTwoPCA from "./PCA.js";
 class NearestNeighborGraph {
   loadInitialData(n) {
+    this.ignore = -1;
     this.restLength = 100;
 
     const embeddings = [];
@@ -14,15 +15,11 @@ class NearestNeighborGraph {
       });
     });
 
-    this.scaledPositions = embeddings.map(() => [
-      Math.random(),
-      Math.random()
-    ]);
+    this.scaledPositions = embeddings.map(() => [Math.random(), Math.random()]);
 
-
-    this.positions = this.scaledPositions.map(([x,y]) => [
-      x * this.restLength * 0.1,
-      y * this.restLength * 0.1,
+    this.positions = this.scaledPositions.map(([x, y]) => [
+      x * this.restLength * 2,
+      y * this.restLength * 2,
     ]);
 
     const nearest = embeddings.map(({ embedding, note }) =>
@@ -62,10 +59,11 @@ class NearestNeighborGraph {
       this.positions[0][0] + forces[0][0],
       this.positions[0][1] + forces[0][1],
     ];
-    const cooling = this.cooling(0.01, 0.2, k);
     forces.forEach((force, index) => {
-      this.positions[index][0] += force[0] * cooling;
-      this.positions[index][1] += force[1] * cooling;
+      if (index != this.ignore) {
+        this.positions[index][0] += force[0] * k;
+        this.positions[index][1] += force[1] * k;
+      }
 
       if (this.positions[index][0] < min[0]) {
         min[0] = this.positions[index][0];
@@ -81,32 +79,38 @@ class NearestNeighborGraph {
       }
     });
 
-    const scale = [1 / (max[0] - min[0]), 1 / (max[1] - min[1])];
+    this.min = min;
+    this.max = max;
+
+    this.scale = [
+      1 / (this.max[0] - this.min[0]),
+      1 / (this.max[1] - this.min[1]),
+    ];
 
     this.positions.forEach((position, index) => {
-      this.scaledPositions[index][0] = position[0];
-      this.scaledPositions[index][1] = position[1];
-      this.scaledPositions[index][0] -= min[0];
-      this.scaledPositions[index][1] -= min[1];
-      this.scaledPositions[index][0] *= scale[0];
-      this.scaledPositions[index][1] *= scale[1];
+      if (index == this.ignore) {
+        return;
+      }
+      this.scaledPositions[index][0] = (position[0]-this.min[0]) * this.scale[0];
+      this.scaledPositions[index][1] = (position[1]-this.min[1]) * this.scale[1];
     });
   }
 
-  cooling(minTemp, maxTemp, k) {
-    const ratio = maxTemp / minTemp;
-    const rounds = 2000;
-    const atMax = 500;
-    return k < atMax
-      ? minTemp * Math.pow(ratio, 1 / atMax) ** k
-      : maxTemp * Math.pow(1 / ratio, 1 / (rounds - atMax)) ** (k - atMax);
+  setPositionByPercentage(index, percentageX, percentageY) {
+    this.scaledPositions[index][0] = (percentageX - 10) / 80;
+    this.scaledPositions[index][1] = (percentageY - 10) / 80;
+    this.positions[index][0] = this.scaledPositions[index][0] / this.scale[0] + this.min[0];
+    this.positions[index][1] = this.scaledPositions[index][1] / this.scale[1] + this.min[1];
   }
 
   getForces() {
-    const forces = [];
+    const forces = this.positions.map(() => [0, 0]);
     this.positions.forEach((left, leftIndex) => {
-      const force = [0, 0];
       this.positions.forEach((right, rightIndex) => {
+        if (leftIndex <= rightIndex) {
+          return;
+        }
+
         const xDiff = right[0] - left[0];
         const yDiff = right[1] - left[1];
 
@@ -122,15 +126,25 @@ class NearestNeighborGraph {
 
         const direction = [xDiff / distance, yDiff / distance];
 
-        force[0] -= (direction[0] * this.restLength) / distance ** 2;
-        force[1] -= (direction[1] * this.restLength) / distance ** 2;
+        const forceX = (direction[0] * this.restLength) / distance ** 2;
+        const forceY = (direction[1] * this.restLength) / distance ** 2;
+
+        forces[leftIndex][0] -= forceX;
+        forces[leftIndex][1] -= forceY;
+
+        forces[rightIndex][0] += forceX;
+        forces[rightIndex][1] += forceY;
 
         if (this.nearestMatrix[leftIndex].indexOf(rightIndex) != -1) {
-          force[0] += (direction[0] * distance ** 2) / this.restLength;
-          force[1] += (direction[1] * distance ** 2) / this.restLength;
+          const forceXAtt = (direction[0] * distance ** 2) / this.restLength;
+          const forceYAtt = (direction[1] * distance ** 2) / this.restLength;
+          forces[leftIndex][0] += forceXAtt;
+          forces[leftIndex][1] += forceYAtt;
+
+          forces[rightIndex][0] -= forceXAtt;
+          forces[rightIndex][1] -= forceYAtt;
         }
       });
-      forces.push(force);
     });
     return forces;
   }

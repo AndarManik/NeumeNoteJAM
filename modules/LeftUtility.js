@@ -47,7 +47,11 @@ class LeftUtility {
     chunkViewer.displayAllNotes();
     if (leftSection.style.display == "none") {
       leftSection.style.display = "flex";
-    } 
+    }
+    
+    if(graphViewer.state == "graph"){
+      graphViewer.displayEditor();
+    }
   }
 
   toggleContext() {
