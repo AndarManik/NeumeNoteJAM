@@ -55,6 +55,7 @@ body {
   flex-direction: row;
   height: 100%;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 #rightHeader {
@@ -70,7 +71,7 @@ body {
 
 #rightHeader::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
-} 
+}
 
 .leftHeaderbutton {
   display: flex; /* Enable Flexbox */
@@ -127,6 +128,7 @@ body {
   width: 42px;
   border-right: 1px solid var(--left);
   background-color: var(--left);
+  z-index: 1;
 }
 
 #leftSection {
@@ -138,6 +140,8 @@ body {
   width: 300px;
   box-sizing: border-box;
   border-right: 1px solid var(--left);
+  z-index: 1;
+
 }
 
 #rightSectionBody {
@@ -170,7 +174,9 @@ textarea {
 }
 
 textarea::placeholder {
-  color: var(--text); /* Replace 'var(--placeholder)' with your desired placeholder text color */
+  color: var(
+    --text
+  ); /* Replace 'var(--placeholder)' with your desired placeholder text color */
 }
 textarea:focus {
   outline: none;
@@ -191,6 +197,10 @@ textarea::selection {
 #completeSection {
   padding: 1em;
   width: 100%;
+}
+
+#middleSection{
+  z-index: 1;
 }
 #searchInputSection {
   background-color: var(--search);
@@ -291,6 +301,7 @@ textarea::selection {
   font-size: 16px;
   color: var(--text);
   border-radius: 5px;
+  
 }
 
 .graphThought p {
@@ -317,7 +328,7 @@ textarea::selection {
 }
 
 .thoughtButton {
-  height:100%;
+  height: 100%;
   padding: 0.15em;
   padding-left: 1em;
   padding-right: 1em;
@@ -360,7 +371,7 @@ textarea::selection {
   padding: 1em;
 }
 
-.apiInputContainer a{
+.apiInputContainer a {
   color: var(--highlight);
 }
 
@@ -375,6 +386,8 @@ textarea::selection {
   border: 1px solid var(--left);
   border-radius: 5px;
   overflow-y: auto;
+  z-index: 2;
+
 }
 
 .settingsSection {
@@ -429,22 +442,20 @@ textarea::selection {
   width: 300px;
 }
 
-input[type=range] {
+input[type="range"] {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
   width: 200px; /* Specific width is required for Firefox. */
   background: var(--editor); /* Otherwise white in Chrome */
   border-radius: 1px solid var(--left);
 }
 
-input[type=range]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   height: 14px;
   width: 14px;
   background: var(--active);
   cursor: pointer;
   -webkit-appearance: none;
 }
-
-
 
 .settingsButton {
   font-family: "Roboto Slab";
@@ -529,6 +540,16 @@ input[type=range]::-webkit-slider-thumb {
   transition: border-radius 0.125s ease-in-out;
   cursor: pointer;
   position: relative;
+}
+
+.graphTab {
+  height: 16px;
+  width: 16px;
+  min-width: 0;
+  margin: 2px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
 }
 
 .isActiveTab {

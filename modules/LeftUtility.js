@@ -29,7 +29,7 @@ class LeftUtility {
     const toggleGraph = document.createElement("div");
     toggleGraph.classList.add("leftHeaderbutton");
     toggleGraph.append(iconReader.newIcon("sitemap", iconSize));
-    toggleGraph.addEventListener("click", (e) => this.toggleGraph());
+    toggleGraph.addEventListener("click", async (e) => await this.toggleGraph());
     toggleGraph.setAttribute("title", "Toggle graph view");
     document.getElementById("leftHeader").append(toggleGraph);
   }
@@ -62,8 +62,8 @@ class LeftUtility {
     }
   }
 
-  toggleGraph() {
-    graphViewer.toggle();
+  async toggleGraph() {
+    await graphViewer.toggle();
   }
 }
 const leftUtility = new LeftUtility();

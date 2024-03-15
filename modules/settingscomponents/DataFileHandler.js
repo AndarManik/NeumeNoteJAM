@@ -1,5 +1,7 @@
 import notes from "../Notes.js";
 import themeEditor from "./ThemeEditor.js";
+import notesDatabase from "../NotesDatabase.js";
+import chunkViewer from "../ChunkViewer.js";
 class DataFileHandler {
   getNotesZip() {
     var zip = new JSZip();
@@ -47,23 +49,19 @@ class DataFileHandler {
   }
 
   loadNotesZip(file) {
-    var flag = false;
-    var newZip = new JSZip();
-    newZip.loadAsync(file).then(function (zip) {
-      zip.forEach((relativePath, zipEntry) => {
-        zipEntry.async("text").then((content) => {
-          if (relativePath != "data") {
-            return;
-          }
-          const data = JSON.parse(content);
-          console.log(data);
-          notes.loadNewData(data.notes);
-          themeEditor.setTheme(data.theme);
-          flag = true;
-        });
-      });
-      location.reload();
-    });
+    let reader = new FileReader();
+    reader.onload = async (event) => {
+      let textFromFile = event.target.result;
+      const data = JSON.parse(textFromFile);
+      console.log(data);
+      notes.loadNewData(data.notes);
+      themeEditor.setTheme(data.theme);
+
+      await notesDatabase.saveNotesData(notes);
+      await notesDatabase.saveThemeData(themeEditor.getTheme());
+      chunkViewer.handleChange();
+    };
+    reader.readAsText(file);
   }
 }
 const dataFileHandler = new DataFileHandler();

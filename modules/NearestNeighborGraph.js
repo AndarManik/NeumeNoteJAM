@@ -1,20 +1,45 @@
 import instances from "./NeumeEngine.js";
 import notes from "./Notes.js";
+import projectToTopTwoPCA from "./PCA.js";
 class NearestNeighborGraph {
-  loadInitialData() {
+  loadInitialData(n) {
+    this.restLength = 100;
+
     const embeddings = [];
+    const embeddingsSlice = [];
     notes.notes.forEach((note) => {
       note.embeddings.forEach((embedding) => {
-        embeddings.push(embedding);
+        embeddings.push({ embedding, note });
+        embeddingsSlice.push(embedding.slice(0, 100));
       });
     });
 
-    this.nearestMatrix = embeddings.map((embedding) =>
-      this.nearestIndexes(embedding, embeddings)
+    this.scaledPositions = embeddings.map(() => [
+      Math.random(),
+      Math.random()
+    ]);
+
+
+    this.positions = this.scaledPositions.map(([x,y]) => [
+      x * this.restLength * 0.1,
+      y * this.restLength * 0.1,
+    ]);
+
+    const nearest = embeddings.map(({ embedding, note }) =>
+      this.nearestIndexes(embedding, embeddings, note)
     );
-    this.positions = embeddings.map((e) => {
-      return [Math.random() * 50, Math.random() * 50];
+
+    this.nearestMatrix = nearest.map(() => []);
+
+    nearest.forEach((neighbors, currentIndex) => {
+      this.nearestMatrix[currentIndex].push(...neighbors.slice(1, n + 1));
+      neighbors.slice(1, n + 1).forEach((neighbor) => {
+        this.nearestMatrix[neighbor].push(currentIndex);
+      });
     });
+
+    this.nearestMatrix = this.nearestMatrix.map((arr) => [...new Set(arr)]);
+
     this.velocities = embeddings.map((e) => {
       return [0, 0];
     });
@@ -22,19 +47,25 @@ class NearestNeighborGraph {
     this.scaledPositions = embeddings.map((e) => {
       return [0, 0];
     });
-
+    console.log(this.positions);
     console.log(this.nearestMatrix);
   }
 
-  update(n, k) {
-    const forces = this.getForces(n);
+  update(k) {
+    const forces = this.getForces();
 
-    const min = [this.positions[0][0], this.positions[0][1]];
-    const max = [this.positions[0][0], this.positions[0][1]];
-
+    const min = [
+      this.positions[0][0] + forces[0][0],
+      this.positions[0][1] + forces[0][1],
+    ];
+    const max = [
+      this.positions[0][0] + forces[0][0],
+      this.positions[0][1] + forces[0][1],
+    ];
+    const cooling = this.cooling(0.01, 0.2, k);
     forces.forEach((force, index) => {
-      this.positions[index][0] += force[0] * 1000 * 0.99**k;
-      this.positions[index][1] += force[1] * 1000 * 0.99**k;
+      this.positions[index][0] += force[0] * cooling;
+      this.positions[index][1] += force[1] * cooling;
 
       if (this.positions[index][0] < min[0]) {
         min[0] = this.positions[index][0];
@@ -62,39 +93,52 @@ class NearestNeighborGraph {
     });
   }
 
-  getForces(n) {
-    const forces = [];
-    this.nearestMatrix.forEach((nearest, nearestIndex) => {
-      const force = [0, 0];
-      const restLength = 100; // This value can be adjusted based on your simulation needs.
+  cooling(minTemp, maxTemp, k) {
+    const ratio = maxTemp / minTemp;
+    const rounds = 2000;
+    const atMax = 500;
+    return k < atMax
+      ? minTemp * Math.pow(ratio, 1 / atMax) ** k
+      : maxTemp * Math.pow(1 / ratio, 1 / (rounds - atMax)) ** (k - atMax);
+  }
 
-      nearest.forEach((near, index) => {
-        const xDiff = this.positions[near][0] - this.positions[nearestIndex][0];
-        const yDiff = this.positions[near][1] - this.positions[nearestIndex][1];
+  getForces() {
+    const forces = [];
+    this.positions.forEach((left, leftIndex) => {
+      const force = [0, 0];
+      this.positions.forEach((right, rightIndex) => {
+        const xDiff = right[0] - left[0];
+        const yDiff = right[1] - left[1];
 
         if (xDiff == 0 && yDiff == 0) {
           return;
         }
+
         const distance = Math.sqrt(xDiff ** 2 + yDiff ** 2);
+
+        if (distance < 0.1) {
+          return;
+        }
+
         const direction = [xDiff / distance, yDiff / distance];
 
-        if (index < n) {
-          force[0] += (direction[0] * distance) / restLength ** 2;
-          force[1] += (direction[1] * distance) / restLength ** 2;
+        force[0] -= (direction[0] * this.restLength) / distance ** 2;
+        force[1] -= (direction[1] * this.restLength) / distance ** 2;
+
+        if (this.nearestMatrix[leftIndex].indexOf(rightIndex) != -1) {
+          force[0] += (direction[0] * distance ** 2) / this.restLength;
+          force[1] += (direction[1] * distance ** 2) / this.restLength;
         }
-        force[0] -= (direction[0] * restLength) / distance ** 2;
-        force[1] -= (direction[1] * restLength) / distance ** 2;
       });
-      console.log("force", force);
       forces.push(force);
     });
     return forces;
   }
 
-  nearestIndexes(currentEmbedding, embeddings) {
+  nearestIndexes(currentEmbedding, embeddings, currentNote) {
     const distances = embeddings
-      .map((embedding, index) => {
-        let distance = 0;
+      .map(({ embedding, note }, index) => {
+        let distance = note == currentNote ? 0 : 0;
         for (let j = 0; j < embedding.length; j++) {
           distance += (currentEmbedding[j] - embedding[j]) ** 2;
         }

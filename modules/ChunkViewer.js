@@ -2,7 +2,6 @@ import graphViewer from "./GraphViewer.js";
 import instances from "./NeumeEngine.js";
 import ViewHistory from "./chunkviewercomponents/ViewHistory.js";
 
-
 class ChunkViewer {
   constructor() {
     this.index = -1;
@@ -14,7 +13,7 @@ class ChunkViewer {
       setDisplay: this.setNoteSearchSection.bind(this),
       handleDelete: this.handleDelete.bind(this),
       displayNotes: this.displayNotes.bind(this),
-      handleRechunk: this.handleRechunk.bind(this)
+      handleRechunk: this.handleRechunk.bind(this),
     };
     this.viewHistory = new ViewHistory(callbacks);
   }
@@ -25,20 +24,16 @@ class ChunkViewer {
 
   goBack() {
     this.index = Math.max(this.index - 1, 0);
-    this.setDisplay(
-      this.history[this.index]
-    );
+    this.setDisplay(this.history[this.index]);
   }
 
   goForward() {
     this.index = Math.min(this.history.length - 1, this.index + 1);
-    this.setDisplay(
-      this.history[this.index]
-    );
+    this.setDisplay(this.history[this.index]);
   }
 
-  displayAllNotes(){
-    if(this.history.length && this.history[this.index].type == "all") {
+  displayAllNotes() {
+    if (this.history.length && this.history[this.index].type == "all") {
       return;
     }
     const allNotesDisplay = this.viewHistory.buildAllNotesDisplay();
@@ -99,7 +94,7 @@ class ChunkViewer {
         this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
       }
 
-      if(viewHistory.type == "all") {
+      if (viewHistory.type == "all") {
         this.history[index] = allNoteCache;
       }
     });
@@ -126,37 +121,58 @@ class ChunkViewer {
         this.setDisplay(null);
       }
     } else {
-      this.setDisplay(
-        this.history[this.index],
-      );
+      this.setDisplay(this.history[this.index]);
     }
   }
 
-  handleRechunk(note){
+  handleRechunk(note) {
     const allNoteCache = this.viewHistory.buildAllNotesDisplay();
     this.history.forEach((viewHistory, index) => {
-      if(viewHistory.notes.includes(note)){
+      if (viewHistory.notes.includes(note)) {
         if (viewHistory.type == "nearest") {
           const embedding = viewHistory.embedding;
           const nearest = instances.notes.nearestNeighbor(embedding, 10);
           this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
-        }
-        else if(viewHistory.type == "note"){
+        } else if (viewHistory.type == "note") {
           this.history[index] = this.viewHistory.buildNoteDisplay(note);
-        }
-        else if(viewHistory.type = "all") {
+        } else if ((viewHistory.type = "all")) {
           this.history[index] = allNoteCache;
         }
       }
     });
 
-    if(graphViewer.state == "graph") {
+    if (graphViewer.state == "graph") {
       graphViewer.updateGraph();
     }
   }
 
-  isCurrentHistory(note){
-    return this.history[this.index] && this.history[this.index].type == "note" && this.history[this.index].notes[0] == note;
+  handleChange() {
+    const allNoteCache = this.viewHistory.buildAllNotesDisplay();
+    this.history.forEach((viewHistory, index) => {
+      if (viewHistory.type == "nearest") {
+        const embedding = viewHistory.embedding;
+        const nearest = instances.notes.nearestNeighbor(embedding, 10);
+        this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
+      } else if (viewHistory.type == "note") {
+        this.history[index] = this.viewHistory.buildNoteDisplay(viewHistory.note[0]);
+      } else if ((viewHistory.type = "all")) {
+        this.history[index] = allNoteCache;
+      }
+    });
+
+    this.setDisplay(this.history[this.index]);
+
+    if (graphViewer.state == "graph") {
+      graphViewer.updateGraph();
+    }
+  }
+
+  isCurrentHistory(note) {
+    return (
+      this.history[this.index] &&
+      this.history[this.index].type == "note" &&
+      this.history[this.index].notes[0] == note
+    );
   }
 }
 
