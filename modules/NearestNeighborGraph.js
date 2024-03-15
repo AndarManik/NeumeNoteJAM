@@ -18,8 +18,8 @@ class NearestNeighborGraph {
     this.scaledPositions = embeddings.map(() => [Math.random(), Math.random()]);
 
     this.positions = this.scaledPositions.map(([x, y]) => [
-      x * this.restLength * 2,
-      y * this.restLength * 2,
+      x * this.restLength * 4,
+      y * this.restLength * 4,
     ]);
 
     const nearest = embeddings.map(({ embedding, note }) =>

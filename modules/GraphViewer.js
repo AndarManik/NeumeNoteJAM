@@ -320,8 +320,8 @@ class GraphViewer {
       const timePromise = new Promise((resolve) => setTimeout(resolve, 16));
       console.time("onepass" + index);
 
-      for (let i = 0; i < 10; i++) {
-        nearestNeighborGraph.update(0.01);
+      for (let i = 0; i < 15; i++) {
+        nearestNeighborGraph.update(0.03);
       }
 
       const bounds = [];
