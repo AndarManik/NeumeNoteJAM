@@ -89,18 +89,26 @@ class NearestNeighborGraph {
 
     this.positions.forEach((position, index) => {
       if (index == this.ignore) {
+        this.positions[index][0] =
+          this.scaledPositions[index][0] / this.scale[0] + this.min[0];
+        this.positions[index][1] =
+          this.scaledPositions[index][1] / this.scale[1] + this.min[1];
         return;
       }
-      this.scaledPositions[index][0] = (position[0]-this.min[0]) * this.scale[0];
-      this.scaledPositions[index][1] = (position[1]-this.min[1]) * this.scale[1];
+      this.scaledPositions[index][0] =
+        (position[0] - this.min[0]) * this.scale[0];
+      this.scaledPositions[index][1] =
+        (position[1] - this.min[1]) * this.scale[1];
     });
   }
 
   setPositionByPercentage(index, percentageX, percentageY) {
     this.scaledPositions[index][0] = (percentageX - 10) / 80;
     this.scaledPositions[index][1] = (percentageY - 10) / 80;
-    this.positions[index][0] = this.scaledPositions[index][0] / this.scale[0] + this.min[0];
-    this.positions[index][1] = this.scaledPositions[index][1] / this.scale[1] + this.min[1];
+    this.positions[index][0] =
+      this.scaledPositions[index][0] / this.scale[0] + this.min[0];
+    this.positions[index][1] =
+      this.scaledPositions[index][1] / this.scale[1] + this.min[1];
   }
 
   getForces() {

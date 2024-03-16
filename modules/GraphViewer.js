@@ -158,7 +158,7 @@ class GraphViewer {
   }
 
   async displayGraph() {
-    const n = 6;
+    const n = 5;
     if (this.state == "graph" || !notes.notes.length) {
       return;
     }
