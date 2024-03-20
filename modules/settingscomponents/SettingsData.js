@@ -38,10 +38,15 @@ class SettingsData {
   displayChildren() {
     this.settings.innerHTML = "";
     this.settings.append(this.header());
-    this.settings.append(this.deleteDataSection());
-    this.settings.append(this.setOpenAIKeySection());
-    this.settings.append(this.downloadNotes());
-    this.settings.append(this.loadNotes());
+    const body = document.createElement("div");
+    body.classList.add("settingsBody");
+
+    body.append(this.deleteDataSection());
+    body.append(this.setOpenAIKeySection());
+    body.append(this.downloadNotes());
+    body.append(this.loadNotes());
+
+    this.settings.append(body);
   }
 
   header() {
@@ -135,35 +140,6 @@ class SettingsData {
         input.value = "";
       }
     });
-
-    return section;
-  }
-
-  downloadNotes() {
-    const section = document.createElement("div");
-    section.classList.add("settingsSection");
-
-    const header = document.createElement("div");
-    header.classList.add("settingsSectionHeader");
-    header.innerText = "Download notes";
-    section.appendChild(header);
-
-    const info = document.createElement("div");
-    info.classList.add("settingsInfo");
-    section.appendChild(info);
-
-    const text = document.createElement("div");
-    text.classList.add("settingsText");
-    text.innerText = `Press to download all of your notes.`;
-    info.appendChild(text);
-
-    const button = document.createElement("button");
-    button.classList.add("settingsButton");
-    button.append(iconReader.newIcon("download", 45));
-    button.addEventListener("click", (e) => {
-      dataFileHandler.getNotesZip();
-    });
-    info.append(button);
 
     return section;
   }

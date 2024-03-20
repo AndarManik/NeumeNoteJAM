@@ -1,6 +1,5 @@
-import instances from "./NeumeEngine.js";
 import displayApiInput from "./ApiKeyReader.js";
-
+import notesDatabase from "./NotesDatabase.js";
 class OpenAI {
   constructor() {
     this.apiKey = "";
@@ -14,7 +13,7 @@ class OpenAI {
   }
 
   async initialize() {
-    const apiKey = await instances.notesDatabase.getAPIKey();
+    const apiKey = await notesDatabase.getAPIKey();
     if (apiKey) {
       await this.setKey(apiKey);
       return;
@@ -22,15 +21,12 @@ class OpenAI {
 
     displayApiInput(async (apiKey) => {
       await this.setKey(apiKey);
-      instances.notesDatabase.saveAPIKey(apiKey);
+      notesDatabase.saveAPIKey(apiKey);
     });
-  }
 
-  async retryinitialize() {
-    displayApiInput(async (apiKey) => {
-      await this.setKey(apiKey);
-      instances.notesDatabase.saveAPIKey(apiKey);
-    }, "Invalid ");
+    while (!this.validKey) {
+      await new Promise((resolve) => setTimeout(resolve, 125));
+    }
   }
 
   async setKey(apiKey) {
@@ -44,7 +40,10 @@ class OpenAI {
       });
 
       if (!response.ok) {
-        await this.retryinitialize();
+        displayApiInput(async (apiKey) => {
+          await this.setKey(apiKey);
+          notesDatabase.saveAPIKey(apiKey);
+        }, "Invalid ");
       }
 
       const models = await response.json();
@@ -168,11 +167,11 @@ Format:
   async partition(
     prompt,
     system = `Task:
-  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity with high granularity.
+  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity.
     
 Requirements:
   Delimiters should be extracted from the end of each segment.
-  Use several consecutive words as delimiters to ensure a single occurrence within the message.
+  Use several consecutive words as delimiters to ensure a single occurrence within the message. Use up to five words.
   The output should be formatted as a JSON object with a single key delimiters, associated with a list of identified delimiters.
     
 Example: 
@@ -281,5 +280,4 @@ Format:
 }
 
 const openAI = new OpenAI();
-instances.openAI = openAI;
 export default openAI;

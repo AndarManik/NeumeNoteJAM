@@ -1,6 +1,6 @@
-import SettingsData from "./settingscomponents/SettingsData.js";
-import SettingsTheme from "./settingscomponents/SettingsTheme.js";
-import iconReader from "./IconReader.js";
+import SettingsData from "./SettingsData.js";
+import SettingsTheme from "./SettingsTheme.js";
+import iconReader from "../IconReader.js";
 class Settings {
   constructor() {
     this.settings = document.createElement("div");
@@ -15,8 +15,15 @@ class Settings {
   displayChildren(){
     this.settings.innerHTML = "";
     this.settings.append(this.header());
-    this.settings.append(this.settingsData.getDisplay());
-    this.settings.append(this.settingsTheme.getDisplay());
+    
+    
+    const body = document.createElement("div");
+    body.classList.add("settingsBody");
+
+    body.append(this.settingsData.getDisplay());
+    body.append(this.settingsTheme.getDisplay());
+
+    this.settings.append(body);
   }
 
   header() {

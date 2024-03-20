@@ -1,7 +1,7 @@
 import notes from "../Notes.js";
 import contextBuilder from "../ContextBuilder.js";
 import iconReader from "../IconReader.js";
-import instances from "../NeumeEngine.js";
+import chunkViewer from "../ChunkViewer.js";
 
 class ThoughtHeader {
   constructor(callbacks) {
@@ -17,7 +17,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      instances.chunkViewer.displayNotes(note);
+      chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
@@ -80,7 +80,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      instances.chunkViewer.displayNotes(note);
+      chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
@@ -117,7 +117,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      instances.chunkViewer.displayNotes(note);
+      chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);
@@ -133,7 +133,7 @@ class ThoughtHeader {
     removeButton.classList.add("thoughtButton");
     removeButton.append(iconReader.newIcon("backspace", this.iconSize));
     removeButton.addEventListener("click", (e) => {
-      instances.contextBuilder.removeContext(note.chunks[index]);
+      contextBuilder.removeContext(note.chunks[index]);
     });
     removeButton.setAttribute("title", "Remove");
     thoughtHeader.appendChild(removeButton);
@@ -151,7 +151,7 @@ class ThoughtHeader {
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
     readButton.addEventListener("click", (e) => {
-      instances.chunkViewer.displayNotes(note);
+      chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
     thoughtHeader.appendChild(readButton);

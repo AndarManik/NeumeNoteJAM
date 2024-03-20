@@ -2,10 +2,9 @@ import SearchHeader from "./SearchHeader.js";
 import SearchSection from "./SearchSection.js";
 import notes from "../Notes.js";
 class ViewHistory {
-  constructor(callbacks) {
-    this.callbacks = callbacks;
-    this.searchHeader = new SearchHeader(callbacks);
-    this.searchSection = new SearchSection(callbacks);
+  constructor() {
+    this.searchHeader = new SearchHeader();
+    this.searchSection = new SearchSection();
   }
 
   buildAllNotesDisplay(){

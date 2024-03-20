@@ -1,24 +1,15 @@
 import graphViewer from "./GraphViewer.js";
-import instances from "./NeumeEngine.js";
 import ViewHistory from "./chunkviewercomponents/ViewHistory.js";
-
+import notes from "./Notes.js";
 class ChunkViewer {
   constructor() {
     this.index = -1;
     this.history = [];
 
-    const callbacks = {
-      goBack: this.goBack.bind(this),
-      goForward: this.goForward.bind(this),
-      setDisplay: this.setNoteSearchSection.bind(this),
-      handleDelete: this.handleDelete.bind(this),
-      displayNotes: this.displayNotes.bind(this),
-      handleRechunk: this.handleRechunk.bind(this),
-    };
-    this.viewHistory = new ViewHistory(callbacks);
   }
 
   initialize() {
+    this.viewHistory = new ViewHistory();
     this.displayAllNotes();
   }
 
@@ -90,7 +81,7 @@ class ChunkViewer {
     this.history.forEach((viewHistory, index) => {
       if (viewHistory.type == "nearest" && viewHistory.notes.includes(note)) {
         const embedding = viewHistory.embedding;
-        const nearest = instances.notes.nearestNeighbor(embedding, 10);
+        const nearest = notes.nearestNeighbor(embedding, 10);
         this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
       }
 
@@ -131,7 +122,7 @@ class ChunkViewer {
       if (viewHistory.notes.includes(note)) {
         if (viewHistory.type == "nearest") {
           const embedding = viewHistory.embedding;
-          const nearest = instances.notes.nearestNeighbor(embedding, 10);
+          const nearest = notes.nearestNeighbor(embedding, 10);
           this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
         } else if (viewHistory.type == "note") {
           this.history[index] = this.viewHistory.buildNoteDisplay(note);
@@ -151,10 +142,10 @@ class ChunkViewer {
     this.history.forEach((viewHistory, index) => {
       if (viewHistory.type == "nearest") {
         const embedding = viewHistory.embedding;
-        const nearest = instances.notes.nearestNeighbor(embedding, 10);
+        const nearest = notes.nearestNeighbor(embedding, 10);
         this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
       } else if (viewHistory.type == "note") {
-        this.history[index] = this.viewHistory.buildNoteDisplay(viewHistory.note[0]);
+        this.history[index] = this.viewHistory.buildNoteDisplay(viewHistory.notes[0]);
       } else if ((viewHistory.type = "all")) {
         this.history[index] = allNoteCache;
       }
@@ -177,6 +168,5 @@ class ChunkViewer {
 }
 
 const chunkViewer = new ChunkViewer();
-instances.chunkViewer = chunkViewer;
 
 export default chunkViewer;

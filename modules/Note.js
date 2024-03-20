@@ -4,8 +4,8 @@ import themeEditor from "./settingscomponents/ThemeEditor.js";
 class Note {
   constructor(colorCounter,text = "", chunks = [], embeddings = [], title = "") {
     const goldenRatio = 1.618033988749895;
-    this.outerHue = 360 * ((goldenRatio * -0.09 * colorCounter) % 1);
-    this.innerHue = 360 * ((goldenRatio * 0.012 * colorCounter) % 1);
+    this.outerHue = 360 * (((goldenRatio / 9.5) * colorCounter) % 1);
+    this.innerHue = 360 * (((goldenRatio / 9.5 / 9.5) * colorCounter) % 1);
     this.colorCounter = colorCounter;
     this.text = text;
     this.chunks = chunks;

@@ -1,4 +1,3 @@
-import instances from "./NeumeEngine.js";
 class IconReader {
 
   newIcon(name, size){
@@ -59,6 +58,5 @@ class IconReader {
 
 }
 const iconReader = new IconReader();
-instances.iconReader = iconReader;
 
 export default iconReader;

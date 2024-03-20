@@ -1,26 +1,15 @@
-import instances from "./NeumeEngine.js";
 import notes from "./Notes.js";
-import projectToTopTwoPCA from "./PCA.js";
 class NearestNeighborGraph {
   loadInitialData(n) {
     this.ignore = -1;
     this.restLength = 100;
 
     const embeddings = [];
-    const embeddingsSlice = [];
     notes.notes.forEach((note) => {
       note.embeddings.forEach((embedding) => {
         embeddings.push({ embedding, note });
-        embeddingsSlice.push(embedding.slice(0, 100));
       });
     });
-
-    this.scaledPositions = embeddings.map(() => [Math.random(), Math.random()]);
-
-    this.positions = this.scaledPositions.map(([x, y]) => [
-      x * this.restLength * 4,
-      y * this.restLength * 4,
-    ]);
 
     const nearest = embeddings.map(({ embedding, note }) =>
       this.nearestIndexes(embedding, embeddings, note)
@@ -37,15 +26,12 @@ class NearestNeighborGraph {
 
     this.nearestMatrix = this.nearestMatrix.map((arr) => [...new Set(arr)]);
 
-    this.velocities = embeddings.map((e) => {
-      return [0, 0];
-    });
+    this.scaledPositions = embeddings.map(() => [Math.random(), Math.random()]);
 
-    this.scaledPositions = embeddings.map((e) => {
-      return [0, 0];
-    });
-    console.log(this.positions);
-    console.log(this.nearestMatrix);
+    this.positions = this.scaledPositions.map(([x, y]) => [
+      x * this.restLength * 4,
+      y * this.restLength * 4,
+    ]);
   }
 
   update(k) {
@@ -126,16 +112,20 @@ class NearestNeighborGraph {
           return;
         }
 
-        const distance = Math.sqrt(xDiff ** 2 + yDiff ** 2);
+        const distanceSquared = xDiff ** 2 + yDiff ** 2;
 
-        if (distance < 0.1) {
+        if (distanceSquared < 0.1) {
           return;
         }
 
+        const distance = Math.sqrt(distanceSquared);
+
         const direction = [xDiff / distance, yDiff / distance];
 
-        const forceX = (direction[0] * this.restLength) / distance ** 2;
-        const forceY = (direction[1] * this.restLength) / distance ** 2;
+        const scale = this.restLength / distanceSquared;
+
+        const forceX = direction[0] * scale;
+        const forceY = direction[1] * scale;
 
         forces[leftIndex][0] -= forceX;
         forces[leftIndex][1] -= forceY;
@@ -144,8 +134,8 @@ class NearestNeighborGraph {
         forces[rightIndex][1] += forceY;
 
         if (this.nearestMatrix[leftIndex].indexOf(rightIndex) != -1) {
-          const forceXAtt = (direction[0] * distance ** 2) / this.restLength;
-          const forceYAtt = (direction[1] * distance ** 2) / this.restLength;
+          const forceXAtt = direction[0] / scale;
+          const forceYAtt = direction[1] / scale;
           forces[leftIndex][0] += forceXAtt;
           forces[leftIndex][1] += forceYAtt;
 
@@ -174,6 +164,5 @@ class NearestNeighborGraph {
 }
 
 const nearestNeighborGraph = new NearestNeighborGraph();
-instances.nearestNeighborGraph = nearestNeighborGraph;
 
 export default nearestNeighborGraph;

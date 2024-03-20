@@ -1,4 +1,3 @@
-import instances from "./NeumeEngine.js";
 class NotesDatabase {
   constructor() {
     this.dbName = "NotesDB";
@@ -6,46 +5,37 @@ class NotesDatabase {
     this.db = null;
   }
 
-  initialize() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.dbVersion);
+  async initialize() {
+    const request = indexedDB.open(this.dbName, this.dbVersion);
 
-      request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = (event) => {
         this.db = event.target.result;
 
         if (!this.db.objectStoreNames.contains("apiKey")) {
-          this.db.createObjectStore("apiKey", {
-            keyPath: "id",
-            autoIncrement: true,
-          });
+            this.db.createObjectStore("apiKey", { keyPath: "id", autoIncrement: true });
         }
 
         if (!this.db.objectStoreNames.contains("notesData")) {
-          this.db.createObjectStore("notesData", {
-            keyPath: "id",
-            autoIncrement: true,
-          });
+            this.db.createObjectStore("notesData", { keyPath: "id", autoIncrement: true });
         }
 
         if (!this.db.objectStoreNames.contains("themeData")) {
-          this.db.createObjectStore("themeData", {
-            keyPath: "id",
-            autoIncrement: true,
-          });
+            this.db.createObjectStore("themeData", { keyPath: "id", autoIncrement: true });
         }
-      };
+    };
 
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        resolve(this.db); // Resolve the promise with the db instance
-      };
+    await new Promise((resolve, reject) => {
+        request.onsuccess = (event) => {
+            this.db = event.target.result;
+            resolve(); // Previously resolved with this.db, now resolved with no value
+        };
 
-      request.onerror = (event) => {
-        console.log("Database error: ", event.target.errorCode);
-        reject(event.target.error); // Reject the promise with the error
-      };
+        request.onerror = (event) => {
+            console.log("Database error: ", event.target.errorCode);
+            reject(event.target.error); // Reject the promise with the error
+        };
     });
-  }
+}
 
   async getNotes() {
     try {
@@ -179,5 +169,4 @@ class NotesDatabase {
 }
 
 const notesDatabase = new NotesDatabase();
-instances.notesDatabase = notesDatabase;
 export default notesDatabase;

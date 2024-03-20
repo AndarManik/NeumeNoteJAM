@@ -1,8 +1,7 @@
 import SearchHeaderButton from "./SearchHeaderButton.js";
 class SearchHeader {
-  constructor(callbacks) {
-    this.callbacks = callbacks;
-    this.searchHeaderButton = new SearchHeaderButton(callbacks);
+  constructor() {
+    this.searchHeaderButton = new SearchHeaderButton();
   }
 
   buildAllNotesHeader() {

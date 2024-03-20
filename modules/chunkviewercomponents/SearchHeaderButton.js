@@ -3,8 +3,7 @@ import noteEditor from "../NoteEditor.js";
 import iconReader from "../IconReader.js";
 import chunkViewer from "../ChunkViewer.js";
 class SearchHeaderButton {
-  constructor(callbacks) {
-    this.callbacks = callbacks;
+  constructor() {
     this.iconSize = 16;
   }
 

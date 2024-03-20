@@ -1,7 +1,7 @@
-import instances from "../NeumeEngine.js";
+import notesDatabase from "../NotesDatabase.js";
 class ThemeEditor {
   async initialize() {
-    const themes = await instances.notesDatabase.getTheme();
+    const themes = await notesDatabase.getTheme();
     console.log(themes);
     if(!themes) {
         this.setLightMode();
@@ -138,6 +138,5 @@ class ThemeEditor {
 }
 
 const themeEditor = new ThemeEditor();
-instances.themeEditor = themeEditor;
 
 export default themeEditor;

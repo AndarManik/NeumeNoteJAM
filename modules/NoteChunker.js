@@ -106,7 +106,7 @@ function initialSplit(text) {
   var startIndex = 0;
   const initialChunks = [];
   const characters = Array.from(text);
-  const numberOfChunks = Math.ceil(characters.length / 3000);
+  const numberOfChunks = Math.ceil(characters.length / 1000);
   const initialChunkSize = Math.ceil(characters.length / numberOfChunks);
 
   for (var i = 0; i < numberOfChunks; i++) {
@@ -124,6 +124,7 @@ async function parallelChunk(initialChunks) {
   await Promise.all(
     initialChunks.map(async (chunk, index) => {
       const partition = await openAI.partition(chunk);
+      console.log(partition);
       const subParition = [];
       var tail = chunk;
       partition.delimiters.forEach((delimiter) => {

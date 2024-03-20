@@ -1,5 +1,7 @@
-import instances from "./NeumeEngine.js";
 import Note from "./Note.js";
+import openAI from "./OpenAI.js";
+import notesDatabase from "./NotesDatabase.js";
+import chunkViewer from "./ChunkViewer.js";
 class Notes {
   constructor() {
     this.colorCounter = 0;
@@ -9,10 +11,8 @@ class Notes {
   }
 
   async initialize() {
-    const data = await instances.notesDatabase.getNotes();
-
+    const data = await notesDatabase.getNotes();
     console.log(data);
-
     if (!data) {
       return;
     }
@@ -27,12 +27,33 @@ class Notes {
         noteData.title
       );
     });
+
+    document
+      .getElementById("searchInputSection")
+      .addEventListener("keydown", async (e) => {
+        const shiftEnterPressed = e.shiftKey && e.code == "Enter";
+        if (shiftEnterPressed && this.canSearch()) {
+          e.preventDefault();
+          await this.search();
+        }
+      });
   }
 
-  loadNewData(data){
+  async search() {
+    this.notes.isSearching = true;
+    document.getElementById("searchSection").classList.add("animate");
+    const searchText = this.getSearchText();
+    const embedding = await openAI.embed(searchText);
+    const nearest = this.nearestNeighbor(embedding, 10);
+    document.getElementById("searchSection").classList.remove("animate");
+    chunkViewer.displayNearestSearch(nearest);
+    this.isSearching = false;
+  }
+
+  loadNewData(data) {
     this.colorCounter = 0;
     this.notes = data.map((noteData) => {
-      if(this.colorCounter < noteData.colorCounter) {
+      if (this.colorCounter < noteData.colorCounter) {
         this.colorCounter = noteData.colorCounter;
       }
       return new Note(
@@ -57,8 +78,8 @@ class Notes {
     document
       .getElementById("searchSection")
       .classList.remove("rechunkAnimation");
-    instances.chunkViewer.handleRechunk(note);
-    instances.chunkViewer.displayNotes(note);
+    chunkViewer.handleRechunk(note);
+    chunkViewer.displayNotes(note);
     this.isAdding = false;
   }
 
@@ -68,11 +89,11 @@ class Notes {
     document
       .getElementById("searchSection")
       .classList.remove("rechunkAnimation");
-    instances.chunkViewer.handleRechunk(note);
-    if (!instances.chunkViewer.isCurrentHistory(note)) {
-      instances.chunkViewer.displayNotes(note);
+    chunkViewer.handleRechunk(note);
+    if (!chunkViewer.isCurrentHistory(note)) {
+      chunkViewer.displayNotes(note);
     } else {
-      instances.chunkViewer.setNoteSearchSection(note);
+      chunkViewer.setNoteSearchSection(note);
     }
     this.isAdding = false;
   }
@@ -96,15 +117,6 @@ class Notes {
     const searchText = document.getElementById("searchInputSection").value;
     document.getElementById("searchInputSection").value = "";
     return searchText;
-  }
-
-  search(embedding) {
-    this.notes.isSearching = true;
-    document.getElementById("searchSection").classList.add("animate");
-    const nearest = this.nearestNeighbor(embedding, 10);
-    this.isSearching = false;
-    document.getElementById("searchSection").classList.remove("animate");
-    instances.chunkViewer.displayNearestSearch(nearest);
   }
 
   nearestNeighbor(embedding, N) {
@@ -145,5 +157,4 @@ class Notes {
 }
 
 const notes = new Notes();
-instances.notes = notes;
 export default notes;

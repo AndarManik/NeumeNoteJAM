@@ -1,4 +1,4 @@
-import Settings from "./Settings.js";
+import Settings from "./settingscomponents/Settings.js";
 class HeaderUtility {
     constructor(){
         const settings = document.createElement("div");

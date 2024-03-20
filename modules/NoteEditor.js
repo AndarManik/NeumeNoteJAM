@@ -1,5 +1,8 @@
 import EditorTab from "./EditorTab.js";
-import instances from "./NeumeEngine.js";
+import openAI from "./OpenAI.js";
+import notes from "./Notes.js";
+import graphViewer from "./GraphViewer.js";
+import contextBuilder from "./ContextBuilder.js";
 
 class NoteEditor {
   constructor() {
@@ -7,17 +10,63 @@ class NoteEditor {
     this.currentTab = null;
   }
 
-  initialize(){
+  initialize() {
     this.addMakeNewtabButton();
     this.addBlankTab();
+    document
+      .getElementById("completeSection")
+      .addEventListener("keydown", async (e) => {
+        if(!openAI.validKey) {
+          return;
+        }
+        const shiftEnterPressed = e.shiftKey && e.code == "Enter";
+        if (shiftEnterPressed && this.canComplete()) {
+          e.preventDefault();
+          await this.complete();
+        }
+        if (e.code === "Escape") {
+          e.preventDefault();
+          this.stopComplete();
+        }
+        if (e.ctrlKey && e.code === "KeyS") {
+          e.preventDefault();
+          if (this.hasText()) {
+            await this.save();
+          }
+        }
+        if (e.code === "Tab" && this.canComplete()) {
+          e.preventDefault();
+          this.insertTab();
+        }
+      });
+  }
+
+  async complete() {
+    const textWithSmartTag = this.getTextWithSmartTag();
+    const textStream = await openAI.smartComplete(textWithSmartTag);
+    if (!textStream) {
+      noteEditor.streamFailed();
+      return;
+    }
+    this.streamTextToTab(textStream);
+  }
+
+  async save() {
+    const { note, type } = await this.saveText();
+    await notes.finishedAdding();
+    if (type == "new") {
+      notes.addNote(note);
+    } else {
+      notes.updateNote(note);
+    }
   }
 
   addMakeNewtabButton() {
     const newTabButton = document.createElement("div");
     newTabButton.classList.add("makeNewTabButton");
-    newTabButton.addEventListener("click", e => {
+    newTabButton.addEventListener("click", (e) => {
       this.addBlankTab();
-    })
+    });
     document.getElementById("rightHeader").append(newTabButton);
   }
 
@@ -31,8 +80,8 @@ class NoteEditor {
   }
 
   editNote(note) {
-    if(instances.graphViewer.state == "graph") {
-      instances.graphViewer.displayEditor();
+    if (graphViewer.state == "graph") {
+      graphViewer.displayEditor();
     }
 
     const noteIndex = this.has(note);
@@ -71,15 +120,13 @@ class NoteEditor {
 
     note.addRechunkAnimation("searchSection");
 
-
     completeSection.value = "";
     this.tabs.splice(index, 1)[0].icon.remove();
 
-    if(this.tabs.length == 0){
+    if (this.tabs.length == 0) {
       console.log("saveText addBlankTab");
       this.addBlankTab();
-    }
-    else {
+    } else {
       console.log("saveText setActiveTab");
 
       const newIndex = Math.max(index - 1, 0);
@@ -92,7 +139,7 @@ class NoteEditor {
       await note.reChunkText(text);
     }
 
-    return {note, type};
+    return { note, type };
   }
 
   deleteTab(note) {
@@ -109,15 +156,16 @@ class NoteEditor {
     this.tabs.splice(tabIndex, 1)[0].icon.remove();
   }
 
-  
-
   canComplete() {
-    return !this.currentTab.isCompleteing && document.activeElement ==  document.getElementById("completeSection");
+    return (
+      !this.currentTab.isCompleteing &&
+      document.activeElement == document.getElementById("completeSection")
+    );
   }
 
   getTextWithSmartTag() {
     const smartTag = this.currentTab.getTextWithSmartTag();
-    const context = instances.contextBuilder.getContextPrompt();
+    const context = contextBuilder.getContextPrompt();
     return `${context}\n${smartTag}"`;
   }
 
@@ -138,16 +186,15 @@ class NoteEditor {
     return this.tabs.map((tab) => tab.note).indexOf(note);
   }
 
-  stopComplete(){
+  stopComplete() {
     this.currentTab.stopComplete = true;
   }
 
-  insertTab(){
+  insertTab() {
     console.log("insert tab");
     this.currentTab.insertTab();
   }
 }
 
 const noteEditor = new NoteEditor();
-instances.noteEditor = noteEditor;
 export default noteEditor;

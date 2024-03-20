@@ -189,10 +189,7 @@ textarea::selection {
   background-color: var(--highlight);
 }
 
-#settingsHeader {
-  width: 28px;
-  border-right: 1px solid var(--left);
-}
+
 
 #completeSection {
   padding: 1em;
@@ -201,6 +198,15 @@ textarea::selection {
 
 #middleSection{
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto Slab";
+  font-weight: 500;
+  word-spacing: 0.2em;
+  line-height: 1.4em;
+  font-size: 16px;
+  color: var(--text);
+  text-decoration-color: var(--text);
 }
 #searchInputSection {
   background-color: var(--search);
@@ -380,15 +386,25 @@ textarea::selection {
   background-color: var(--search);
   height: 400px;
   width: 400px;
-  position: fixed;
+  position: absolute;
+  size: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid var(--left);
   border-radius: 5px;
-  overflow-y: auto;
   z-index: 2;
+}
 
+.settingsBody {
+  width: 400px;
+  height: 372px;
+  overflow-y: auto;
+}
+
+.settingsHeader {
+  width: 400px;
+  height: 28px;
 }
 
 .settingsSection {

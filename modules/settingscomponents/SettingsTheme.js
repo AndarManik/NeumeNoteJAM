@@ -34,9 +34,14 @@ class SettingsTheme {
   displayChildren() {
     this.settings.innerHTML = "";
     this.settings.append(this.header());
-    this.settings.append(this.lightordark());
-    this.settings.append(this.setColor());
-    this.settings.append(this.setGreyScale());
+    const body = document.createElement("div");
+    body.classList.add("settingsBody");
+
+    body.append(this.lightordark());
+    body.append(this.setColor());
+    body.append(this.setGreyScale());
+
+    this.settings.append(body);
   }
 
   header() {

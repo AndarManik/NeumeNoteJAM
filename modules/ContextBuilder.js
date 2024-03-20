@@ -1,5 +1,4 @@
 import Thought from "./chunkviewercomponents/Thought.js"
-import instances from "./NeumeEngine.js";
 class ContextBuilder {
   constructor() {
     this.context = [];
@@ -8,10 +7,10 @@ class ContextBuilder {
     this.contextBuilder = document.createElement("div");
     this.contextBuilder.id = "contextBuilder";
 
-    const callbacks = {
-      removeContext: this.removeContext.bind(this)
-    }
-    this.thought = new Thought(callbacks);
+  }
+
+  initialize() {
+    this.thought = new Thought();
   }
 
   addThought(note, index) {
@@ -53,6 +52,5 @@ class ContextBuilder {
   }
 }
 const contextBuilder = new ContextBuilder();
-instances.contextBuilder = contextBuilder;
 
 export default contextBuilder;
