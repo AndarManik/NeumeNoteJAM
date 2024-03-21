@@ -2,6 +2,7 @@ import notes from "../Notes.js";
 import themeEditor from "./ThemeEditor.js";
 import notesDatabase from "../NotesDatabase.js";
 import chunkViewer from "../ChunkViewer.js";
+import graphViewer from "../GraphViewer.js";
 class DataFileHandler {
   getNotesZip() {
     var zip = new JSZip();
@@ -56,10 +57,10 @@ class DataFileHandler {
       console.log(data);
       notes.loadNewData(data.notes);
       themeEditor.setTheme(data.theme);
-
+      chunkViewer.initialize();
       await notesDatabase.saveNotesData(notes);
       await notesDatabase.saveThemeData(themeEditor.getTheme());
-      chunkViewer.handleChange();
+      graphViewer.handleNoteChange();
     };
     reader.readAsText(file);
   }

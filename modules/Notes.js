@@ -2,6 +2,7 @@ import Note from "./Note.js";
 import openAI from "./OpenAI.js";
 import notesDatabase from "./NotesDatabase.js";
 import chunkViewer from "./ChunkViewer.js";
+import graphViewer from "./GraphViewer.js";
 class Notes {
   constructor() {
     this.colorCounter = 0;
@@ -79,6 +80,7 @@ class Notes {
       .getElementById("searchSection")
       .classList.remove("rechunkAnimation");
     chunkViewer.handleRechunk(note);
+    graphViewer.handleNoteChange();
     chunkViewer.displayNotes(note);
     this.isAdding = false;
   }
@@ -90,6 +92,8 @@ class Notes {
       .getElementById("searchSection")
       .classList.remove("rechunkAnimation");
     chunkViewer.handleRechunk(note);
+    graphViewer.handleNoteChange();
+
     if (!chunkViewer.isCurrentHistory(note)) {
       chunkViewer.displayNotes(note);
     } else {

@@ -4,6 +4,7 @@ import notesDatabase from "../NotesDatabase.js";
 import iconReader from "../IconReader.js";
 import dataFileHandler from "./DataFileHandler.js";
 import nearestNeighborGraph from "../NearestNeighborGraph.js";
+import themeEditor from "./ThemeEditor.js";
 
 class SettingsData {
   constructor(settings, displayParent) {
@@ -98,6 +99,8 @@ class SettingsData {
     input.addEventListener("keypress", async (event) => {
       if (event.key === "Enter" && document.activeElement == input) {
         if (input.value == "Delete") {
+          themeEditor.setLightMode();
+          themeEditor.setColor(240);
           notes.deleteData();
           openAI.deleteData();
           await notesDatabase.deleteData();

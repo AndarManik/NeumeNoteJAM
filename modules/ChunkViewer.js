@@ -131,31 +131,6 @@ class ChunkViewer {
         }
       }
     });
-
-    if (graphViewer.state == "graph") {
-      graphViewer.updateGraph();
-    }
-  }
-
-  handleChange() {
-    const allNoteCache = this.viewHistory.buildAllNotesDisplay();
-    this.history.forEach((viewHistory, index) => {
-      if (viewHistory.type == "nearest") {
-        const embedding = viewHistory.embedding;
-        const nearest = notes.nearestNeighbor(embedding, 10);
-        this.history[index] = this.viewHistory.buildNearestDisplay(nearest);
-      } else if (viewHistory.type == "note") {
-        this.history[index] = this.viewHistory.buildNoteDisplay(viewHistory.notes[0]);
-      } else if ((viewHistory.type = "all")) {
-        this.history[index] = allNoteCache;
-      }
-    });
-
-    this.setDisplay(this.history[this.index]);
-
-    if (graphViewer.state == "graph") {
-      graphViewer.updateGraph();
-    }
   }
 
   isCurrentHistory(note) {

@@ -1,18 +1,19 @@
 import notes from "./Notes.js";
 class NearestNeighborGraph {
   loadInitialData(n) {
+    this.n = n;
     this.ignore = -1;
     this.restLength = 100;
 
-    const embeddings = [];
+    this.embeddings = [];
     notes.notes.forEach((note) => {
       note.embeddings.forEach((embedding) => {
-        embeddings.push({ embedding, note });
+        this.embeddings.push({ embedding, note });
       });
     });
 
-    const nearest = embeddings.map(({ embedding, note }) =>
-      this.nearestIndexes(embedding, embeddings, note)
+    const nearest = this.embeddings.map(({ embedding, note }) =>
+      this.nearestIndexes(embedding, note)
     );
 
     this.nearestMatrix = nearest.map(() => []);
@@ -26,7 +27,10 @@ class NearestNeighborGraph {
 
     this.nearestMatrix = this.nearestMatrix.map((arr) => [...new Set(arr)]);
 
-    this.scaledPositions = embeddings.map(() => [Math.random(), Math.random()]);
+    this.scaledPositions = this.embeddings.map(() => [
+      Math.random(),
+      Math.random(),
+    ]);
 
     this.positions = this.scaledPositions.map(([x, y]) => [
       x * this.restLength * 4,
@@ -147,8 +151,8 @@ class NearestNeighborGraph {
     return forces;
   }
 
-  nearestIndexes(currentEmbedding, embeddings, currentNote) {
-    const distances = embeddings
+  nearestIndexes(currentEmbedding, currentNote) {
+    const distances = this.embeddings
       .map(({ embedding, note }, index) => {
         let distance = note == currentNote ? 0 : 0;
         for (let j = 0; j < embedding.length; j++) {
@@ -157,9 +161,29 @@ class NearestNeighborGraph {
         return { index, distance };
       })
       .flat();
-    console.log("distances", distances);
     distances.sort((a, b) => a.distance - b.distance);
     return distances.map((distance) => distance.index);
+  }
+
+  handleNoteChange() {
+    console.time("noteChange1");
+    const previousEmbeddings = this.embeddings.map(
+      ({ embedding }) => embedding
+    );
+    const previousPositions = this.positions;
+    const previousScaledPositions = this.scaledPositions;
+
+    this.loadInitialData(this.n);
+
+    this.embeddings.forEach(({ embedding }, index) => {
+      const previousIndex = previousEmbeddings.indexOf(embedding);
+      if(previousIndex == -1) {
+        return;
+      }
+      this.positions[index] = previousPositions[previousIndex];
+      this.scaledPositions[index] = previousScaledPositions[previousIndex];
+    });
+    console.timeEnd("noteChange1");
   }
 }
 

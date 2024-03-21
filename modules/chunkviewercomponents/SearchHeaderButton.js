@@ -2,6 +2,8 @@ import notes from "../Notes.js";
 import noteEditor from "../NoteEditor.js";
 import iconReader from "../IconReader.js";
 import chunkViewer from "../ChunkViewer.js";
+import graphViewer from "../GraphViewer.js";
+
 class SearchHeaderButton {
   constructor() {
     this.iconSize = 16;
@@ -51,6 +53,7 @@ class SearchHeaderButton {
       await note.chunkText(note.text);
       chunkViewer.handleRechunk(note);
       chunkViewer.setNoteSearchSection(note);
+      graphViewer.handleNoteChange();
     });
     reChunkButton.setAttribute("title", "Rechunk note");
 
@@ -65,6 +68,7 @@ class SearchHeaderButton {
       notes.delete(note);
       noteEditor.deleteTab(note);
       chunkViewer.handleDelete(note);
+      graphViewer.handleNoteChange();
     });
     deleteButton.setAttribute("title", "Delete note");
     return deleteButton;

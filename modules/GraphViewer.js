@@ -8,6 +8,7 @@ class GraphViewer {
     this.thought = new Thought({});
     this.n = 6;
     this.fps = 60;
+    this.initialized = false;
   }
 
   async initialize() {
@@ -22,19 +23,43 @@ class GraphViewer {
       "position: absolute; top: 0; left: 0; width: 100svw; height: 100svh;"
     );
 
+    this.building = true;
     nearestNeighborGraph.loadInitialData(this.n);
     this.buildGraph();
+    this.building = false;
+    this.initialized = true;
   }
 
-  async updateGraph() {
+  handleNoteChange() {
     if (!notes.notes.length) {
       return;
+    }
+    this.building = true;
+    this.graphSection.remove();
+    this.svg.remove();
+    const svgNS = "http://www.w3.org/2000/svg";
+    this.svg = document.createElementNS(svgNS, "svg");
+    this.svg.setAttribute(
+      "style",
+      "position: absolute; top: 0; left: 0; width: 100svw; height: 100svh;"
+    );
+    nearestNeighborGraph.handleNoteChange();
+    this.buildGraph();
+    this.building = false;
+
+    if (this.state == "graph") {
+      document.getElementById("rightSection").append(this.graphSection);
+      document.body.appendChild(this.svg);
     }
   }
 
   async displayGraph() {
     if (this.state == "graph" || !notes.notes.length) {
       return;
+    }
+
+    if (!this.initialized) {
+      await this.initialize();
     }
     this.state = "graph";
 
@@ -49,14 +74,16 @@ class GraphViewer {
   async simulate() {
     var index = 0;
     var numberOfUpdates = 1;
-    var startTime = 0;
+    var renderTime = 0;
 
     while (this.state == "graph") {
-      const timePromise = new Promise((resolve) => setTimeout(resolve, 0));
-      console.time("onepass" + index);
-      if (index % (this.fps) == 0) {
-        startTime = performance.now();
+      while (this.building) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
+
+      const timePromise = new Promise((resolve) => setTimeout(resolve, 0));
+      //console.time("onepass" + index);
+      const startTime = performance.now();
 
       for (let i = 0; i < numberOfUpdates; i++) {
         nearestNeighborGraph.update(0.02);
@@ -78,19 +105,21 @@ class GraphViewer {
 
       this.lines.forEach((line) => line(bounds));
 
-      if (index % (this.fps) == (this.fps) - 1) {
-        const endTime = (performance.now() - startTime) / (this.fps);
-        console.log(endTime);
-        if (endTime < (1000 / this.fps) - 1) {
+      renderTime += performance.now() - startTime;
+
+      if (index % this.fps == this.fps - 1) {
+        const singleUpdateTime = renderTime / this.fps;
+        console.log(singleUpdateTime);
+        if (singleUpdateTime < 1000 / this.fps - 1) {
           numberOfUpdates++;
         }
-        if (endTime > (1000 / this.fps) + 1) {
+        if (singleUpdateTime > 1000 / this.fps + 1) {
           numberOfUpdates = Math.max(1, numberOfUpdates - 1);
         }
       }
 
-      console.log(numberOfUpdates);
-      console.timeEnd("onepass" + index++);
+      //console.log(numberOfUpdates);
+      //console.timeEnd("onepass" + index++);
       await timePromise;
     }
   }
@@ -138,7 +167,7 @@ class GraphViewer {
         const percentageX = (x / bounds.width) * 100;
         const percentageY = (y / bounds.height) * 100;
         return { percentageX, percentageY };
-      }
+      };
 
       point.addEventListener("mousedown", (event) => {
         if (thought.matches(":hover")) {
@@ -153,7 +182,7 @@ class GraphViewer {
         point.style.zIndex = "2";
       });
 
-      document.addEventListener("mousemove", (event) =>{
+      document.addEventListener("mousemove", (event) => {
         if (isDragging) {
           var { percentageX, percentageY } = calculatePercentagePosition(event);
           if (percentageX < 10) percentageX = 10;
@@ -169,7 +198,7 @@ class GraphViewer {
         }
       });
 
-      document.addEventListener("mouseup", () =>{
+      document.addEventListener("mouseup", () => {
         isDragging = false;
         this.isDraggingGlobal = false;
         nearestNeighborGraph.ignore = -1;
@@ -186,7 +215,9 @@ class GraphViewer {
         thought.classList.add("isActiveTab");
 
         thought.style.position = "absolute";
-        thought.style.transform = `translate(${x > 0.5 ? "calc(-100% + 0px)" : "19px"}, ${y > 0.5 ? "calc(-100% + 19px)" : "0px"})`;
+        thought.style.transform = `translate(${
+          x > 0.5 ? "calc(-100% + 0px)" : "19px"
+        }, ${y > 0.5 ? "calc(-100% + 19px)" : "0px"})`;
 
         point.append(thought);
         point.style.zIndex = "1000";
@@ -240,7 +271,6 @@ class GraphViewer {
       if (colorMatch && colorMatch.length > 0) {
         const lastColor = colorMatch[colorMatch.length - 1];
         const [r, g, b] = lastColor.match(/\d+/g);
-        console.log(r);
         if (themeEditor.state == "light") {
           return `#${parseInt(255 - (255 - r) / 2.5)
             .toString(16)
