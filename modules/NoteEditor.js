@@ -99,15 +99,24 @@ class NoteEditor {
     this.setActiveTab(newTab);
   }
 
-  setActiveTab(tab) {
+  //TODO: this was recently made to be async but other things weren't
+  // so I didn't change them. They didn't need to await it technically 
+  // but there might be a time in the future where I might need to color all the functions
+  // I just don't want to do that right now.
+  async setActiveTab(tab) {
     if (tab == this.currentTab) {
       return;
     }
     if (this.currentTab) {
       this.currentTab.deactivate();
+      if(this.currentTab.isCompleteing){
+        while(!this.currentTab.streamPaused) {
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+      }
     }
-    this.currentTab = tab;
 
+    this.currentTab = tab;
     tab.activate();
   }
 

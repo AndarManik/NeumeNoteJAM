@@ -1,6 +1,7 @@
 import notes from "./Notes.js";
+import noteEditor from "./NoteEditor.js";
 class EditorTab {
-  constructor(note, handleClick) {
+  constructor(note) {
     if (!note) {
       this.note = notes.newBlankNote();
       this.type = "new";
@@ -14,19 +15,21 @@ class EditorTab {
     this.isCompleteing = false;
     this.stopComplete = false;
     this.isActive = true;
+    this.streamPaused = false;
     this.textBeforeCursor = "";
     this.textAfterCursor = "";
-    this.icon = this.buildIcon(handleClick);
+    this.icon = this.buildIcon();
+    this.textArea = this.buildTextArea();
   }
 
-  buildIcon(handleClick) {
+  buildIcon() {
     const icon = document.createElement("div");
     icon.classList.add("editorTab");
     icon.classList.add("isActiveTab");
     icon.style.background = this.note.getColor();
 
     icon.addEventListener("click", (e) => {
-      handleClick(this);
+      noteEditor.setActiveTab(this);
     });
 
     document
@@ -37,6 +40,10 @@ class EditorTab {
       );
 
     return icon;
+  }
+
+  buildTextArea() {
+
   }
 
   activate() {
@@ -75,6 +82,7 @@ class EditorTab {
   }
 
   async streamTextToNote(textStream) {
+    this.streamPaused = false;
     const completeSection = document.getElementById("completeSection");
     for await (const text of textStream) {
       if(this.stopComplete) {
@@ -85,9 +93,13 @@ class EditorTab {
       if (this.isActive) {
         completeSection.value = this.currentText;
       }
+      else {
+        this.streamPaused = true;
+      }
     }
     this.isCompleteing = false;
     this.stopComplete = false;
+    this.streamPaused = false;
 
     if (this.isActive) {
       document
