@@ -31,10 +31,11 @@ class GraphViewer {
   }
 
   handleNoteChange() {
-    if (!notes.notes.length) {
+    if (!notes.notes.length && this.initialized) {
       return;
     }
     this.building = true;
+
     this.graphSection.remove();
     this.svg.remove();
     const svgNS = "http://www.w3.org/2000/svg";
