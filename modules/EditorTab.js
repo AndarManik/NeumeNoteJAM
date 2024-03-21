@@ -41,6 +41,7 @@ class EditorTab {
     return icon;
   }
 
+
   activate() {
     this.isActive = true;
     this.icon.classList.add("isActiveTab");

@@ -31,7 +31,7 @@ class GraphViewer {
   }
 
   handleNoteChange() {
-    if (!notes.notes.length && this.initialized) {
+    if (!notes.notes.length || !this.initialized) {
       return;
     }
     this.building = true;
