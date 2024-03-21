@@ -149,6 +149,7 @@ class GraphViewer {
       point.style.left = `calc(${x * 80 + 10}% - 11px)`;
       point.style.top = `calc(${y * 80 + 10}% - 11px)`;
       point.style.background = noteThought[index].getColor();
+      point.style.boxShadow = `-0px 0px 3px hsl(${noteThought[index].innerHue}, 100%, 50%)`;
 
       const thought = this.thought.buildGraphthought(
         noteThought[index],
@@ -273,11 +274,11 @@ class GraphViewer {
         const lastColor = colorMatch[colorMatch.length - 1];
         const [r, g, b] = lastColor.match(/\d+/g);
         if (themeEditor.state == "light") {
-          return `#${parseInt(255 - (255 - r) / 2.5)
+          return `#${parseInt(255 - (255 - r) / 3.5)
             .toString(16)
-            .padStart(2, "0")}${parseInt(255 - (255 - g) / 2.5)
+            .padStart(2, "0")}${parseInt(255 - (255 - g) / 3.5)
             .toString(16)
-            .padStart(2, "0")}${parseInt(255 - (255 - b) / 2.5)
+            .padStart(2, "0")}${parseInt(255 - (255 - b) / 3.5)
             .toString(16)
             .padStart(2, "0")}`;
         } else {

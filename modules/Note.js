@@ -16,7 +16,7 @@ class Note {
 
   getColor(){
     if(themeEditor.state == "light"){
-      return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 55%) 0%, hsl(${this.innerHue}, 85%, 55%) 100%)`;
+      return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 50%) 0%, hsl(${this.innerHue}, 85%, 50%) 100%)`;
     }
     else {
       return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 66%) 0%, hsl(${this.innerHue}, 85%, 66%) 100%)`;

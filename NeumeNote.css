@@ -376,6 +376,7 @@ textarea::selection {
   border: 1px solid var(--left);
   border-radius: 5px;
   padding: 1em;
+  z-index: 10;
 }
 
 .apiInputContainer a {
