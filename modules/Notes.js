@@ -51,6 +51,15 @@ class Notes {
     this.isSearching = false;
   }
 
+  searchEmbedding(embedding) {
+    this.notes.isSearching = true;
+    document.getElementById("searchSection").classList.add("animate");
+    const nearest = this.nearestNeighbor(embedding, 10);
+    document.getElementById("searchSection").classList.remove("animate");
+    chunkViewer.displayNearestSearch(nearest);
+    this.isSearching = false;
+  }
+
   loadNewData(data) {
     this.colorCounter = 0;
     this.notes = data.map((noteData) => {

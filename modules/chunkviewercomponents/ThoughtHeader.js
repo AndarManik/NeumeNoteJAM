@@ -36,7 +36,7 @@ class ThoughtHeader {
     searchButton.classList.add("thoughtButton");
     searchButton.append(iconReader.newIcon("search", this.iconSize));
     searchButton.addEventListener("click", (e) => {
-      notes.search(note.embeddings[index]);
+      notes.searchEmbedding(note.embeddings[index]);
     });
     searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
@@ -71,7 +71,7 @@ class ThoughtHeader {
     searchButton.classList.add("thoughtButton");
     searchButton.append(iconReader.newIcon("search", this.iconSize));
     searchButton.addEventListener("click", (e) => {
-      notes.search(note.embeddings[index]);
+      notes.searchEmbedding(note.embeddings[index]);
     });
     searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
@@ -108,7 +108,7 @@ class ThoughtHeader {
     searchButton.classList.add("thoughtButton");
     searchButton.append(iconReader.newIcon("search", this.iconSize));
     searchButton.addEventListener("click", (e) => {
-      notes.search(note.embeddings[index]);
+      notes.searchEmbedding(note.embeddings[index]);
     });
     searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
@@ -142,7 +142,7 @@ class ThoughtHeader {
     searchButton.classList.add("thoughtButton");
     searchButton.append(iconReader.newIcon("search", this.iconSize));
     searchButton.addEventListener("click", (e) => {
-      notes.search(note.embeddings[index]);
+      notes.searchEmbedding(note.embeddings[index]);
     });
     searchButton.setAttribute("title", "Search");
     thoughtHeader.appendChild(searchButton);
