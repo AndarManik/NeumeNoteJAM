@@ -19,7 +19,6 @@ class EditorTab {
     this.textBeforeCursor = "";
     this.textAfterCursor = "";
     this.icon = this.buildIcon();
-    this.textArea = this.buildTextArea();
   }
 
   buildIcon() {
@@ -40,10 +39,6 @@ class EditorTab {
       );
 
     return icon;
-  }
-
-  buildTextArea() {
-
   }
 
   activate() {
