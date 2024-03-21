@@ -83,7 +83,7 @@ class GraphViewer {
       }
 
       const timePromise = new Promise((resolve) => setTimeout(resolve, 0));
-      //console.time("onepass" + index);
+      console.time("onepass" + index);
       const startTime = performance.now();
 
       for (let i = 0; i < numberOfUpdates; i++) {
@@ -112,15 +112,16 @@ class GraphViewer {
         const singleUpdateTime = renderTime / this.fps;
         console.log(singleUpdateTime);
         if (singleUpdateTime < 1000 / this.fps - 1) {
-          numberOfUpdates++;
+          numberOfUpdates = Math.min(50, numberOfUpdates + 1);
         }
         if (singleUpdateTime > 1000 / this.fps + 1) {
           numberOfUpdates = Math.max(1, numberOfUpdates - 1);
         }
+        renderTime = 0;
       }
 
-      //console.log(numberOfUpdates);
-      //console.timeEnd("onepass" + index++);
+      console.log(numberOfUpdates);
+      console.timeEnd("onepass" + index++);
       await timePromise;
     }
   }
@@ -149,7 +150,7 @@ class GraphViewer {
       point.style.left = `calc(${x * 80 + 10}% - 11px)`;
       point.style.top = `calc(${y * 80 + 10}% - 11px)`;
       point.style.background = noteThought[index].getColor();
-      point.style.boxShadow = `-0px 0px 3px hsl(${noteThought[index].innerHue}, 100%, 50%)`;
+      point.style.boxShadow = `-0px 0px 50px hsl(${noteThought[index].innerHue}, 100%, 50%, 0.25)`;
 
       const thought = this.thought.buildGraphthought(
         noteThought[index],

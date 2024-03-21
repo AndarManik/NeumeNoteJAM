@@ -177,7 +177,12 @@ class NearestNeighborGraph {
 
     this.embeddings.forEach(({ embedding }, index) => {
       const previousIndex = previousEmbeddings.indexOf(embedding);
-      if(previousIndex == -1) {
+      if (previousIndex == -1) {
+        this.scaledPositions[index] = [Math.random() / 1.5 + 1/1.5/2, Math.random() / 1.5 + 1/1.5/2];
+        this.positions[index][0] =
+          this.scaledPositions[index][0] / this.scale[0] + this.min[0];
+        this.positions[index][1] =
+          this.scaledPositions[index][1] / this.scale[1] + this.min[1];
         return;
       }
       this.positions[index] = previousPositions[previousIndex];
