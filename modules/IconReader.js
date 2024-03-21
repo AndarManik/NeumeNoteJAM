@@ -17,7 +17,7 @@ class IconReader {
       this.folderPath = "/NeumeNoteJAM/Icons"
     }
 
-
+    this.logo = await this.fetchSvg("logo.svg");
     this.pencil = await this.fetchSvg("pencil-r.svg");
     this.refresh = await this.fetchSvg("refresh-r.svg");
     this.trash = await this.fetchSvg("trash-r.svg");
