@@ -162,7 +162,7 @@ class SettingsData {
 
     const text = document.createElement("div");
     text.classList.add("settingsText");
-    text.innerText = `Press to download all of your notes.`;
+    text.innerText = `Press to download all of your notes. Notes.zip contains each note as a txt as well as a data.txt to reupload your data.`;
     info.appendChild(text);
 
     const button = document.createElement("button");
@@ -191,7 +191,7 @@ class SettingsData {
 
     const text = document.createElement("div");
     text.classList.add("settingsText");
-    text.innerText = `Drag and drop your files here to load your notes.`;
+    text.innerText = `Drag and drop your data.txt files in to the box. The data.txt is obtained from decompressing the downloaded zip.`;
     info.appendChild(text);
 
     const dropArea = document.createElement("div");
