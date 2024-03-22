@@ -4,7 +4,7 @@ class NearestNeighborGraph {
     this.n = n;
     this.ignore = -1;
     this.restLength = 100;
-    
+
     this.embeddings = [];
     notes.notes.forEach((note) => {
       note.embeddings.forEach((embedding) => {
@@ -102,54 +102,59 @@ class NearestNeighborGraph {
   }
 
   getForces() {
-    const forces = this.positions.map(() => [0, 0]);
-    this.positions.forEach((left, leftIndex) => {
-      const directions = [];
-      const scales = [];
-      this.positions.forEach((right, rightIndex) => {
-        if (leftIndex <= rightIndex) {
-          return;
-        }
-
+    const forces = [];
+    const directions = [];
+    const scales = [];
+    for (let i = 0; i < this.positions.length; i++) {
+      forces[i] = [0, 0];
+      directions[i] = [];
+      scales[i] = [];
+    }
+    for (let leftIndex = 0; leftIndex < this.positions.length; leftIndex++) {
+      for (let rightIndex = 0; rightIndex < leftIndex; rightIndex++) {
+        const left = this.positions[leftIndex];
+        const right = this.positions[rightIndex];
         const xDiff = right[0] - left[0];
         const yDiff = right[1] - left[1];
 
         if (xDiff == 0 && yDiff == 0) {
-          return;
+          continue;
         }
 
         const distanceSquared = xDiff ** 2 + yDiff ** 2;
         const distance = Math.sqrt(distanceSquared);
         const direction = [xDiff / distance, yDiff / distance];
         const scale = this.restLength / distanceSquared;
-        directions[rightIndex] = direction;
-        scales[rightIndex] = scale;
+        directions[leftIndex][rightIndex] = direction;
+        scales[leftIndex][rightIndex] = scale;
 
-        if(distance > 500) {
-          return;
+        if (distance > 500) {
+          continue;
         }
         const forceX = direction[0] * scale;
         const forceY = direction[1] * scale;
-        
+
         forces[leftIndex][0] -= forceX;
         forces[leftIndex][1] -= forceY;
         forces[rightIndex][0] += forceX;
         forces[rightIndex][1] += forceY;
-      });
+      }
+    }
 
-      this.nearestMatrix[leftIndex].forEach((rightIndex) => {
-        if(leftIndex <= rightIndex || scales[rightIndex] < 1 / 10000) {
-          return;
+    for (let leftIndex = 0; leftIndex < this.positions.length; leftIndex++) {
+      for (const rightIndex of this.nearestMatrix[leftIndex]) {
+        if (leftIndex <= rightIndex || (scales[leftIndex] && scales[leftIndex][rightIndex] < 1 / 10000)) {
+          continue;
         }
 
-        const forceXAtt = directions[rightIndex][0] / scales[rightIndex];
-        const forceYAtt = directions[rightIndex][1] / scales[rightIndex];
+        const forceXAtt = directions[leftIndex][rightIndex][0] / scales[leftIndex][rightIndex];
+        const forceYAtt = directions[leftIndex][rightIndex][1] / scales[leftIndex][rightIndex];
         forces[leftIndex][0] += forceXAtt;
         forces[leftIndex][1] += forceYAtt;
         forces[rightIndex][0] -= forceXAtt;
         forces[rightIndex][1] -= forceYAtt;
-      });
-    });
+      }
+    }
     return forces;
   }
 
@@ -180,8 +185,11 @@ class NearestNeighborGraph {
     this.embeddings.forEach(({ embedding }, index) => {
       const previousIndex = previousEmbeddings.indexOf(embedding);
       if (previousIndex == -1) {
-        if(this.scale){
-          this.scaledPositions[index] = [Math.random() / 1.5 + 1/1.5/2, Math.random() / 1.5 + 1/1.5/2];
+        if (this.scale) {
+          this.scaledPositions[index] = [
+            Math.random() / 1.5 + 1 / 1.5 / 2,
+            Math.random() / 1.5 + 1 / 1.5 / 2,
+          ];
 
           this.positions[index][0] =
             this.scaledPositions[index][0] / this.scale[0] + this.min[0];
