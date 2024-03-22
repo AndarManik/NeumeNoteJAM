@@ -5,7 +5,7 @@ class HeaderUtility {
         const logo = document.createElement("div");
         logo.append(iconReader.newIcon("logo", 22));
         logo.style.margin = "7px";
-        document.getElementById("header").append(logo);
+        //document.getElementById("header").append(logo);
 
 
         const settings = document.createElement("div");

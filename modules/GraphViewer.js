@@ -82,13 +82,16 @@ class GraphViewer {
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
 
-      const timePromise = new Promise((resolve) => setTimeout(resolve, 0));
+      const timePromise = new Promise((resolve) => setTimeout(resolve, 16));
       console.time("onepass" + index);
       const startTime = performance.now();
 
+      console.time("updateTime");
       for (let i = 0; i < numberOfUpdates; i++) {
-        nearestNeighborGraph.update(0.02);
+        nearestNeighborGraph.update(0.03);
       }
+      console.timeEnd("updateTime");
+
 
       this.graphSection.childNodes.forEach((child, childIndex) => {
         const x = nearestNeighborGraph.scaledPositions[childIndex][0];
