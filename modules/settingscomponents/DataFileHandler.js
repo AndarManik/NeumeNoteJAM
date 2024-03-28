@@ -57,7 +57,7 @@ class DataFileHandler {
       console.log(data);
       notes.loadNewData(data.notes);
       themeEditor.setTheme(data.theme);
-      chunkViewer.initialize();
+      chunkViewer.reInitialize();
       await notesDatabase.saveNotesData(notes);
       await notesDatabase.saveThemeData(themeEditor.getTheme());
       graphViewer.handleNoteChange();

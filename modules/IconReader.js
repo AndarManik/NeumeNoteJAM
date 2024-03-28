@@ -35,7 +35,8 @@ class IconReader {
     this.sitemap = await this.fetchSvg("sitemap-r.svg");
     this.download = await this.fetchSvg("download-r.svg");
     this.upload = await this.fetchSvg("upload-r.svg");
-
+    this.gear = await this.fetchSvg("gear-alt-r.svg");
+    this.cloud = await this.fetchSvg("cloud-r.svg");
   }
   
 

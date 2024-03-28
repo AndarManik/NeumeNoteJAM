@@ -54,6 +54,29 @@ class GraphViewer {
     }
   }
 
+  handleStyleChange() {
+    if (!notes.notes.length || !this.initialized) {
+      return;
+    }
+    this.building = true;
+
+    this.graphSection.remove();
+    this.svg.remove();
+    const svgNS = "http://www.w3.org/2000/svg";
+    this.svg = document.createElementNS(svgNS, "svg");
+    this.svg.setAttribute(
+      "style",
+      "position: absolute; top: 0; left: 0; width: 100svw; height: 100svh;"
+    );
+    this.buildGraph();
+    this.building = false;
+
+    if (this.state == "graph") {
+      document.getElementById("rightSection").append(this.graphSection);
+      document.body.appendChild(this.svg);
+    }
+  }
+
   async displayGraph() {
     if (this.state == "graph" || !notes.notes.length) {
       return;
@@ -77,10 +100,23 @@ class GraphViewer {
     var numberOfUpdates = 1;
     var renderTime = 0;
 
+    for (let index = 0; index < 25; index++) {
+      nearestNeighborGraph.update(0.005);
+    }
+
+    const graphSectionBounds = document
+        .getElementById("graphSection")
+        .getBoundingClientRect();
+
+      const left = graphSectionBounds.left;
+      const top = graphSectionBounds.top;
+      const width = graphSectionBounds.width / 100;
+      const height = graphSectionBounds.height / 100;
+
     while (this.state == "graph") {
-      while (this.building) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
+      //while (this.building) {
+        //await new Promise((resolve) => setTimeout(resolve, 1));
+//}
 
       const timePromise = new Promise((resolve) => setTimeout(resolve, 16));
       console.time("onepass" + index);
@@ -88,23 +124,23 @@ class GraphViewer {
 
       console.time("updateTime");
       for (let i = 0; i < numberOfUpdates; i++) {
-        nearestNeighborGraph.update(0.03);
+        nearestNeighborGraph.update(0.02);
       }
       console.timeEnd("updateTime");
 
+      
+
+      const bounds = [];
 
       this.graphSection.childNodes.forEach((child, childIndex) => {
         const x = nearestNeighborGraph.scaledPositions[childIndex][0];
         const y = nearestNeighborGraph.scaledPositions[childIndex][1];
 
-        child.style.left = `calc(${x * 80 + 10}% - 11px)`;
-        child.style.top = `calc(${y * 80 + 10}% - 11px)`;
-      });
+        const nodeLeft = left + (x * 80 + 10) * width + 11;
+        const nodeTop = top + (y * 80 + 10) * height + 11;
 
-      const bounds = [];
-
-      this.graphSection.childNodes.forEach((child, childIndex) => {
-        bounds[childIndex] = child.getBoundingClientRect();
+        child.style.transform = `translate(${nodeLeft}px, ${nodeTop}px)`;
+        bounds.push({ nodeLeft, nodeTop });
       });
 
       this.lines.forEach((line) => line(bounds));
@@ -150,10 +186,10 @@ class GraphViewer {
       const x = position[0];
       const y = position[1];
 
-      point.style.left = `calc(${x * 80 + 10}% - 11px)`;
-      point.style.top = `calc(${y * 80 + 10}% - 11px)`;
+      point.style.left = `0`;
+      point.style.top = `0`;
       point.style.background = noteThought[index].getColor();
-      point.style.boxShadow = `-0px 0px 50px hsl(${noteThought[index].innerHue}, 100%, 50%, 0.25)`;
+      point.style.boxShadow = `-0px 0px 50px hsl(${noteThought[index].innerHue}, 100%, 50%, 0.33)`;
 
       const thought = this.thought.buildGraphthought(
         noteThought[index],
@@ -247,7 +283,7 @@ class GraphViewer {
 
     this.lines = [];
 
-    nearestNeighborGraph.nearestMatrix.forEach((nearest, rightIndex) => {
+    nearestNeighborGraph.adjacencyMatrix.forEach((nearest, rightIndex) => {
       nearest.forEach((leftIndex, index) => {
         if (leftIndex < rightIndex) {
           return;
@@ -335,7 +371,7 @@ class GraphViewer {
       const elem1 = elementBounds[index1];
       const elem2 = elementBounds[index2];
 
-      const bool = elem1.left < elem2.left;
+      const bool = elem1.nodeLeft < elem2.nodeLeft;
 
       if (bool != left2right) {
         left2right = bool;
@@ -347,10 +383,10 @@ class GraphViewer {
           .setAttribute("stop-color", bool ? color2 : color1);
       }
 
-      line.setAttribute("x1", elem1.left + elem1.width / 2);
-      line.setAttribute("y1", elem1.top + elem1.height / 2);
-      line.setAttribute("x2", elem2.left + elem2.width / 2);
-      line.setAttribute("y2", elem2.top + elem2.height / 2);
+      line.setAttribute("x1", elem1.nodeLeft + 11);
+      line.setAttribute("y1", elem1.nodeTop + 11);
+      line.setAttribute("x2", elem2.nodeLeft + 11);
+      line.setAttribute("y2", elem2.nodeTop + 11);
     }
     return updateLine;
   }

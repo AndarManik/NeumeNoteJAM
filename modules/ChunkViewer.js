@@ -5,11 +5,16 @@ class ChunkViewer {
   constructor() {
     this.index = -1;
     this.history = [];
-
   }
 
   initialize() {
     this.viewHistory = new ViewHistory();
+    this.displayAllNotes();
+  }
+
+  reInitialize() {
+    this.index = -1;
+    this.history = [];
     this.displayAllNotes();
   }
 

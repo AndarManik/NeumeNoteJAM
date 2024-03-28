@@ -1,15 +1,18 @@
 import notes from "./Notes.js";
 import noteEditor from "./NoteEditor.js";
+import openAI from "./OpenAI.js";
+import contextBuilder from "./ContextBuilder.js";
+
 class EditorTab {
   constructor(note) {
-    if (!note) {
-      this.note = notes.newBlankNote();
-      this.type = "new";
-      this.currentText = "";
-    } else {
+    if (note) {
       this.note = note;
       this.type = "old";
       this.currentText = note.text;
+    } else {
+      this.note = notes.newBlankNote();
+      this.type = "new";
+      this.currentText = "";
     }
 
     this.isCompleteing = false;
@@ -18,116 +21,165 @@ class EditorTab {
     this.streamPaused = false;
     this.textBeforeCursor = "";
     this.textAfterCursor = "";
-    this.icon = this.buildIcon();
+
+    this.buildIcon();
+    this.buildEditor();
   }
 
   buildIcon() {
-    const icon = document.createElement("div");
-    icon.classList.add("editorTab");
-    icon.classList.add("isActiveTab");
-    icon.style.background = this.note.getColor();
+    this.icon = document.createElement("div");
+    this.icon.classList.add("editorTab");
+    this.icon.classList.add("isActiveTab");
+    this.icon.style.background = this.note.getColor();
 
-    icon.addEventListener("click", (e) => {
+    this.icon.addEventListener("click", (e) => {
       noteEditor.setActiveTab(this);
     });
 
     document
       .getElementById("rightHeader")
       .insertBefore(
-        icon,
+        this.icon,
         document.getElementById("rightHeader").lastElementChild
       );
-
-    return icon;
   }
 
+  buildEditor() {
+    this.containerDiv = document.createElement("div");
+    this.containerDiv.classList.add("editorContainer");
+    this.editorDiv = document.createElement("textarea");
+    this.editorDiv.id = "completeSection";
+    this.editorDiv.placeholder =
+      "New note";
+
+    this.containerDiv.append(this.editorDiv);
+
+    this.activate();
+
+    const toolbar = [
+      "bold",
+      "italic",
+      "heading",
+      "|",
+      "quote",
+      "unordered-list",
+      "ordered-list",
+      "|",
+      "code",
+      "link",
+      "image",
+      "|",
+      "preview",
+      "side-by-side",
+      "fullscreen",
+      "|",
+      {
+        name: "smartComplete",
+        action: this.complete.bind(this),
+        className: "fa-solid fa-wand-magic-sparkles", // Using Font Awesome icon here
+        title: "Smart complete (Shift-Enter)",
+      },
+      {
+        name: "save",
+        action: this.save.bind(this),
+        className: "fa-solid fa-floppy-disk", // Using Font Awesome icon here
+        title: "Save note (Shift-S)",
+      },
+      "guide",
+    ];
+
+    this.simplemde = new SimpleMDE({
+      toolbar,
+      element: this.editorDiv,
+      styleSelectedText: false,
+      tabSize: 4,
+      spellChecker: false,
+      renderingConfig: {
+        codeSyntaxHighlighting: true,
+      },
+    });
+
+    this.simplemde.codemirror.setValue(this.currentText);
+
+    this.simplemde.codemirror
+      .getInputField()
+      .addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.keyCode == 83) {
+          event.preventDefault();
+          this.save(this.simplemde);
+        }
+        if (event.shiftKey && event.key === 'Enter') {
+          event.preventDefault();
+          this.complete(this.simplemde);
+        }
+      });
+  }
 
   activate() {
     this.isActive = true;
     this.icon.classList.add("isActiveTab");
-    document.getElementById("completeSection").value = this.currentText;
-    if (this.isCompleteing) {
-      this.note.addEditorAnimation("completeSection");
-    } else {
-      document
-        .getElementById("completeSection")
-        .classList.remove("editorAnimation");
-    }
+    document.getElementById("rightSectionBody").append(this.containerDiv);
   }
 
   deactivate() {
     this.isActive = false;
     this.icon.classList.remove("isActiveTab");
-    if (!this.isCompleteing) {
-      this.currentText = document.getElementById("completeSection").value;
+    document.getElementById("rightSectionBody").innerHTML = "";
+  }
+
+  async complete(editor) {
+    this.note.addEditorAnimation(this.containerDiv.children[2]);
+    this.note.addEditorAnimation(this.containerDiv.children[1]);
+
+    const cm = editor.codemirror;
+    const docContent = cm.getValue();
+    const cursorPosition = cm.getCursor();
+    const index = cm.indexFromPos(cursorPosition);
+    const smartTaged =
+      docContent.slice(0, index) +
+      "[[SmartComplete]]" +
+      docContent.slice(index);
+    const stream = await openAI.smartComplete(smartTaged, contextBuilder.getContextPrompt());
+
+    var startPoint = cm.getCursor("start");
+
+    for await (let text of stream) {
+      cm.setCursor(startPoint);
+      cm.replaceRange(text, startPoint);
+      startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
+
     }
+
+    this.containerDiv.children[2].classList.remove("editorAnimation");
+    this.containerDiv.children[1].classList.remove("editorAnimation");
   }
+  
+  async save(editor) {
+    const cm = editor.codemirror;
+    const text = cm.getValue();
 
-  getTextWithSmartTag() {
-    this.isCompleteing = true;
-    this.stopComplete = false;
-
-    this.note.addEditorAnimation("completeSection");
-
-    const { value: text, selectionStart: cursorPosition } =
-      document.getElementById("completeSection");
-    this.textBeforeCursor = text.substring(0, cursorPosition);
-    this.textAfterCursor = text.substring(cursorPosition);
-
-    return `User's Message: "${this.textBeforeCursor}[[SmartComplete]]${this.textAfterCursor}"`;
-  }
-
-  async streamTextToNote(textStream) {
-    this.streamPaused = false;
-    const completeSection = document.getElementById("completeSection");
-    for await (const text of textStream) {
-      if(this.stopComplete) {
-        break;
-      }
-      this.textBeforeCursor += text;
-      this.currentText = this.textBeforeCursor + this.textAfterCursor;
-      if (this.isActive) {
-        completeSection.value = this.currentText;
-      }
-      else {
-        this.streamPaused = true;
-      }
+    if(!text) {
+      return;
     }
-    this.isCompleteing = false;
-    this.stopComplete = false;
-    this.streamPaused = false;
 
-    if (this.isActive) {
-      document
-        .getElementById("completeSection")
-        .classList.remove("editorAnimation");
-      document
-        .getElementById("completeSection")
-        .setSelectionRange(
-          this.textBeforeCursor.length,
-          this.textBeforeCursor.length
-        );
+    this.note.addRechunkAnimation("searchSection");
+
+
+    this.deactivate();
+    noteEditor.removeTab(this);
+
+    if (this.type == "new") {
+      await this.note.chunkText(text);
+      await notes.finishedAdding();
+      notes.addNote(this.note);
+
+    } else {
+      await this.note.reChunkText(text);
+      await notes.finishedAdding();
+      notes.updateNote(this.note);
     }
-  }
 
-  insertTab() {
-    const { value: text, selectionStart: cursorPosition } =
-      document.getElementById("completeSection");
-    this.textBeforeCursor = text.substring(0, cursorPosition);
-    this.textAfterCursor = text.substring(cursorPosition);
-    document.getElementById(
-      "completeSection"
-    ).value = `${this.textBeforeCursor}    ${this.textAfterCursor}`;
-    document
-      .getElementById("completeSection")
-      .setSelectionRange(cursorPosition + 4, cursorPosition + 4);
-  }
-
-  streamFailed() {
-    this.isCompleteing = false;
-    document
-      .getElementById("completeSection")
-      .classList.remove("editorAnimation");
+    
   }
 }
 export default EditorTab;

@@ -16,7 +16,7 @@ class Note {
 
   getColor(){
     if(themeEditor.state == "light"){
-      return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 50%) 0%, hsl(${this.innerHue}, 85%, 50%) 100%)`;
+      return `radial-gradient(circle, hsl(${this.outerHue}, 100%, 66%) 0%, hsl(${this.innerHue}, 100%, 66%) 100%)`;
     }
     else {
       return `radial-gradient(circle, hsl(${this.outerHue}, 85%, 66%) 0%, hsl(${this.innerHue}, 85%, 66%) 100%)`;
@@ -92,7 +92,7 @@ class Note {
     document.getElementById(elementId).classList.add('rechunkAnimation');
   }
 
-  addEditorAnimation(elementId) {
+  addEditorAnimation(element) {
     const editorColor = getComputedStyle(document.documentElement).getPropertyValue('--editor');
     var [hue, saturation, lightness] = editorColor.match(/\d+/g);
     saturation = Math.max(saturation, 5);
@@ -105,18 +105,18 @@ class Note {
   
       @keyframes editorFade {
         0% {
-          background-color: hsl(${this.outerHue}, ${saturation}%, ${lightness}%);
+          background: hsl(${this.outerHue}, ${saturation}%, ${lightness}%);
         }
         50% {
-          background-color: hsl(${this.innerHue}, ${saturation}%, ${lightness}%);
+          background: hsl(${this.innerHue}, ${saturation}%, ${lightness}%);
         }
         100% {
-          background-color: hsl(${this.outerHue}, ${saturation}%, ${lightness}%);
+          background: hsl(${this.outerHue}, ${saturation}%, ${lightness}%);
         }
       }
     `;
     document.head.appendChild(style);
-    document.getElementById(elementId).classList.add('editorAnimation');
+    element.classList.add('editorAnimation');
   }
 }
 

@@ -62,7 +62,7 @@ body {
   background-color: var(--editor);
   display: flex;
   align-items: center;
-  height: 28px;
+  height:31px;
   width: 100%;
   overflow-x: scroll;
   scrollbar-width: none; /* Firefox */
@@ -118,18 +118,21 @@ body {
 .notebody {
   display: flex;
   flex-direction: row;
-  height: calc(100% - 37px);
+  height: 100%;
   width: 100%;
-  border-top: 1px solid var(--left);
 }
 
 #leftHeader {
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   width: 42px;
   border-right: 1px solid var(--left);
   background-color: var(--left);
   z-index: 1;
+  position:relatve;
 }
+
 
 #leftSection {
   background-color: var(--search);
@@ -141,15 +144,15 @@ body {
   box-sizing: border-box;
   border-right: 1px solid var(--left);
   z-index: 1;
-
 }
 
 #rightSectionBody {
-  display: flex;
-  flex-direction: row-reverse;
-  height: 100%;
+  display:flex;
+  flex-direction: column;
+  height: calc(100% - 31px);
   width: 100%;
   box-sizing: border-box;
+  flex-grow: 0;
 }
 
 #rightSection {
@@ -165,7 +168,7 @@ textarea {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 16px;
+  font-size: 14px;
   resize: none;
   border: none;
   background-color: var(--editor);
@@ -189,11 +192,19 @@ textarea::selection {
   background-color: var(--highlight);
 }
 
-
+.editorContainer {
+  width:100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  size: absolute;
+}
 
 #completeSection {
   padding: 1em;
   width: 100%;
+  height: 100%;
 }
 
 #middleSection{
@@ -204,7 +215,7 @@ textarea::selection {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text);
   text-decoration-color: var(--text);
 }
@@ -224,7 +235,7 @@ textarea::selection {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text);
   text-decoration-color: var(--text);
   overflow-y: scroll;
@@ -304,7 +315,7 @@ textarea::selection {
   font-weight: 500;
   word-spacing: 0.2em;
   line-height: 1.4em;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text);
   border-radius: 10px;
 }
@@ -581,7 +592,6 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 #graphSection {
-  position: relative;
   height: 100%;
   width: 100%;
   background-color: var(--editor);

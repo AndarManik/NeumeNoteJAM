@@ -3,7 +3,6 @@ import openAI from "./modules/OpenAI.js";
 import noteEditor from "./modules/NoteEditor.js";
 import notesDatabase from "./modules/NotesDatabase.js";
 import contextBuilder from "./modules/ContextBuilder.js";
-import headerUtility from "./modules/HeaderUtility.js";
 import chunkViewer from "./modules/ChunkViewer.js";
 import iconReader from "./modules/IconReader.js";
 import leftUtility from "./modules/LeftUtility.js";
@@ -22,7 +21,6 @@ import graphViewer from "./modules/GraphViewer.js";
   await Promise.all([openAI.initialize(), notes.initialize()]);
 
   noteEditor.initialize();
-  headerUtility.initialize();
   leftUtility.initialize();
   chunkViewer.initialize();
   contextBuilder.initialize();

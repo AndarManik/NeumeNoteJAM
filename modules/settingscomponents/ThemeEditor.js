@@ -1,4 +1,6 @@
+import graphViewer from "../GraphViewer.js";
 import notesDatabase from "../NotesDatabase.js";
+import setEditorStyle from "../SimpleMDEStyle.js";
 class ThemeEditor {
   async initialize() {
     const themes = await notesDatabase.getTheme();
@@ -45,6 +47,8 @@ class ThemeEditor {
         `hsl(${hsl[1]}, ${saturation}%, ${lightness}%)`
       );
     });
+    setEditorStyle();
+    graphViewer.handleStyleChange();
   }
 
   setDarkMode() {
@@ -70,6 +74,8 @@ class ThemeEditor {
         `hsl(${hsl[1]}, ${saturation}%, ${lightness}%)`
       );
     });
+    setEditorStyle();
+    graphViewer.handleStyleChange();
   }
 
   setColor(hue) {
@@ -89,6 +95,7 @@ class ThemeEditor {
       const hsl = style.match(/hsl\((\d+), (\d+)%, (\d+)%\)/);
       root.style.setProperty(property, `hsl(${hue}, ${hsl[2]}%, ${hsl[3]}%)`);
     });
+    setEditorStyle();
   }
 
   setGreyScale(){
@@ -107,6 +114,7 @@ class ThemeEditor {
       const hsl = style.match(/hsl\((\d+), (\d+)%, (\d+)%\)/);
       root.style.setProperty(property, `hsl(${hsl[1]}, ${0}%, ${hsl[3]}%)`);
     });
+    setEditorStyle();
   }
 
   setColorScale(){
@@ -117,10 +125,12 @@ class ThemeEditor {
     else{
         this.setDarkMode();
     }
+    setEditorStyle();
   }
 
   getTheme() {
     const theme = {hue: this.hue, state: this.state, monochrome: this.monochrome};
+    
     return theme;
   }
 
@@ -134,6 +144,8 @@ class ThemeEditor {
     else {
       this.setColor(data.hue);
     }
+    setEditorStyle();
+
   }
 }
 

@@ -47,7 +47,7 @@ class SearchHeaderButton {
   buildRechunkButton(note) {
     const reChunkButton = document.createElement("div");
     reChunkButton.classList.add("searchSectionButton");
-    reChunkButton.append(iconReader.newIcon("refresh", this.iconSize));
+    reChunkButton.append(iconReader.newIcon("sitemap", this.iconSize));
     reChunkButton.addEventListener("click", async (e) => {
       note.addRechunkAnimation("searchSection");
       await note.chunkText(note.text);
