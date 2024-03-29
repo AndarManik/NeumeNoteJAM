@@ -147,7 +147,6 @@ class EditorTab {
       cm.setCursor(startPoint);
       cm.replaceRange(text, startPoint);
       startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
-
     }
 
     this.containerDiv.children[2].classList.remove("editorAnimation");
