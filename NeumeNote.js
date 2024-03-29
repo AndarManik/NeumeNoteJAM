@@ -28,8 +28,6 @@ import graphViewer from "./modules/GraphViewer.js";
 
   window.addEventListener("beforeunload", async (e) => {
     await notes.finishedProcessing();
-    await notesDatabase.saveNotesData(notes);
-    await notesDatabase.saveAPIKey(openAI.apiKey);
-    await notesDatabase.saveThemeData(themeEditor.getTheme());
+    await Promise.all([notesDatabase.saveNotesData(notes),notesDatabase.saveAPIKey(openAI.apiKey),notesDatabase.saveThemeData(themeEditor.getTheme())])
   });
 })();
