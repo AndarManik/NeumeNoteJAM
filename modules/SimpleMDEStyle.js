@@ -71,7 +71,7 @@ function setEditorStyle() {
     }
     .cm-strong {
       color: ${themeEditor.getBoldColor()};
-    }}
+    }
 
 .editor-preview pre,.editor-preview-side pre {
   background: ${rootStyles.getPropertyValue("--editor")};
