@@ -62,6 +62,17 @@ function setEditorStyle() {
         font-size: 14px;
 
     }
+
+    .editor-preview strong{
+      color: ${themeEditor.getBoldColor()};
+    }
+    .editor-preview-side strong{
+      color: ${themeEditor.getBoldColor()};
+    }
+    .cm-strong {
+      color: ${themeEditor.getBoldColor()};
+    }}
+
 .editor-preview pre,.editor-preview-side pre {
   background: ${rootStyles.getPropertyValue("--editor")};
 

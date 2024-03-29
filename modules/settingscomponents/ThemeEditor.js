@@ -147,6 +147,13 @@ class ThemeEditor {
     setEditorStyle();
 
   }
+
+  getBoldColor() {
+    const root = document.documentElement;
+    const style = getComputedStyle(root).getPropertyValue("--text");
+    const hsl = style.match(/hsl\((\d+), (\d+)%, (\d+)%\)/);
+    return `hsl(${this.hue}, ${100}%, ${hsl[3] - (this.state == "light") ? 20 : 0}%)`
+  }
 }
 
 const themeEditor = new ThemeEditor();
