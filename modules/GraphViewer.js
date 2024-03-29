@@ -136,8 +136,8 @@ class GraphViewer {
         const x = nearestNeighborGraph.scaledPositions[childIndex][0];
         const y = nearestNeighborGraph.scaledPositions[childIndex][1];
 
-        const nodeLeft = left + (x * 80 + 10) * width + 11;
-        const nodeTop = top + (y * 80 + 10) * height + 11;
+        const nodeLeft = left + (x * 80 + 10) * width - 11;
+        const nodeTop = top + (y * 80 + 10) * height - 11;
 
         child.style.transform = `translate(${nodeLeft}px, ${nodeTop}px)`;
         bounds.push({ nodeLeft, nodeTop });
@@ -204,7 +204,7 @@ class GraphViewer {
 
       const calculatePercentagePosition = (event) => {
         const bounds = this.graphSection.getBoundingClientRect();
-        const x = event.pageX - bounds.left - window.scrollX;
+        const x = event.pageX - bounds.left - window.scrollX ;
         const y = event.pageY - bounds.top - window.scrollY;
         const percentageX = (x / bounds.width) * 100;
         const percentageY = (y / bounds.height) * 100;
