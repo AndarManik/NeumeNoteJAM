@@ -6,8 +6,8 @@ class GraphViewer {
   constructor() {
     this.state = "editor";
     this.thought = new Thought({});
-    this.n = 6;
-    this.fps = 60;
+    this.n = 7;
+    this.fps = 45;
     this.initialized = false;
   }
 
@@ -100,25 +100,22 @@ class GraphViewer {
     var numberOfUpdates = 1;
     var renderTime = 0;
 
-    for (let index = 0; index < 25; index++) {
-      nearestNeighborGraph.update(0.005);
-    }
-
     const graphSectionBounds = document
-        .getElementById("graphSection")
-        .getBoundingClientRect();
+      .getElementById("graphSection")
+      .getBoundingClientRect();
 
-      const left = graphSectionBounds.left;
-      const top = graphSectionBounds.top;
-      const width = graphSectionBounds.width / 100;
-      const height = graphSectionBounds.height / 100;
+    var left = graphSectionBounds.left;
+    var top = graphSectionBounds.top;
+    var width = graphSectionBounds.width / 100;
+    var height = graphSectionBounds.height / 100;
 
     while (this.state == "graph") {
       //while (this.building) {
-        //await new Promise((resolve) => setTimeout(resolve, 1));
-//}
-
-      const timePromise = new Promise((resolve) => setTimeout(resolve, 16));
+      //await new Promise((resolve) => setTimeout(resolve, 1));
+      //}
+      const timePromise = new Promise((resolve) =>
+        setTimeout(resolve, 1000 / this.fps)
+      );
       console.time("onepass" + index);
       const startTime = performance.now();
 
@@ -127,8 +124,6 @@ class GraphViewer {
         nearestNeighborGraph.update(0.02);
       }
       console.timeEnd("updateTime");
-
-      
 
       const bounds = [];
 
@@ -157,6 +152,17 @@ class GraphViewer {
           numberOfUpdates = Math.max(1, numberOfUpdates - 1);
         }
         renderTime = 0;
+      }
+
+      if (index % (this.fps / 4) == this.fps / 4 - 1) {
+        const graphSectionBounds = document
+          .getElementById("graphSection")
+          .getBoundingClientRect();
+
+        left = graphSectionBounds.left;
+        top = graphSectionBounds.top;
+        width = graphSectionBounds.width / 100;
+        height = graphSectionBounds.height / 100;
       }
 
       console.log(numberOfUpdates);
@@ -204,7 +210,7 @@ class GraphViewer {
 
       const calculatePercentagePosition = (event) => {
         const bounds = this.graphSection.getBoundingClientRect();
-        const x = event.pageX - bounds.left - window.scrollX ;
+        const x = event.pageX - bounds.left - window.scrollX;
         const y = event.pageY - bounds.top - window.scrollY;
         const percentageX = (x / bounds.width) * 100;
         const percentageY = (y / bounds.height) * 100;

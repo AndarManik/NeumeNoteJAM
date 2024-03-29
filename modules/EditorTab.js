@@ -129,7 +129,7 @@ class EditorTab {
 
   async complete(editor) {
     this.note.addEditorAnimation(this.containerDiv.children[2]);
-    this.note.addEditorAnimation(this.containerDiv.children[1]);
+    //this.note.addEditorAnimation(this.containerDiv.children[1]);
 
     const cm = editor.codemirror;
     const docContent = cm.getValue();
@@ -150,7 +150,7 @@ class EditorTab {
     }
 
     this.containerDiv.children[2].classList.remove("editorAnimation");
-    this.containerDiv.children[1].classList.remove("editorAnimation");
+    //this.containerDiv.children[1].classList.remove("editorAnimation");
   }
   
   async save(editor) {
