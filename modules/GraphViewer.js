@@ -6,8 +6,8 @@ class GraphViewer {
   constructor() {
     this.state = "editor";
     this.thought = new Thought({});
-    this.n = 7;
-    this.fps = 45;
+    this.n = 5;
+    this.fps = 25;
     this.initialized = false;
   }
 
@@ -233,10 +233,10 @@ class GraphViewer {
       document.addEventListener("mousemove", (event) => {
         if (isDragging) {
           var { percentageX, percentageY } = calculatePercentagePosition(event);
-          if (percentageX < 10) percentageX = 10;
-          if (percentageX > 90) percentageX = 90;
-          if (percentageY < 10) percentageY = 10;
-          if (percentageY > 90) percentageY = 90;
+          if (percentageX < 10.1) percentageX = 10.1;
+          if (percentageX > 89.9) percentageX = 89.9;
+          if (percentageY < 10.1) percentageY = 10.1;
+          if (percentageY > 89.9) percentageY = 89.9;
 
           nearestNeighborGraph.setPositionByPercentage(
             index,

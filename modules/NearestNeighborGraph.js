@@ -66,13 +66,15 @@ class NearestNeighborGraph {
       this.positions[initialPosition][1] + forces[initialPosition][1] * k,
     ];
     const max = [
-      this.positions[initialPosition][0] + forces[initialPosition][0],
-      this.positions[initialPosition][1] + forces[initialPosition][1],
+      this.positions[initialPosition][0] + forces[initialPosition][0] * k,
+      this.positions[initialPosition][1] + forces[initialPosition][1] * k,
     ];
     for (let index = 0; index < forces.length; index++) {
       if (index != this.ignore) {
         this.positions[index][0] += forces[index][0] * k;
         this.positions[index][1] += forces[index][1] * k;
+
+        
       }
 
       if (this.positions[index][0] < min[0]) {
@@ -113,8 +115,8 @@ class NearestNeighborGraph {
   }
 
   setPositionByPercentage(index, percentageX, percentageY) {
-    this.scaledPositions[index][0] = (percentageX - 9.5) / 81;
-    this.scaledPositions[index][1] = (percentageY - 9.5) / 81;
+    this.scaledPositions[index][0] = (percentageX - 10) / 80;
+    this.scaledPositions[index][1] = (percentageY - 10) / 80;
     this.positions[index][0] =
       this.scaledPositions[index][0] / this.scale[0] + this.min[0];
     this.positions[index][1] =
