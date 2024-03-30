@@ -84,12 +84,14 @@ class EditorTab {
         action: this.save.bind(this),
         className: "fa-solid fa-floppy-disk", // Using Font Awesome icon here
         title: "Save note (Shift-S)",
+        disableInPreview: false
       },
       {
         name: "close",
         action: this.close.bind(this),
         className: "fa-solid fa-x", // Using Font Awesome icon here
         title: "Discard changes",
+        disableInPreview: false
       },
       "|",
       "guide",
@@ -104,6 +106,10 @@ class EditorTab {
       renderingConfig: {
         codeSyntaxHighlighting: true,
       },
+    });
+
+    document.querySelectorAll('.editor-toolbar > .fa-floppy-disk, .fa-x').forEach(button => {
+      button.classList.add("no-disable"); // This line might vary based on how the buttons are implemented
     });
 
     this.simplemde.codemirror.setValue(this.currentText);
