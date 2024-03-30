@@ -85,6 +85,13 @@ class EditorTab {
         className: "fa-solid fa-floppy-disk", // Using Font Awesome icon here
         title: "Save note (Shift-S)",
       },
+      {
+        name: "close",
+        action: this.close.bind(this),
+        className: "fa-solid fa-x", // Using Font Awesome icon here
+        title: "Discard changes",
+      },
+      "|",
       "guide",
     ];
 
@@ -100,6 +107,10 @@ class EditorTab {
     });
 
     this.simplemde.codemirror.setValue(this.currentText);
+
+    if(this.type == "old"){
+      this.simplemde.togglePreview();
+    }
 
     this.simplemde.codemirror
       .getInputField()
@@ -177,8 +188,10 @@ class EditorTab {
       await notes.finishedAdding();
       notes.updateNote(this.note);
     }
+  }
 
-    
+  close(){
+    noteEditor.removeTab(this);
   }
 }
 export default EditorTab;

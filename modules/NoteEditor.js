@@ -82,18 +82,15 @@ class NoteEditor {
     }
   }
 
-  deleteTab(note) {
-    if (this.tabs.length && this.currentTab.note == note) {
-      this.saveText();
-      return;
+  removeNote(note) {
+    const index = this.tabs.map(tab => tab.note).indexOf(note);
+    this.tabs.splice(index, 1)[0].icon.remove();
+    if (this.tabs.length == 0) {
+      this.addBlankTab();
+    } else {
+      const newIndex = Math.max(index - 1, 0);
+      this.setActiveTab(this.tabs[newIndex]);
     }
-
-    const tabIndex = this.tabs.map((tab) => tab.note).indexOf(note);
-    if (tabIndex == -1) {
-      return;
-    }
-
-    this.tabs.splice(tabIndex, 1)[0].icon.remove();
   }
 
   canComplete() {

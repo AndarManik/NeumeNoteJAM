@@ -66,7 +66,7 @@ class SearchHeaderButton {
     deleteButton.append(iconReader.newIcon("trash", this.iconSize));
     deleteButton.addEventListener("click", (e) => {
       notes.delete(note);
-      noteEditor.deleteTab(note);
+      noteEditor.removeNote(note);
       chunkViewer.handleDelete(note);
       graphViewer.handleNoteChange();
     });
