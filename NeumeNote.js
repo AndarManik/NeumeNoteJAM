@@ -30,7 +30,7 @@ import graphViewer from "./modules/GraphViewer.js";
   
   setInterval(async () => {
     await saveDatabase();
-  }, 30000);
+  }, 15000);
 })();
 
 async function saveDatabase() {
