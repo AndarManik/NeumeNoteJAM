@@ -1,4 +1,3 @@
-import graphViewer from "./GraphViewer.js";
 import ViewHistory from "./chunkviewercomponents/ViewHistory.js";
 import notes from "./Notes.js";
 class ChunkViewer {
@@ -146,7 +145,5 @@ class ChunkViewer {
     );
   }
 }
-
 const chunkViewer = new ChunkViewer();
-
 export default chunkViewer;

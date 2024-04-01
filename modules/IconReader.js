@@ -1,5 +1,4 @@
 class IconReader {
-
   newIcon(name, size){
     const clone = this[name].cloneNode(true);
     clone.style.width = size + "px";
@@ -12,7 +11,6 @@ class IconReader {
 
     const test = await this.fetchSvg("pencil-r.svg")
 
-    console.log(test);
     if(!test) {
       this.folderPath = "/NeumeNoteJAM/Icons"
     }

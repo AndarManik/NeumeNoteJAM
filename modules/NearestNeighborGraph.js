@@ -73,8 +73,6 @@ class NearestNeighborGraph {
       if (index != this.ignore) {
         this.positions[index][0] += forces[index][0] * k;
         this.positions[index][1] += forces[index][1] * k;
-
-        
       }
 
       if (this.positions[index][0] < min[0]) {
@@ -179,7 +177,16 @@ class NearestNeighborGraph {
         forces[rightIndex][1] -= forceYAtt;
       }
     }
-    return forces;
+    const maxForce = 100;
+    return forces.map((force) => {
+      const forceMagnitude = Math.sqrt(force[0] ** 2 + force[1] ** 2);
+      if (forceMagnitude > maxForce) {
+        const scale = maxForce / forceMagnitude;
+        return [force[0] * scale, force[1] * scale];
+      } else {
+        return force;
+      }
+    });
   }
 
   handleNoteChange() {

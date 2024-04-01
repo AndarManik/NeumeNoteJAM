@@ -7,7 +7,7 @@ class GraphViewer {
     this.state = "editor";
     this.thought = new Thought({});
     this.n = 5;
-    this.fps = 25;
+    this.fps = 45;
     this.initialized = false;
   }
 
@@ -110,9 +110,6 @@ class GraphViewer {
     var height = graphSectionBounds.height / 100;
 
     while (this.state == "graph") {
-      //while (this.building) {
-      //await new Promise((resolve) => setTimeout(resolve, 1));
-      //}
       const timePromise = new Promise((resolve) =>
         setTimeout(resolve, 1000 / this.fps)
       );
@@ -121,7 +118,7 @@ class GraphViewer {
 
       console.time("updateTime");
       for (let i = 0; i < numberOfUpdates; i++) {
-        nearestNeighborGraph.update(0.02);
+        nearestNeighborGraph.update(0.1);
       }
       console.timeEnd("updateTime");
 

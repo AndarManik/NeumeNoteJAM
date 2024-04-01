@@ -1,4 +1,4 @@
-import Thought from "./chunkviewercomponents/Thought.js"
+import Thought from "./chunkviewercomponents/Thought.js";
 class ContextBuilder {
   constructor() {
     this.context = [];
@@ -6,7 +6,6 @@ class ContextBuilder {
     this.middleSection = document.getElementById("middleSection");
     this.contextBuilder = document.createElement("div");
     this.contextBuilder.id = "contextBuilder";
-
   }
 
   initialize() {
@@ -14,7 +13,7 @@ class ContextBuilder {
   }
 
   addThought(note, index) {
-    if(this.context.indexOf(note.chunks[index]) != -1){
+    if (this.context.indexOf(note.chunks[index]) != -1) {
       return;
     }
     if (!this.context.length) {
@@ -25,32 +24,31 @@ class ContextBuilder {
     this.context.push(text);
 
     const thoughtClone = this.thought.buildContextthought(note, index);
-    
+
     this.contextThoughts.push(thoughtClone);
     this.contextBuilder.append(thoughtClone);
   }
 
-  getContextPrompt(){
+  getContextPrompt() {
     var contextPrompt = "External Context: {";
-    this.context.forEach(text => {
-        contextPrompt += `, "${text}"`;
+    this.context.forEach((text) => {
+      contextPrompt += `, "${text}"`;
     });
     contextPrompt += "}";
     return contextPrompt;
   }
 
-  removeContext(text){
+  removeContext(text) {
     const index = this.context.indexOf(text);
-        console.log("addThought", index);
+    console.log("addThought", index);
 
-        this.context.splice(index,1);
-        this.contextThoughts.splice(index, 1)[0].remove();
+    this.context.splice(index, 1);
+    this.contextThoughts.splice(index, 1)[0].remove();
 
-        if(!this.context.length){
-            this.contextBuilder.remove();
-        }
+    if (!this.context.length) {
+      this.contextBuilder.remove();
+    }
   }
 }
 const contextBuilder = new ContextBuilder();
-
 export default contextBuilder;

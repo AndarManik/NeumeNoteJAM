@@ -49,8 +49,7 @@ class EditorTab {
     this.containerDiv.classList.add("editorContainer");
     this.editorDiv = document.createElement("textarea");
     this.editorDiv.id = "completeSection";
-    this.editorDiv.placeholder =
-      "New note";
+    this.editorDiv.placeholder = "New note";
 
     this.containerDiv.append(this.editorDiv);
 
@@ -84,14 +83,14 @@ class EditorTab {
         action: this.save.bind(this),
         className: "fa-solid fa-floppy-disk", // Using Font Awesome icon here
         title: "Save note (Shift-S)",
-        disableInPreview: false
+        disableInPreview: false,
       },
       {
         name: "close",
         action: this.close.bind(this),
         className: "fa-solid fa-x", // Using Font Awesome icon here
         title: "Discard changes",
-        disableInPreview: false
+        disableInPreview: false,
       },
       "|",
       "guide",
@@ -108,13 +107,15 @@ class EditorTab {
       },
     });
 
-    document.querySelectorAll('.editor-toolbar > .fa-floppy-disk, .fa-x').forEach(button => {
-      button.classList.add("no-disable"); // This line might vary based on how the buttons are implemented
-    });
+    document
+      .querySelectorAll(".editor-toolbar > .fa-floppy-disk, .fa-x")
+      .forEach((button) => {
+        button.classList.add("no-disable"); // This line might vary based on how the buttons are implemented
+      });
 
     this.simplemde.codemirror.setValue(this.currentText);
 
-    if(this.type == "old"){
+    if (this.type == "old") {
       this.simplemde.togglePreview();
     }
 
@@ -125,7 +126,7 @@ class EditorTab {
           event.preventDefault();
           this.save(this.simplemde);
         }
-        if (event.shiftKey && event.key === 'Enter') {
+        if (event.shiftKey && event.key === "Enter") {
           event.preventDefault();
           this.complete(this.simplemde);
         }
@@ -146,7 +147,6 @@ class EditorTab {
 
   async complete(editor) {
     this.note.addEditorAnimation(this.containerDiv.children[2]);
-    //this.note.addEditorAnimation(this.containerDiv.children[1]);
 
     const cm = editor.codemirror;
     const docContent = cm.getValue();
@@ -156,7 +156,10 @@ class EditorTab {
       docContent.slice(0, index) +
       "[[SmartComplete]]" +
       docContent.slice(index);
-    const stream = await openAI.smartComplete(smartTaged, contextBuilder.getContextPrompt());
+    const stream = await openAI.smartComplete(
+      smartTaged,
+      contextBuilder.getContextPrompt()
+    );
 
     var startPoint = cm.getCursor("start");
 
@@ -167,19 +170,17 @@ class EditorTab {
     }
 
     this.containerDiv.children[2].classList.remove("editorAnimation");
-    //this.containerDiv.children[1].classList.remove("editorAnimation");
   }
-  
+
   async save(editor) {
     const cm = editor.codemirror;
     const text = cm.getValue();
 
-    if(!text) {
+    if (!text) {
       return;
     }
 
     this.note.addRechunkAnimation("searchSection");
-
 
     this.deactivate();
     noteEditor.removeTab(this);
@@ -188,7 +189,6 @@ class EditorTab {
       await this.note.chunkText(text);
       await notes.finishedAdding();
       notes.addNote(this.note);
-
     } else {
       await this.note.reChunkText(text);
       await notes.finishedAdding();
@@ -196,7 +196,7 @@ class EditorTab {
     }
   }
 
-  close(){
+  close() {
     noteEditor.removeTab(this);
   }
 }
