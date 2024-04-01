@@ -178,6 +178,7 @@ class NearestNeighborGraph {
       }
     }
     const maxForce = 100;
+    
     return forces.map((force) => {
       const forceMagnitude = Math.sqrt(force[0] ** 2 + force[1] ** 2);
       if (forceMagnitude > maxForce) {
