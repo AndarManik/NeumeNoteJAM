@@ -26,8 +26,18 @@ import graphViewer from "./modules/GraphViewer.js";
   contextBuilder.initialize();
   graphViewer.initialize();
 
-  window.addEventListener("beforeunload", async (e) => {
-    await notes.finishedProcessing();
-    await Promise.all([notesDatabase.saveNotesData(notes),notesDatabase.saveAPIKey(openAI.apiKey),notesDatabase.saveThemeData(themeEditor.getTheme())])
-  });
+  window.addEventListener("beforeunload", saveDatabase());
+  
+  setInterval(async () => {
+    await saveDatabase();
+  }, 30000);
 })();
+
+async function saveDatabase() {
+  await notes.finishedProcessing();
+  await Promise.all([
+    notesDatabase.saveNotesData(notes),
+    notesDatabase.saveAPIKey(openAI.apiKey),
+    notesDatabase.saveThemeData(themeEditor.getTheme()),
+  ]);
+}
