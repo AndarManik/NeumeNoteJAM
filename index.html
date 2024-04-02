@@ -1,52 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neume Note</title>
-    <link rel="stylesheet" href="NeumeNote.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="notebody">
-      <div id="leftHeader"></div>
-      <div id="leftSection">
-        <textarea
-          id="searchInputSection"
-          placeholder="Search text here. SHIFT + ENTER to search."
-        ></textarea>
-        <div id="searchSection"></div>
-      </div>
-      <div id="middleSection"></div>
-      <div id="rightSection">
-        <div id="rightHeader"></div>
-        <div id="rightSectionBody"></div>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neume Note</title>
+  <link rel="stylesheet" href="NeumeNote.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+</head>
+<body>
+  <div class="notebody">
+    <div id="leftHeader"></div>
+    <div id="leftSection">
+      <textarea id="searchInputSection" placeholder="Search text here. SHIFT + ENTER to search."></textarea>
+      <div id="searchSection"></div>
     </div>
-    <script
-      src="https://kit.fontawesome.com/28244a89f1.js"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script type="module" src="./NeumeNote.js"></script>
-  </body>
+    <div id="middleSection"></div>
+    <div id="rightSection">
+      <div id="rightHeader"></div>
+      <div id="rightSectionBody"></div>
+    </div>
+  </div>
+  <script src="https://kit.fontawesome.com/28244a89f1.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script type="module" src="./NeumeNote.js"></script>
+</body>
 </html>

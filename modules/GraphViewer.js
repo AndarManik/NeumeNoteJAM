@@ -6,13 +6,16 @@ class GraphViewer {
   constructor() {
     this.state = "editor";
     this.thought = new Thought({});
-    this.n = 5;
+    this.n = 6;
     this.fps = 45;
     this.initialized = false;
   }
 
   async initialize() {
-    if (!notes.notes.length) {
+    const noteCounter = notes.notes.reduce((prev, current) => {
+      return prev + current.chunks.length;
+    }, 0);
+    if (noteCounter < 3) {
       return;
     }
     this.isDraggingGlobal = false;
@@ -31,7 +34,10 @@ class GraphViewer {
   }
 
   handleNoteChange() {
-    if (!notes.notes.length || !this.initialized) {
+    const noteCounter = notes.notes.reduce((prev, current) => {
+      return prev + current.chunks.length;
+    }, 0);
+    if (noteCounter < 3 || !this.initialized) {
       return;
     }
     this.building = true;
@@ -55,7 +61,10 @@ class GraphViewer {
   }
 
   handleStyleChange() {
-    if (!notes.notes.length || !this.initialized) {
+    const noteCounter = notes.notes.reduce((prev, current) => {
+      return prev + current.chunks.length;
+    }, 0);
+    if (noteCounter < 3 || !this.initialized) {
       return;
     }
     this.building = true;
@@ -78,7 +87,10 @@ class GraphViewer {
   }
 
   async displayGraph() {
-    if (this.state == "graph" || !notes.notes.length) {
+    const noteCounter = notes.notes.reduce((prev, current) => {
+      return prev + current.chunks.length;
+    }, 0);
+    if (noteCounter < 3 || !notes.notes.length) {
       return;
     }
 

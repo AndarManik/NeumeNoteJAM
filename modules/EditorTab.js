@@ -16,11 +16,7 @@ class EditorTab {
     }
 
     this.isCompleteing = false;
-    this.stopComplete = false;
-    this.isActive = true;
-    this.streamPaused = false;
-    this.textBeforeCursor = "";
-    this.textAfterCursor = "";
+    this.completeCanceled = false;
 
     this.buildIcon();
     this.buildEditor();
@@ -134,20 +130,28 @@ class EditorTab {
   }
 
   activate() {
-    this.isActive = true;
     this.icon.classList.add("isActiveTab");
     document.getElementById("rightSectionBody").append(this.containerDiv);
   }
 
   deactivate() {
-    this.isActive = false;
     this.icon.classList.remove("isActiveTab");
     document.getElementById("rightSectionBody").innerHTML = "";
   }
 
   async complete(editor) {
-    this.note.addEditorAnimation(this.containerDiv.children[2]);
+    const previousButton = editor.toolbar[16];
+    editor.toolbar[16] = {
+      name: "cancel",
+      action: () => {
+        this.completeCanceled = true;
+      },
+      className: "fa-solid fa-pause", // Using Font Awesome icon here
+      title: "Cancel completion (Esc)",
+    };
 
+    this.note.addEditorAnimation(this.containerDiv.children[2]);
+    this.completeCanceled = false;
     const cm = editor.codemirror;
     const docContent = cm.getValue();
     const cursorPosition = cm.getCursor();
@@ -156,20 +160,32 @@ class EditorTab {
       docContent.slice(0, index) +
       "[[SmartComplete]]" +
       docContent.slice(index);
-    const stream = await openAI.smartComplete(
-      smartTaged,
-      contextBuilder.getContextPrompt()
-    );
+    try {
+      const stream = await openAI.smartComplete(
+        smartTaged,
+        contextBuilder.getContextPrompt()
+      );
 
-    var startPoint = cm.getCursor("start");
+      var startPoint = cm.getCursor("start");
 
-    for await (let text of stream) {
-      cm.setCursor(startPoint);
-      cm.replaceRange(text, startPoint);
-      startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
+      for await (let text of stream) {
+        cm.setCursor(startPoint);
+        cm.replaceRange(text, startPoint);
+        startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
+        if (this.completeCanceled) {
+          editor.toolbar[16] = previousButton;
+          this.containerDiv.children[2].classList.remove("editorAnimation");
+          return;
+        }
+      }
+
+      editor.toolbar[16] = previousButton;
+      this.containerDiv.children[2].classList.remove("editorAnimation");
+    } catch (e) {
+      editor.toolbar[16] = previousButton;
+      this.containerDiv.children[2].classList.remove("editorAnimation");
+      throw e;
     }
-
-    this.containerDiv.children[2].classList.remove("editorAnimation");
   }
 
   async save(editor) {

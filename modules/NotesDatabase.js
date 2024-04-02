@@ -145,13 +145,14 @@ class NotesDatabase {
   async deleteData() {
     try {
       const transaction = this.db.transaction(
-        ["apiKey", "notesData"],
+        ["apiKey", "notesData", "themeData"],
         "readwrite"
       );
 
       await Promise.all([
         transaction.objectStore("apiKey").clear(),
         transaction.objectStore("notesData").clear(),
+        transaction.objectStore("themeData").clear(),
       ]);
 
       await new Promise((resolve, reject) => {

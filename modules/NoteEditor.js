@@ -1,8 +1,5 @@
 import EditorTab from "./EditorTab.js";
-import openAI from "./OpenAI.js";
-import notes from "./Notes.js";
 import graphViewer from "./GraphViewer.js";
-import contextBuilder from "./ContextBuilder.js";
 import setEditorStyle from "./SimpleMDEStyle.js";
 
 class NoteEditor {
@@ -93,44 +90,10 @@ class NoteEditor {
     }
   }
 
-  canComplete() {
-    return (
-      !this.currentTab.isCompleteing &&
-      document.activeElement == document.getElementById("completeSection")
-    );
-  }
-
-  getTextWithSmartTag() {
-    const smartTag = this.currentTab.getTextWithSmartTag();
-    const context = contextBuilder.getContextPrompt();
-    return `${context}\n${smartTag}"`;
-  }
-
-  hasText() {
-    const text = document.getElementById("completeSection").value;
-    return Boolean(text);
-  }
-
-  streamTextToTab(textStream) {
-    this.currentTab.streamTextToNote(textStream);
-  }
-
-  streamFailed() {
-    this.currentTab.streamFailed();
-  }
-
   has(note) {
     return this.tabs.map((tab) => tab.note).indexOf(note);
   }
 
-  stopComplete() {
-    this.currentTab.stopComplete = true;
-  }
-
-  insertTab() {
-    console.log("insert tab");
-    this.currentTab.insertTab();
-  }
 }
 
 const noteEditor = new NoteEditor();

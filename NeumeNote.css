@@ -62,7 +62,7 @@ body {
   background-color: var(--editor);
   display: flex;
   align-items: center;
-  height:31px;
+  height: 31px;
   width: 100%;
   overflow-x: scroll;
   scrollbar-width: none; /* Firefox */
@@ -130,9 +130,8 @@ body {
   border-right: 1px solid var(--left);
   background-color: var(--left);
   z-index: 1;
-  position:relatve;
+  position: relatve;
 }
-
 
 #leftSection {
   background-color: var(--search);
@@ -147,7 +146,7 @@ body {
 }
 
 #rightSectionBody {
-  display:flex;
+  display: flex;
   flex-direction: column;
   height: calc(100% - 31px);
   width: 100%;
@@ -193,7 +192,7 @@ textarea::selection {
 }
 
 .editorContainer {
-  width:100%;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -207,7 +206,7 @@ textarea::selection {
   height: 100%;
 }
 
-#middleSection{
+#middleSection {
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -379,19 +378,19 @@ textarea::selection {
 
 .apiInputContainer {
   background: var(--search);
+  height: 100svh;
+  width: 100svw;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  border: 1px solid var(--left);
-  border-radius: 5px;
-  padding: 1em;
+  align-content: center;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .apiInputContainer a {
-  color: var(--highlight);
+  color: var(--active);
 }
 
 .settings {

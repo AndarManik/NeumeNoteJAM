@@ -23,7 +23,7 @@ class DataFileHandler {
     zip.file("data.txt", JSON.stringify(dataToSave));
 
     notes.notes.forEach((note) => {
-      const title = note.title + ".txt";
+      const title = note.title + ".md";
       const text = note.chunks.reduce((acc, value) => acc + value, "");
       zip.file(title, text);
     });
