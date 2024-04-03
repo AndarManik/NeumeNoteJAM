@@ -2,15 +2,13 @@
 
 Neume Note is a front-end only note-taking engine designed to enhance your note-taking experience using the power of ChatGPT. With features like smart complete and smart search, Neume Note transforms your workflow, making note-taking more efficient and intuitive.
 
-
-
 ## Features
 
 ### Smart Complete
-Triggered in the editor, Smart Complete intelligently infers from the context of your text to generate and complete text. This feature works seamlessly within any part of your text, offering real-time, context-aware suggestions to speed up your note-taking process.
+An intuitive tool for editing text which uses the text output from ChatGPT. This text is directly inserted into your document where your cursor is currently. With this tool you can quickly format text, summarize informations, or ask questions.
 
 ### Smart Search
-Initiated from the search bar, Smart Search revolutionizes how you find information in your notes. By accepting natural language queries, it displays relevant sections from your notes that match the query. Clicking on these sections reveals the full notes, allowing you to navigate through your notes via an automatically generated network of related information.
+A streamlined search tool which understands natural language search queries, which speeds up making and finding new documents.
 
 ### Requirements
 
@@ -23,7 +21,6 @@ Initiated from the search bar, Smart Search revolutionizes how you find informat
 
 
 ## Contributions
-
 Contributions are welcome! If you're interested in improving Neume Note or adding new features, please feel free to fork the repository, make your changes, and submit a pull request.
 
 ## What's cooking?
