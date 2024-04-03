@@ -124,14 +124,62 @@ Format:
     prompt,
     context,
     system = `Role:
-  You are an editor for a Markdown document.
+  You are an editor for a Markdown document. The user's message is the Markdown document.
 Task:
-  Determine the best text to replace the "[[SmartComplete]]" in the document. Infer the desired text based on the intructions in the document above or around the "[[Smartomplete]]". If no instructions are present, complete the "User's Message" or treat the "User's message" as a heading.
+  Determine the best text to replace the "[[SmartComplete]]". Infer the desired text based on the intructions above or around the "[[Smartomplete]]". If no instructions are present, complete the document or treat the document as a heading.
   Enhance your text by utilizing the information in the "External Context". Infer based on the user's instruction whether to incorporate information from "External Context".
 Format: 
   Use markdown syntax indicators to format your text. All code indicators are available, except the \`\`\`markdown\`\`\`  indicator.
-  Respond with only the text which would replace the [[SmartComplete]], for a simplified example respond with "dog's" if the "User's Message" is "The man put on his [[SmartComplete]] leash before going for a walk."
-  Include spaces or line breaks at the start and end if needed, for a simplified example respond with " gazelle" if the "User's Message" is "The cheetah hunts the[[SmartComplete]]".
+  Respond with only the text which would replace the [[SmartComplete]], for a simplified example respond with "dog's" if the document is "The man put on his [[SmartComplete]] leash before going for a walk."
+  Include spaces or line breaks at the start and end if needed, for a simplified example respond with " gazelle" if the document is "The cheetah hunts the[[SmartComplete]]".
+
+${context}
+`
+  ) {
+    return this.autoRequest(async () => {
+      try {
+        const response = await fetch(this.completionEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: this.model,
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: prompt },
+            ],
+            stream: true,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok, status: ${response.status}`
+          );
+        }
+
+        return this.streamTextLines(response.body);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    });
+  }
+
+  async smartReplace(
+    prompt,
+    context,
+    system = `Role:
+  You are an editor for a Markdown document. The user's message is the Markdown document.
+Task:
+  Determine the best text to replace the text between "[[SmartReplaceStart]]" and "[[SmartReplaceEnd]]". Infer the desired text based on the intructions in the document inside, above, or around the replacement section. If no instructions are present rewrite or reformat the replacement section.
+  Enhance your text by utilizing the information in the "External Context". Infer based on the user's instruction whether to incorporate information from "External Context".
+Format: 
+  Use markdown syntax indicators to format your text. All code indicators are available, except the \`\`\`markdown\`\`\` indicator.
+  Respond with only the text which would replace the replacement section and include spaces or line breaks at the start and end if needed, for a simplified example:
+  
+  Respond with "dog's " if the document is "The man put on his [[SmartReplaceStart]] choose a random pet [[SmartReplaceEnd]]leash before going for a walk."
 
 ${context}
 `

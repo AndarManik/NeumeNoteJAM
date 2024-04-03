@@ -18,16 +18,19 @@ import graphViewer from "./modules/GraphViewer.js";
 (async function () {
   await Promise.all([notesDatabase.initialize(), iconReader.initialize()]);
   await themeEditor.initialize();
-  await Promise.all([openAI.initialize(), notes.initialize()]);
+  await Promise.all([
+    openAI.initialize(),
+    notes.initialize(),
+    noteEditor.initialize(),
+  ]);
 
-  noteEditor.initialize();
   leftUtility.initialize();
   chunkViewer.initialize();
   contextBuilder.initialize();
   graphViewer.initialize();
 
   window.addEventListener("beforeunload", saveDatabase());
-  
+
   setInterval(async () => {
     await saveDatabase();
   }, 15000);

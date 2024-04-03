@@ -52,7 +52,6 @@ class EditorTab {
     this.activate();
 
     const toolbar = [
-
       {
         name: "smartComplete",
         action: this.complete.bind(this),
@@ -133,31 +132,70 @@ class EditorTab {
     this.completeCanceled = false;
     const cm = editor.codemirror;
     const docContent = cm.getValue();
-    const cursorPosition = cm.getCursor();
-    const index = cm.indexFromPos(cursorPosition);
+    const fromCursor = cm.getCursor("from");
+    const toCursor = cm.getCursor("to");
+    const fromIndex = cm.indexFromPos(fromCursor);
+    const toIndex = cm.indexFromPos(toCursor);
+    var selection = cm.getSelection();
+
+    console.log(fromCursor, toCursor, fromIndex, toIndex, selection);
+
     const smartTaged =
-      docContent.slice(0, index) +
-      "[[SmartComplete]]" +
-      docContent.slice(index);
+      fromIndex == toIndex
+        ? docContent.slice(0, fromIndex) +
+          "[[SmartComplete]]" +
+          docContent.slice(fromIndex)
+        : docContent.slice(0, fromIndex) +
+          "[[SmartReplaceStart]]" +
+          docContent.slice(fromIndex, toIndex) +
+          "[[SmartReplaceEnd]]" +
+          docContent.slice(toIndex);
+
     try {
-      const stream = await openAI.smartComplete(
-        smartTaged,
-        contextBuilder.getContextPrompt()
-      );
+      const stream =
+        fromIndex == toIndex
+          ? await openAI.smartComplete(
+              smartTaged,
+              contextBuilder.getContextPrompt()
+            )
+          : await openAI.smartReplace(
+              smartTaged,
+              contextBuilder.getContextPrompt()
+            );
 
-      var startPoint = cm.getCursor("start");
-
+      var newText = "";
+      var isReplace = true;
+      var startPoint = toCursor;
       for await (let text of stream) {
-        cm.setCursor(startPoint);
-        cm.replaceRange(text, startPoint);
+        newText += text;
+        if (isReplace) {
+          if (text.length > selection.length) {
+            isReplace = false;
+            cm.setCursor(fromCursor);
+            cm.replaceRange(newText, fromCursor, startPoint);
+          } else {
+            selection = selection.slice(text.length);
+            cm.setCursor(fromCursor);
+            cm.replaceRange(newText + selection, fromCursor, startPoint);
+          }
+        } else {
+          cm.setCursor(startPoint);
+          cm.replaceRange(text, startPoint);
+        }
+
         startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
+
         if (this.completeCanceled) {
           this.containerDiv.children[2].classList.remove("editorAnimation");
           return;
         }
       }
 
+      if (isReplace) {
+        cm.replaceRange(newText, fromCursor, startPoint);
+      }
       this.containerDiv.children[2].classList.remove("editorAnimation");
+      console.log(newText);
     } catch (e) {
       this.containerDiv.children[2].classList.remove("editorAnimation");
       throw e;
