@@ -52,22 +52,7 @@ class EditorTab {
     this.activate();
 
     const toolbar = [
-      "bold",
-      "italic",
-      "heading",
-      "|",
-      "quote",
-      "unordered-list",
-      "ordered-list",
-      "|",
-      "code",
-      "link",
-      "image",
-      "|",
-      "preview",
-      "side-by-side",
-      "fullscreen",
-      "|",
+
       {
         name: "smartComplete",
         action: this.complete.bind(this),
@@ -88,6 +73,10 @@ class EditorTab {
         title: "Discard changes",
         disableInPreview: false,
       },
+      "|",
+      "preview",
+      "side-by-side",
+      "fullscreen",
       "|",
       "guide",
     ];
@@ -140,16 +129,6 @@ class EditorTab {
   }
 
   async complete(editor) {
-    const previousButton = editor.toolbar[16];
-    editor.toolbar[16] = {
-      name: "cancel",
-      action: () => {
-        this.completeCanceled = true;
-      },
-      className: "fa-solid fa-pause", // Using Font Awesome icon here
-      title: "Cancel completion (Esc)",
-    };
-
     this.note.addEditorAnimation(this.containerDiv.children[2]);
     this.completeCanceled = false;
     const cm = editor.codemirror;
@@ -173,16 +152,13 @@ class EditorTab {
         cm.replaceRange(text, startPoint);
         startPoint = cm.getCursor("end"); // Update startPoint to the end of the inserted text
         if (this.completeCanceled) {
-          editor.toolbar[16] = previousButton;
           this.containerDiv.children[2].classList.remove("editorAnimation");
           return;
         }
       }
 
-      editor.toolbar[16] = previousButton;
       this.containerDiv.children[2].classList.remove("editorAnimation");
     } catch (e) {
-      editor.toolbar[16] = previousButton;
       this.containerDiv.children[2].classList.remove("editorAnimation");
       throw e;
     }
