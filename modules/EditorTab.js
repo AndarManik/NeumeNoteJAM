@@ -114,6 +114,10 @@ class EditorTab {
           event.preventDefault();
           this.complete(this.simplemde);
         }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          this.completeCanceled = true;
+        }
       });
   }
 
@@ -128,7 +132,20 @@ class EditorTab {
   }
 
   async complete(editor) {
+    if (this.isCompleteing) {
+      this.completeCanceled = true;
+      return;
+    }
+
+    const wandIcon = document.querySelectorAll(
+      ".editor-toolbar > .fa-wand-magic-sparkles"
+    )[0];
+
+    wandIcon.classList.remove("fa-wand-magic-sparkles");
+    wandIcon.classList.add("fa-hand");
+
     this.note.addEditorAnimation(this.containerDiv.children[2]);
+    this.isCompleteing = true;
     this.completeCanceled = false;
     const cm = editor.codemirror;
     const docContent = cm.getValue();
@@ -187,6 +204,9 @@ class EditorTab {
 
         if (this.completeCanceled) {
           this.containerDiv.children[2].classList.remove("editorAnimation");
+          this.isCompleteing = false;
+          wandIcon.classList.remove("fa-hand");
+          wandIcon.classList.add("fa-wand-magic-sparkles");
           return;
         }
       }
@@ -195,9 +215,14 @@ class EditorTab {
         cm.replaceRange(newText, fromCursor, startPoint);
       }
       this.containerDiv.children[2].classList.remove("editorAnimation");
-      console.log(newText);
+      this.isCompleteing = false;
+      wandIcon.classList.remove("fa-hand");
+      wandIcon.classList.add("fa-wand-magic-sparkles");
     } catch (e) {
       this.containerDiv.children[2].classList.remove("editorAnimation");
+      this.isCompleteing = false;
+      wandIcon.classList.remove("fa-hand");
+      wandIcon.classList.add("fa-wand-magic-sparkles");
       throw e;
     }
   }
