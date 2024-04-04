@@ -149,7 +149,7 @@ class ThemeEditor {
   }
 
   getBoldColor() {
-    return `hsl(${this.hue}, ${100}%, ${((this.state == "light") ? 20 : 80 )}%)`
+    return `hsl(${this.hue}, ${100}%, ${((this.state == "light") ? 40 : 80 )}%)`
   }
 }
 

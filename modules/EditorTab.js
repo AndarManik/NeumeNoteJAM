@@ -55,20 +55,20 @@ class EditorTab {
       {
         name: "smartComplete",
         action: this.complete.bind(this),
-        className: "fa-solid fa-wand-magic-sparkles", // Using Font Awesome icon here
+        className: "fa-solid fa-wand-magic-sparkles",
         title: "Smart complete (Shift-Enter)",
       },
       {
         name: "save",
         action: this.save.bind(this),
-        className: "fa-solid fa-floppy-disk", // Using Font Awesome icon here
+        className: "fa-solid fa-floppy-disk",
         title: "Save note (Shift-S)",
         disableInPreview: false,
       },
       {
         name: "close",
         action: this.close.bind(this),
-        className: "fa-solid fa-x", // Using Font Awesome icon here
+        className: "fa-solid fa-x",
         title: "Discard changes",
         disableInPreview: false,
       },
@@ -155,8 +155,6 @@ class EditorTab {
     const toIndex = cm.indexFromPos(toCursor);
     var selection = cm.getSelection();
 
-    console.log(fromCursor, toCursor, fromIndex, toIndex, selection);
-
     const smartTaged =
       fromIndex == toIndex
         ? docContent.slice(0, fromIndex) +
@@ -185,7 +183,9 @@ class EditorTab {
       var startPoint = toCursor;
       for await (let text of stream) {
         newText += text;
+
         if (isReplace) {
+          //The current generated text is shorter than the selection
           if (text.length > selection.length) {
             isReplace = false;
             cm.setCursor(fromCursor);
@@ -196,6 +196,7 @@ class EditorTab {
             cm.replaceRange(newText + selection, fromCursor, startPoint);
           }
         } else {
+          //The current generated text is longer than the selection
           cm.setCursor(startPoint);
           cm.replaceRange(text, startPoint);
         }

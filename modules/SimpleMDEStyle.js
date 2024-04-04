@@ -82,11 +82,11 @@ function setEditorStyle() {
   border-bottom: 1px solid ${rootStyles.getPropertyValue("--left")};
 }
 .editor-toolbar.fullscreen::before {
-  background: ${rootStyles.getPropertyValue("--editor")};
+  background: transparent;
 }
 
 .editor-toolbar.fullscreen::after {
-  background: ${rootStyles.getPropertyValue("--editor")};
+  background: transparent;
 }
 
 .editor-preview-side {
