@@ -15,15 +15,14 @@ async function reSplitEmbed(text, chunks, embeddings) {
   const combinedChunks = [];
   const combinedEmbeddings = [];
 
-  if(modifiedTexts.length) {
+  if (modifiedTexts.length) {
     const modifiedData = await splitEmbedBatch(modifiedTexts);
-    
+
     for (let i = 0; i < modifiedData.texts.length; i++) {
       combinedChunks[modifiedIndexes[i]] = modifiedData.texts[i];
       combinedEmbeddings[modifiedIndexes[i]] = modifiedData.embeddings[i];
     }
   }
-  
 
   chunkIndexes.forEach((chunk, chunkIndex) => {
     chunk.forEach((index) => {
@@ -31,8 +30,6 @@ async function reSplitEmbed(text, chunks, embeddings) {
       combinedEmbeddings[index] = embeddings[chunkIndex];
     });
   });
-
-
 
   return {
     texts: combinedChunks.flat(),
@@ -75,93 +72,111 @@ function reSplit(text, chunks) {
 }
 
 async function splitEmbedBatch(texts) {
-  const textList = await Promise.all(texts.map(async (text) => {
-    const initialChunks = initialSplit(text);
-    const parallelChunksResult = await parallelChunk(initialChunks);
-    return combineChunks(parallelChunksResult);
-  }));
+  const textList = await Promise.all(
+    texts.map(async (text) => {
+      const initialChunks = initialSplit(text);
+      const parallelChunksResult = await parallelChunk(initialChunks);
+      return combineChunks(parallelChunksResult);
+    })
+  );
 
   const flatEmbeddings = await openAI.embedBatch(textList.flat());
   const embeddings = [];
 
   textList.forEach((text, index) => {
-    embeddings[index] = flatEmbeddings.splice(
-      0,
-      text.length
-);
+    embeddings[index] = flatEmbeddings.splice(0, text.length);
   });
-  
-  return {texts: textList, embeddings};
+
+  return { texts: textList, embeddings };
 }
 
 async function splitEmbed(text) {
-  const initialChunks = initialSplit(text);
-  const parallelChunksResult = await parallelChunk(initialChunks);
-  const texts = combineChunks(parallelChunksResult);
+  const texts = await markdownSplitter(text);
   const embeddings = await openAI.embedBatch(texts);
   return { texts, embeddings };
 }
 
-function initialSplit(text) {
-  var startIndex = 0;
-  const initialChunks = [];
-  const characters = Array.from(text);
-  const numberOfChunks = Math.ceil(characters.length / 1000);
-  const initialChunkSize = Math.ceil(characters.length / numberOfChunks);
 
-  for (var i = 0; i < numberOfChunks; i++) {
-    const endIndex = startIndex + initialChunkSize;
-    initialChunks.push(characters.slice(startIndex, endIndex).join(""));
-    startIndex = endIndex;
-  }
-
-  return initialChunks;
+async function markdownSplitter(text) {
+  // Split the text by markdown headers
+  const sections = text.split(/(?=^#{1,6} )/gm);
+  const toFlat = await Promise.all(sections.map(embedSection));
+  return toFlat.flat();
 }
 
-async function parallelChunk(initialChunks) {
-  const resolvedChunks = [];
+async function embedSection(section) {
+  if (section.length < 750) {
+    return [section];
+  } else {
+    const smartSplitIndexes = await smartSplit(section);
+    return recombine(smartSplitIndexes, section);
+  }
+}
 
-  await Promise.all(
-    initialChunks.map(async (chunk, index) => {
-      const partition = await openAI.partition(chunk);
-      console.log(partition);
-      const subParition = [];
-      var tail = chunk;
-      partition.delimiters.forEach((delimiter) => {
-        const indexOf = tail.indexOf(delimiter);
-        if (indexOf == -1) {
-          return;
-        }
-        const lengthOfHead = indexOf + delimiter.length;
-        const head = tail.substring(0, lengthOfHead);
-        tail = tail.substring(lengthOfHead);
-        subParition.push(head.trim());
-      });
+async function smartSplit(section) {
+  const numberOfChunks = Math.ceil(section.length / 375);
+  const initialChunkSize = Math.ceil(section.length / numberOfChunks);
 
-      if (tail.trim()) {
-        subParition.push(tail.trim());
+  const overLapping = [];
+  for (let index = 0; index < numberOfChunks - 2; index++) {
+    overLapping.push(
+      section.substring(
+        index * initialChunkSize,
+        (index + 2) * initialChunkSize
+      )
+    );
+  }
+  overLapping.push(
+    section.substring((numberOfChunks - 2) * initialChunkSize)
+  );
+
+
+  const smartSplitIndexes = await Promise.all(
+    overLapping.map(async (split, index) => {
+      var data = await openAI.split(split);
+      var splitIndex = split.indexOf(data.delimiter);
+      while (splitIndex == -1) {
+        data = await openAI.split(split);
+        splitIndex = split.indexOf(data.delimiter);
       }
-
-      resolvedChunks[index] = subParition;
+      return {
+        index: splitIndex + index * initialChunkSize,
+        delimiter: data,
+      };
     })
   );
 
-  return resolvedChunks;
+
+  smartSplitIndexes.sort((a, b) => a.index - b.index);
+  return smartSplitIndexes;
 }
 
-function combineChunks(parallelChunks) {
-  const texts = [];
-  const numberOfChunks = parallelChunks.length;
+function recombine(smartSplitIndexes, section) {
+  const splitSection = [];
 
-  for (var i = 0; i < numberOfChunks - 1; i++) {
-    texts.push(...parallelChunks[i]);
-    texts[texts.length - 1] += parallelChunks[i + 1][0];
-    parallelChunks[i + 1].shift();
+  let prevIndex = 0;
+  smartSplitIndexes.forEach((nextIndex) => {
+    splitSection.push(section.substring(prevIndex, nextIndex.index));
+    prevIndex = nextIndex.index;
+  });
+  splitSection.push(section.substring(prevIndex));
+
+  const combinedShort = combineShortText(splitSection).filter(string => string !== "");
+  return combinedShort;
+}
+
+function combineShortText(splitSection, n = 375) {
+  for (let index = 0; index < splitSection.length - 1; index++) {
+    if (
+      splitSection[index].length < n &&
+      splitSection[index].length + splitSection[index + 1].length < 2 * n
+    ) {
+      splitSection[index] += splitSection[index + 1];
+      splitSection.splice(index + 1, 1);
+      return combineShortText(splitSection);
+    }
   }
-
-  texts.push(...parallelChunks[numberOfChunks - 1]);
-
-  return texts;
+  return splitSection;
 }
 
 export { splitEmbed, reSplitEmbed };

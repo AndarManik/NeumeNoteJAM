@@ -217,20 +217,22 @@ ${context}
 
   async partition(
     prompt,
-    system = `Task:
-  Identify unique delimiters within a user's message, enabling the segmentation of the message into distinct parts. Each segment should encapsulate a single idea, concept, or entity.
+    system = `Role:
+  You are a text segmenter for a Markdown document. The purpose of this segmentation is to aid the search of information within the document.
+Task:
+  Identify unique delimiters within the user's message to define the segmentation of the message into distinct segments. Each segment should encapsulate a single idea, concept, or entity.
     
 Requirements:
   Delimiters should be extracted from the end of each segment.
   Use several consecutive words as delimiters to ensure a single occurrence within the message. Use up to five words.
-  The output should be formatted as a JSON object with a single key delimiters, associated with a list of identified delimiters.
-    
+     
+Format: 
+  The output should be formatted as a JSON object with a single key "delimiters", associated with a list of identified delimiters.
+
 Example: 
   Given the message "If dogs are mammals, then dogs breathe air. The sun is a star.", an appropriate output would be 
   {"delimiters": ["dogs breath air.", "a star."]}.
-    
-Format: 
-  The result should be a JSON object that lists the identified delimiters.`
+`
   ) {
     return this.autoRequest(async () => {
       const completion = await fetch(this.completionEndpoint, {
@@ -246,7 +248,59 @@ Format:
             { role: "user", content: `${prompt}` },
           ],
           response_format: { type: "json_object" },
-          presence_penalty: -1,
+        }),
+      });
+
+      return JSON.parse((await completion.json()).choices[0].message.content);
+    });
+  }
+
+  async split(
+    prompt,
+    system = `Role:
+  You are a text splitter for a Markdown document.
+Task:
+  You will be provided with a document which may be split into two section. 
+  This split is where the document changes topic.
+  If there is more than one change in topic, then split on the first topic change.
+  Define this split using a unique delimiter string.
+Requirements:
+  Provide an explanation, a delimiter, and a confidence score in a JSON.
+  
+  The explanation should provide a reason for the choosen delimiter.
+  Use a single sentence for the explanation.
+
+  The delimiter should be extracted from the begginning of the second section.
+  Use several consecutive words as a delimiter to ensure a single occurrence within the message. Use up to five words.  
+
+  The confidence score should be a value between 0 and 1, near zero means the text should not be split and near one means the text should be split.
+
+Output Examples:
+  1.
+    Input: "If **dogs** are mammals, then **dogs** breathe air.\n- The sun is a **star**. **Stars** are plasma."
+    Output: {"explanation": "The document transisitions from dogs to stars.", "delimiter": "- The sun", "confidence": 0.9}
+  2.
+    Input: "Cats are friends. Cats are pets. Cats are mammals. Cats are animals."
+    Output: {"explanation": "The document transitions from subjective to objective.", "delimiter": "Cats are pets", "confidence": 0.5}
+  3.
+    Input: "Lizards think differently from humans, in that their nervous systems have evolved separately from ours."  
+    Output: {"explanation": "The document transitions using an appositive.", "delimiter": "in that their nervous", "confidence": 0.1}
+`
+  ) {
+    return this.autoRequest(async () => {
+      const completion = await fetch(this.completionEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo-0125",
+          messages: [
+            { role: "system", content: `${system}` },
+            { role: "user", content: `${prompt}` },
+          ],
+          response_format: { type: "json_object" },
         }),
       });
 

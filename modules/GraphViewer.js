@@ -140,8 +140,8 @@ class GraphViewer {
         const x = nearestNeighborGraph.scaledPositions[childIndex][0];
         const y = nearestNeighborGraph.scaledPositions[childIndex][1];
 
-        const nodeLeft = left + (x * 80 + 10) * width - 11;
-        const nodeTop = top + (y * 80 + 10) * height - 11;
+        const nodeLeft = left + (x * 80 + 10) * width - 8;
+        const nodeTop = top + (y * 80 + 10) * height - 8;
 
         child.style.transform = `translate(${nodeLeft}px, ${nodeTop}px)`;
         bounds.push({ nodeLeft, nodeTop });
@@ -398,10 +398,10 @@ class GraphViewer {
           .setAttribute("stop-color", bool ? color2 : color1);
       }
 
-      line.setAttribute("x1", elem1.nodeLeft + 11);
-      line.setAttribute("y1", elem1.nodeTop + 11);
-      line.setAttribute("x2", elem2.nodeLeft + 11);
-      line.setAttribute("y2", elem2.nodeTop + 11);
+      line.setAttribute("x1", elem1.nodeLeft + 8);
+      line.setAttribute("y1", elem1.nodeTop + 8);
+      line.setAttribute("x2", elem2.nodeLeft + 8);
+      line.setAttribute("y2", elem2.nodeTop + 8);
     }
     return updateLine;
   }
