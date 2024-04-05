@@ -273,8 +273,8 @@ class GraphViewer {
 
         thought.style.position = "absolute";
         thought.style.transform = `translate(${
-          x > 0.5 ? "calc(-100% + 0px)" : "19px"
-        }, ${y > 0.5 ? "calc(-100% + 19px)" : "0px"})`;
+          x > 0.5 ? "calc(-100% + 0px)" : "16px"
+        }, ${y > 0.5 ? "calc(-100% + 16px)" : "0px"})`;
 
         point.append(thought);
         point.style.zIndex = "1000";
