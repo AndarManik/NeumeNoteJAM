@@ -21,9 +21,8 @@ import graphViewer from "./modules/GraphViewer.js";
   await Promise.all([
     openAI.initialize(),
     notes.initialize(),
-    noteEditor.initialize(),
   ]);
-
+  noteEditor.initialize()
   leftUtility.initialize();
   chunkViewer.initialize();
   contextBuilder.initialize();
