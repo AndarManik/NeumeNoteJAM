@@ -176,6 +176,16 @@ function combineShortText(splitSection, n = 375) {
       return combineShortText(splitSection);
     }
   }
+
+  const indexLast = splitSection.length - 1;
+
+  if (
+    splitSection[indexLast].length < n &&
+    splitSection[indexLast].length + splitSection[indexLast - 1].length < 2 * n
+  ) {
+    splitSection[indexLast - 1] += splitSection[indexLast];
+    splitSection.splice(indexLast, 1);
+  }
   return splitSection;
 }
 
