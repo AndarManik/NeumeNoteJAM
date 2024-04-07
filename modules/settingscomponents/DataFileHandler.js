@@ -55,11 +55,11 @@ class DataFileHandler {
       let textFromFile = event.target.result;
       const data = JSON.parse(textFromFile);
       console.log(data);
+      await notesDatabase.saveNotes(data.notes);
+      await notesDatabase.saveTheme(data.theme);
       notes.loadNewData(data.notes);
       themeEditor.setTheme(data.theme);
       chunkViewer.reInitialize();
-      await notesDatabase.saveNotesData(notes);
-      await notesDatabase.saveThemeData(themeEditor.getTheme());
       graphViewer.handleNoteChange();
     };
     reader.readAsText(file);

@@ -165,11 +165,11 @@ function recombine(smartSplitIndexes, section) {
   return combinedShort;
 }
 
-function combineShortText(splitSection, n = 375) {
+function combineShortText(splitSection, min = 500, max = 750) {
   for (let index = 0; index < splitSection.length - 1; index++) {
     if (
-      splitSection[index].length < n &&
-      splitSection[index].length + splitSection[index + 1].length < 2 * n
+      splitSection[index].length < min &&
+      splitSection[index].length + splitSection[index + 1].length < max
     ) {
       splitSection[index] += splitSection[index + 1];
       splitSection.splice(index + 1, 1);
@@ -180,8 +180,8 @@ function combineShortText(splitSection, n = 375) {
   const indexLast = splitSection.length - 1;
 
   if (
-    splitSection[indexLast].length < n &&
-    splitSection[indexLast].length + splitSection[indexLast - 1].length < 2 * n
+    splitSection[indexLast].length < min &&
+    splitSection[indexLast].length + splitSection[indexLast - 1].length < max
   ) {
     splitSection[indexLast - 1] += splitSection[indexLast];
     splitSection.splice(indexLast, 1);

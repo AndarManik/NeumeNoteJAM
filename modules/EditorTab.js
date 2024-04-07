@@ -244,11 +244,11 @@ class EditorTab {
     if (this.type == "new") {
       await this.note.chunkText(text);
       await notes.finishedAdding();
-      notes.addNote(this.note);
+      await notes.addNote(this.note);
     } else {
       await this.note.reChunkText(text);
       await notes.finishedAdding();
-      notes.updateNote(this.note);
+      await notes.updateNote(this.note);
     }
   }
 

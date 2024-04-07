@@ -9,52 +9,120 @@ class NotesDatabase {
     const request = indexedDB.open(this.dbName, this.dbVersion);
 
     request.onupgradeneeded = (event) => {
-        this.db = event.target.result;
+      this.db = event.target.result;
 
-        if (!this.db.objectStoreNames.contains("apiKey")) {
-            this.db.createObjectStore("apiKey", { keyPath: "id", autoIncrement: true });
-        }
+      if (!this.db.objectStoreNames.contains("apiKey")) {
+        this.db.createObjectStore("apiKey", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
 
-        if (!this.db.objectStoreNames.contains("notesData")) {
-            this.db.createObjectStore("notesData", { keyPath: "id", autoIncrement: true });
-        }
+      if (!this.db.objectStoreNames.contains("notesData")) {
+        this.db.createObjectStore("notesData", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
 
-        if (!this.db.objectStoreNames.contains("themeData")) {
-            this.db.createObjectStore("themeData", { keyPath: "id", autoIncrement: true });
-        }
+      if (!this.db.objectStoreNames.contains("themeData")) {
+        this.db.createObjectStore("themeData", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
     };
 
     await new Promise((resolve, reject) => {
-        request.onsuccess = (event) => {
-            this.db = event.target.result;
-            resolve(); // Previously resolved with this.db, now resolved with no value
-        };
+      request.onsuccess = async (event) => {
+        this.db = event.target.result;
+        resolve(); // Previously resolved with this.db, now resolved with no value
+      };
 
-        request.onerror = (event) => {
-            console.log("Database error: ", event.target.errorCode);
-            reject(event.target.error); // Reject the promise with the error
-        };
+      request.onerror = (event) => {
+        console.log("Database error: ", event.target.errorCode);
+        reject(event.target.error); // Reject the promise with the error
+      };
     });
-}
+  }
 
   async getNotes() {
     try {
       const transaction = this.db.transaction(["notesData"], "readonly");
       const store = transaction.objectStore("notesData");
-      const request = store.get(1);
+      const request = store.getAll();
 
-      const result = await new Promise((resolve, reject) => {
+      const results = await new Promise((resolve, reject) => {
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
 
-      return result.data;
+      return results || [];
     } catch (error) {
-      if (error.name !== "NotFoundError") {
-        console.error("IndexedDB error for Notes", error);
-      }
-      return null;
+      console.error("IndexedDB error for Notes", error);
+      return [];
     }
+  }
+
+  async saveNotes(notes) {
+    const transaction = this.db.transaction(["notesData"], "readwrite");
+    const store = transaction.objectStore("notesData");
+  
+    const allPromises = notes.map(note => {
+      const data = {
+        colorCounter: note.colorCounter,
+        text: note.text,
+        chunks: note.chunks,
+        embeddings: note.embeddings,
+        title: note.title,
+      };
+  
+      const request = store.put({ id: note.colorCounter, data });
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    });
+  
+    await Promise.all(allPromises);
+  
+    await transaction.done;
+  }
+
+  
+  async saveNote(note){
+    const data = {
+      colorCounter: note.colorCounter,
+      text: note.text,
+      chunks: note.chunks,
+      embeddings: note.embeddings,
+      title: note.title,
+    };
+    const transaction = this.db.transaction(["notesData"], "readwrite");
+    const store = transaction.objectStore("notesData");
+  
+    // Assuming note.id is the unique identifier for each note.
+    const request = store.put({ id: note.colorCounter, data });
+  
+    await new Promise((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  
+    await transaction.done;
+  }
+
+  async deleteNote(colorCounter) {
+    const transaction = this.db.transaction(["notesData"], "readwrite");
+    const store = transaction.objectStore("notesData");
+    const request = store.delete(colorCounter);
+  
+    await new Promise((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  
+    await transaction.done;
   }
 
   async getAPIKey() {
@@ -77,6 +145,12 @@ class NotesDatabase {
     }
   }
 
+   async saveAPIKey(apiKey) {
+    const transaction = this.db.transaction(["apiKey"], "readwrite");
+    const store = transaction.objectStore("apiKey");
+    store.put({ id: 1, key: apiKey });
+  }
+
   async getTheme() {
     try {
       const transaction = this.db.transaction(["themeData"], "readonly");
@@ -97,50 +171,15 @@ class NotesDatabase {
     }
   }
 
-  async saveAPIKey(apiKey) {
-    const transaction = this.db.transaction(["apiKey"], "readwrite");
-    const store = transaction.objectStore("apiKey");
-    await transaction.done;
-    store.put({ id: 1, key: apiKey });
-  }
-
-  async saveNotesData(notes) {
-    const colorCounter = notes.notes.length
-      ? notes.notes.reduce(
-          (max, note) => (note.colorCounter > max ? note.colorCounter : max),
-          notes.notes[0].colorCounter
-        )
-      : 0;
-
-    notes = notes.notes.map((note) => {
-      return {
-        colorCounter: note.colorCounter,
-        text: note.text,
-        chunks: note.chunks,
-        embeddings: note.embeddings,
-        title: note.title,
-      };
-    });
-
-    const data = { colorCounter, notes };
-    const transaction = this.db.transaction(["notesData"], "readwrite");
-    const store = transaction.objectStore("notesData");
-    await transaction.done;
-    store.put({
-      id: 1,
-      data,
-    });
-  }
-
-  async saveThemeData(theme) {
+  async saveTheme(theme) {
     const transaction = this.db.transaction(["themeData"], "readwrite");
     const store = transaction.objectStore("themeData");
-    await transaction.done;
     store.put({
       id: 1,
       theme,
     });
   }
+
 
   async deleteData() {
     try {
@@ -165,8 +204,6 @@ class NotesDatabase {
       throw new Error(error.message);
     }
   }
-
-  
 }
 
 const notesDatabase = new NotesDatabase();

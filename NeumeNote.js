@@ -38,8 +38,7 @@ import graphViewer from "./modules/GraphViewer.js";
 async function saveDatabase() {
   await notes.finishedProcessing();
   await Promise.all([
-    notesDatabase.saveNotesData(notes),
     notesDatabase.saveAPIKey(openAI.apiKey),
-    notesDatabase.saveThemeData(themeEditor.getTheme()),
+    notesDatabase.saveTheme(themeEditor.getTheme()),
   ]);
 }

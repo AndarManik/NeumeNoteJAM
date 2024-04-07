@@ -12,22 +12,23 @@ class Notes {
   }
 
   async initialize() {
-    const data = await notesDatabase.getNotes();
-    console.log(data);
-    if (!data) {
+    const notesData = await notesDatabase.getNotes();
+    console.log(notesData);
+    if (!notesData) {
       return;
     }
 
-    this.colorCounter = data.colorCounter;
-    this.notes = data.notes.map((noteData) => {
+    this.notes = notesData.map((noteData) => {
       return new Note(
-        noteData.colorCounter,
-        noteData.text,
-        noteData.chunks,
-        noteData.embeddings,
-        noteData.title
+        noteData.data.colorCounter,
+        noteData.data.text,
+        noteData.data.chunks,
+        noteData.data.embeddings,
+        noteData.data.title
       );
     });
+
+    this.colorCounter = Math.max(0, ...this.notes.map(note => note.colorCounter));
 
     document
       .getElementById("searchInputSection")
@@ -82,37 +83,45 @@ class Notes {
     return new Note(this.colorCounter);
   }
 
-  addNote(note) {
+  async addNote(note) {
     this.isAdding = true;
     this.notes.push(note);
+    
+    chunkViewer.handleRechunk(note);
+    const databasePromise = notesDatabase.saveNote(note);
+    graphViewer.handleNoteChange();
+    await databasePromise
+    chunkViewer.displayNotes(note);
     document
       .getElementById("searchSection")
       .classList.remove("rechunkAnimation");
-    chunkViewer.handleRechunk(note);
-    graphViewer.handleNoteChange();
-    chunkViewer.displayNotes(note);
     this.isAdding = false;
   }
 
-  updateNote(note) {
+  async updateNote(note) {
     this.isAdding = true;
-
-    document
-      .getElementById("searchSection")
-      .classList.remove("rechunkAnimation");
+    
     chunkViewer.handleRechunk(note);
+    const databasePromise = notesDatabase.saveNote(note);
+
     graphViewer.handleNoteChange();
+    await databasePromise;
 
     if (!chunkViewer.isCurrentHistory(note)) {
       chunkViewer.displayNotes(note);
     } else {
       chunkViewer.setNoteSearchSection(note);
     }
+
+    document
+      .getElementById("searchSection")
+      .classList.remove("rechunkAnimation");
     this.isAdding = false;
   }
 
   delete(note) {
     const noteIndex = this.notes.findIndex((n) => n === note);
+    notesDatabase.deleteNote(note.colorCounter);
     if (noteIndex !== -1) {
       this.notes.splice(noteIndex, 1);
     }

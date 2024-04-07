@@ -24,7 +24,7 @@ class Note {
   }
 
   async chunkText(text) {
-    this.isProssing = true;
+    this.isProcessing = true;
 
     var titlePromise;
     if(!this.title) {
@@ -39,16 +39,15 @@ class Note {
       alert("embedding Null");
     }
     await titlePromise;
-    this.isProssing = false;
+    this.isProcessing = false;
   }
 
   async setTitle(text) {
-    console.log(text);
     this.title = await openAI.titleComplete(text);
   }
 
   async reChunkText(text) {
-    this.isProssing = true;
+    this.isProcessing = true;
 
     const { texts, embeddings } = await reSplitEmbed(
       text,
@@ -62,8 +61,7 @@ class Note {
     if(!embeddings){
       alert("embedding Null");
     }
-        this.isProssing = false;
-
+        this.isProcessing = false;
   }
 
   addRechunkAnimation(elementId) {
