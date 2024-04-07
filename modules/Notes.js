@@ -17,18 +17,32 @@ class Notes {
     if (!notesData) {
       return;
     }
+    if (notesData[0] && notesData[0].data) {
+      this.notes = notesData[0].data.notes.map((noteData) => {
+        return new Note(
+          noteData.data.colorCounter,
+          noteData.data.text,
+          noteData.data.chunks,
+          noteData.data.embeddings,
+          noteData.data.title
+        );
+      });
+    } else {
+      this.notes = notesData.map((noteData) => {
+        return new Note(
+          noteData.data.colorCounter,
+          noteData.data.text,
+          noteData.data.chunks,
+          noteData.data.embeddings,
+          noteData.data.title
+        );
+      });
+    }
 
-    this.notes = notesData.map((noteData) => {
-      return new Note(
-        noteData.data.colorCounter,
-        noteData.data.text,
-        noteData.data.chunks,
-        noteData.data.embeddings,
-        noteData.data.title
-      );
-    });
-
-    this.colorCounter = Math.max(0, ...this.notes.map(note => note.colorCounter));
+    this.colorCounter = Math.max(
+      0,
+      ...this.notes.map((note) => note.colorCounter)
+    );
 
     document
       .getElementById("searchInputSection")
@@ -86,11 +100,11 @@ class Notes {
   async addNote(note) {
     this.isAdding = true;
     this.notes.push(note);
-    
+
     chunkViewer.handleRechunk(note);
     const databasePromise = notesDatabase.saveNote(note);
     graphViewer.handleNoteChange();
-    await databasePromise
+    await databasePromise;
     chunkViewer.displayNotes(note);
     document
       .getElementById("searchSection")
@@ -100,7 +114,7 @@ class Notes {
 
   async updateNote(note) {
     this.isAdding = true;
-    
+
     chunkViewer.handleRechunk(note);
     const databasePromise = notesDatabase.saveNote(note);
 
