@@ -126,12 +126,12 @@ class GraphViewer {
         setTimeout(resolve, 1000 / this.fps)
       );
       console.time("onepass" + index);
-      const startTime = performance.now();
 
       console.time("updateTime");
-      for (let i = 0; i < numberOfUpdates; i++) {
-        nearestNeighborGraph.update(0.1);
-      }
+
+    nearestNeighborGraph.update(0.1);
+
+
       console.timeEnd("updateTime");
 
       const bounds = [];
@@ -148,20 +148,6 @@ class GraphViewer {
       });
 
       this.lines.forEach((line) => line(bounds));
-
-      renderTime += performance.now() - startTime;
-
-      if (index % this.fps == this.fps - 1) {
-        const singleUpdateTime = renderTime / this.fps;
-        console.log(singleUpdateTime);
-        if (singleUpdateTime < 1000 / this.fps - 1) {
-          numberOfUpdates = Math.min(50, numberOfUpdates + 1);
-        }
-        if (singleUpdateTime > 1000 / this.fps + 1) {
-          numberOfUpdates = Math.max(1, numberOfUpdates - 1);
-        }
-        renderTime = 0;
-      }
 
       if (index % (this.fps / 4) == this.fps / 4 - 1) {
         const graphSectionBounds = document

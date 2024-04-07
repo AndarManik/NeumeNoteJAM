@@ -17,7 +17,7 @@ class Notes {
     if (!notesData) {
       return;
     }
-    if (notesData[0] && notesData[0].data) {
+    if (notesData[0] && notesData[0].data && notesData[0].data.notes) {
       this.notes = notesData[0].data.notes.map((noteData) => {
         return new Note(
           noteData.data.colorCounter,
