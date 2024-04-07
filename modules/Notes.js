@@ -27,6 +27,7 @@ class Notes {
           noteData.data.title
         );
       });
+      await notesDatabase.saveNotes(this.notes);
     } else {
       this.notes = notesData.map((noteData) => {
         return new Note(
