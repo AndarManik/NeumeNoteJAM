@@ -7,7 +7,7 @@ class GraphViewer {
     this.state = "editor";
     this.thought = new Thought({});
     this.n = 6;
-    this.fps = 45;
+    this.fps = 15;
     this.initialized = false;
   }
 
@@ -126,16 +126,12 @@ class GraphViewer {
         setTimeout(resolve, 1000 / this.fps)
       );
       console.time("onepass" + index);
-
       console.time("updateTime");
-
-    nearestNeighborGraph.update(0.1);
-
-
+      for (let index = 0; index < (30 / this.fps); index++) {
+        nearestNeighborGraph.update(0.1);
+      }
       console.timeEnd("updateTime");
-
       const bounds = [];
-
       this.graphSection.childNodes.forEach((child, childIndex) => {
         const x = nearestNeighborGraph.scaledPositions[childIndex][0];
         const y = nearestNeighborGraph.scaledPositions[childIndex][1];
@@ -146,21 +142,7 @@ class GraphViewer {
         child.style.transform = `translate(${nodeLeft}px, ${nodeTop}px)`;
         bounds.push({ nodeLeft, nodeTop });
       });
-
       this.lines.forEach((line) => line(bounds));
-
-      if (index % (this.fps / 4) == this.fps / 4 - 1) {
-        const graphSectionBounds = document
-          .getElementById("graphSection")
-          .getBoundingClientRect();
-
-        left = graphSectionBounds.left;
-        top = graphSectionBounds.top;
-        width = graphSectionBounds.width / 100;
-        height = graphSectionBounds.height / 100;
-      }
-
-      console.log(numberOfUpdates);
       console.timeEnd("onepass" + index++);
       await timePromise;
     }
@@ -183,6 +165,7 @@ class GraphViewer {
       const point = document.createElement("div");
       point.classList.add("graphTab");
       point.style.position = "absolute";
+      point.style.transition = `transform ${1000 / this.fps}ms linear`;
 
       const x = position[0];
       const y = position[1];
