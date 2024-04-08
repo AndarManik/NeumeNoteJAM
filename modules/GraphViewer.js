@@ -127,7 +127,7 @@ class GraphViewer {
       );
       console.time("onepass" + index);
       console.time("updateTime");
-      for (let index = 0; index < (30 / this.fps); index++) {
+      for (let index = 0; index < (90 / this.fps); index++) {
         nearestNeighborGraph.update(0.1);
       }
       console.timeEnd("updateTime");
