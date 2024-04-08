@@ -47,6 +47,7 @@ function setEditorStyle() {
         border: none;
         border-radius: 0px;
         font-size: 14px;
+        line-height:22px;
     }
 
     .CodeMirror-selected {
@@ -60,7 +61,26 @@ function setEditorStyle() {
     .editor-preview,.editor-preview-side {
         background: ${rootStyles.getPropertyValue("--editor")};
         font-size: 14px;
+        line-height: 22px;
+    }
 
+    .editor-preview h1:first-of-type, .editor-preview h1:first-of-type{
+      margin-top: 0px;
+      margin-bottom: 40px;
+    }
+
+    .editor-preview h1, .editor-preview-side h1 {
+      margin-top: 49px;
+      margin-bottom: 42px;
+    }
+
+    .editor-preview h2, .editor-preview-side h2 {
+      margin-top: 35px;
+      margin-bottom: 28px;
+    }
+    .editor-preview h3 , .editor-preview-side h3{
+      margin-top: 21px;
+      margin-bottom: 14px;
     }
 
     .editor-preview strong{
@@ -119,6 +139,7 @@ function setEditorStyle() {
     code {
       font-family: "Roboto Mono", monospace;
       font-size: 14px;
+      line-height: 22px;
     }
 `;
 

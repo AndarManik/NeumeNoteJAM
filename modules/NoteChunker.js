@@ -16,7 +16,9 @@ async function reSplitEmbed(text, chunks, embeddings) {
   const combinedEmbeddings = [];
 
   if (modifiedTexts.length) {
-    const modifiedData = await splitEmbedBatch(modifiedTexts);
+    const modifiedData = await promise.all(
+      modifiedTexts.map((text) => splitEmbed(text))
+    );
 
     for (let i = 0; i < modifiedData.texts.length; i++) {
       combinedChunks[modifiedIndexes[i]] = modifiedData.texts[i];
@@ -96,7 +98,6 @@ async function splitEmbed(text) {
   return { texts, embeddings };
 }
 
-
 async function markdownSplitter(text) {
   // Split the text by markdown headers
   const sections = text.split(/(?=^#{1,6} )/gm);
@@ -126,10 +127,7 @@ async function smartSplit(section) {
       )
     );
   }
-  overLapping.push(
-    section.substring((numberOfChunks - 2) * initialChunkSize)
-  );
-
+  overLapping.push(section.substring((numberOfChunks - 2) * initialChunkSize));
 
   const smartSplitIndexes = await Promise.all(
     overLapping.map(async (split, index) => {
@@ -146,7 +144,6 @@ async function smartSplit(section) {
     })
   );
 
-
   smartSplitIndexes.sort((a, b) => a.index - b.index);
   return smartSplitIndexes;
 }
@@ -161,7 +158,9 @@ function recombine(smartSplitIndexes, section) {
   });
   splitSection.push(section.substring(prevIndex));
 
-  const combinedShort = combineShortText(splitSection).filter(string => string !== "");
+  const combinedShort = combineShortText(splitSection).filter(
+    (string) => string !== ""
+  );
   return combinedShort;
 }
 
