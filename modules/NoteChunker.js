@@ -7,41 +7,6 @@ import openAI from "./OpenAI.js";
 */
 
 async function reSplitEmbed(text, chunks, embeddings) {
-  const { modifiedTexts, modifiedIndexes, chunkIndexes } = reSplit(
-    text,
-    chunks
-  );
-
-  const combinedChunks = [];
-  const combinedEmbeddings = [];
-
-  if (modifiedTexts.length) {
-    const modifiedData = await promise.all(
-      modifiedTexts.map((text) => splitEmbed(text))
-    );
-
-    for (let i = 0; i < modifiedData.texts.length; i++) {
-      combinedChunks[modifiedIndexes[i]] = modifiedData.texts[i];
-      combinedEmbeddings[modifiedIndexes[i]] = modifiedData.embeddings[i];
-    }
-  }
-
-  chunkIndexes.forEach((chunk, chunkIndex) => {
-    chunk.forEach((index) => {
-      combinedChunks[index] = chunks[chunkIndex];
-      combinedEmbeddings[index] = embeddings[chunkIndex];
-    });
-  });
-
-  return {
-    texts: combinedChunks.flat(),
-    embeddings: combinedEmbeddings.flatMap((item) =>
-      Array.isArray(item[0]) ? item : [item]
-    ),
-  };
-}
-
-function reSplit(text, chunks) {
   const regexPattern = chunks
     .map((chunk) => chunk.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"))
     .join("|");
@@ -51,45 +16,26 @@ function reSplit(text, chunks) {
     .split(splitRegex)
     .filter((element) => element.trim() !== "");
 
-  splitTexts
-    .map((text) => (chunks.indexOf(text) == -1 ? initialSplit(text) : text))
-    .flat();
+  const newChunks = [];
+  const newEmbeddings = [];
 
-  const modifiedTexts = [];
-  const modifiedIndexes = [];
-  const chunkIndexes = chunks.map(() => []);
-
-  splitTexts.forEach((splitText, index) => {
-    const indexChunk = chunks.indexOf(splitText);
-    if (indexChunk == -1) {
-      modifiedTexts.push(splitText);
-      modifiedIndexes.push(index);
-      return;
+  for (let splitIndex = 0; splitIndex < splitTexts.length; splitIndex++) {
+    const index = chunks.indexOf(splitTexts[splitIndex]);
+    if(index == - 1){
+      const data = await splitEmbed(splitTexts[splitIndex]);
+      newChunks.push(...data.texts)
+      newEmbeddings.push(...data.embeddings);
     }
-
-    chunkIndexes[indexChunk].push(index);
-  });
-
-  return { modifiedTexts, modifiedIndexes, chunkIndexes };
-}
-
-async function splitEmbedBatch(texts) {
-  const textList = await Promise.all(
-    texts.map(async (text) => {
-      const initialChunks = initialSplit(text);
-      const parallelChunksResult = await parallelChunk(initialChunks);
-      return combineChunks(parallelChunksResult);
-    })
-  );
-
-  const flatEmbeddings = await openAI.embedBatch(textList.flat());
-  const embeddings = [];
-
-  textList.forEach((text, index) => {
-    embeddings[index] = flatEmbeddings.splice(0, text.length);
-  });
-
-  return { texts: textList, embeddings };
+    else {
+      newChunks.push(chunks[index]);
+      newEmbeddings.push(embeddings[index]);
+    }
+  }
+  
+  return {
+    texts: newChunks,
+    embeddings: newEmbeddings
+  };
 }
 
 async function splitEmbed(text) {
