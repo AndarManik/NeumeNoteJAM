@@ -50,6 +50,10 @@ function setEditorStyle() {
         line-height:22px;
     }
 
+    .CodeMirror-wrap pre {
+      word-break: break-all;
+    }
+
     .CodeMirror-selected {
       background: ${rootStyles.getPropertyValue("--highlight")};
     }
