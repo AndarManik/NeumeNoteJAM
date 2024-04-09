@@ -51,7 +51,7 @@ function setEditorStyle() {
     }
 
     .CodeMirror-wrap pre {
-      word-break: break-all;
+      word-break: break-word;
     }
 
     .CodeMirror-selected {
