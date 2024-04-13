@@ -8,7 +8,6 @@ function setEditorStyle() {
       opacity: 1;
       border: none;
       border-radius: 0px;
-
     }
 
     .editor-toolbar:hover{
@@ -97,10 +96,14 @@ function setEditorStyle() {
       color: ${themeEditor.getBoldColor()};
     }
 
+.editor-preview a,.editor-preview-side a {
+  color: ${themeEditor.getLinkColor()};
+}
+
 .editor-preview pre,.editor-preview-side pre {
   background: ${rootStyles.getPropertyValue("--editor")};
-
 }
+
 .editor-toolbar.fullscreen {
   background: ${rootStyles.getPropertyValue("--editor")};
   border-bottom: 1px solid ${rootStyles.getPropertyValue("--left")};

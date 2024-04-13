@@ -149,6 +149,10 @@ class ThemeEditor {
   }
 
   getBoldColor() {
+    return `hsl(${this.hue}, ${40}%, ${((this.state == "light") ? 40 : 80 )}%)`
+  }
+
+  getLinkColor() {
     return `hsl(${this.hue}, ${100}%, ${((this.state == "light") ? 40 : 80 )}%)`
   }
 }
