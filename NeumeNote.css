@@ -271,7 +271,7 @@ textarea::selection {
 }
 
 #searchSectionHeader {
-  height: 28px;
+  height: 2em;
   border-bottom: 1px solid var(--left);
   display: flex;
   align-items: center;
@@ -341,7 +341,10 @@ textarea::selection {
   padding-left: 1em;
   padding-right: 0.25em;
   padding-top: 0.25em;
-  height: 1em;
+  margin-bottom: 0.75em;
+
+  height: 1.5em;
+  position: relative;
 }
 
 .thoughtButton {
@@ -354,6 +357,7 @@ textarea::selection {
   display: flex;
   align-items: center;
   transition: background-color 0.25s ease-in-out; /* Transition effect */
+  position: absolute;
 }
 
 .thoughtButton:hover {
@@ -368,6 +372,7 @@ textarea::selection {
 .distanceIndex {
   padding: 0.15em;
   font-size: 12px;
+  margin-left: 1em;
 }
 
 .distanceColorBox {

@@ -23,7 +23,7 @@ class ContextBuilder {
     const text = note.chunks[index];
     this.context.push(text);
 
-    const thoughtClone = this.thought.buildContextthought(note, index);
+    const thoughtClone = this.thought.buildContextThought(note, index);
 
     this.contextThoughts.push(thoughtClone);
     this.contextBuilder.append(thoughtClone);

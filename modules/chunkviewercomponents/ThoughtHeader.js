@@ -7,49 +7,24 @@ class ThoughtHeader {
   constructor(callbacks) {
     this.callbacks = callbacks;
     this.iconSize = 14;
+    this.searchSectionWidth =
+      document.getElementById("searchSection").offsetWidth;
+    console.log(this.searchSectionWidth);
   }
 
   buildAllNoteHeader(note) {
     const thoughtHeader = document.createElement("div");
     thoughtHeader.classList.add("thoughtHeader");
-
-    const readButton = document.createElement("div");
-    readButton.classList.add("thoughtButton");
-    readButton.append(iconReader.newIcon("file", this.iconSize));
-    readButton.addEventListener("click", (e) => {
-      chunkViewer.displayNotes(note);
-    });
-    readButton.setAttribute("title", "Read note");
-    thoughtHeader.appendChild(readButton);
-
-    const noteIdentifier = this.newNoteIdentifier(note);
-    thoughtHeader.appendChild(noteIdentifier);
-
+    thoughtHeader.appendChild(this.buildReadButton(note));
+    thoughtHeader.appendChild(this.newNoteIdentifier(note));
     return thoughtHeader;
   }
 
   buildNoteHeader(note, index) {
     const thoughtHeader = document.createElement("div");
     thoughtHeader.classList.add("thoughtHeader");
-
-    const searchButton = document.createElement("div");
-    searchButton.classList.add("thoughtButton");
-    searchButton.append(iconReader.newIcon("search", this.iconSize));
-    searchButton.addEventListener("click", (e) => {
-      notes.searchEmbedding(note.embeddings[index]);
-    });
-    searchButton.setAttribute("title", "Search");
-    thoughtHeader.appendChild(searchButton);
-
-    const useButton = document.createElement("div");
-    useButton.classList.add("thoughtButton");
-    useButton.append(iconReader.newIcon("stack", this.iconSize));
-    useButton.addEventListener("click", (e) => {
-      contextBuilder.addThought(note, index);
-    });
-    useButton.setAttribute("title", "Add to context");
-    thoughtHeader.appendChild(useButton);
-
+    thoughtHeader.appendChild(this.buildSearchButton(note, index));
+    thoughtHeader.appendChild(this.buildUseButton(note, index));
     return thoughtHeader;
   }
 
@@ -62,66 +37,18 @@ class ThoughtHeader {
     distanceColor.style.backgroundColor = this.green2red(distance / 2);
     thoughtHeader.appendChild(distanceColor);
 
-    const distanceIndex = document.createElement("div");
-    distanceIndex.classList.add("distanceIndex");
-    distanceIndex.textContent = distance.toFixed(3);
-    thoughtHeader.appendChild(distanceIndex);
-
-    const searchButton = document.createElement("div");
-    searchButton.classList.add("thoughtButton");
-    searchButton.append(iconReader.newIcon("search", this.iconSize));
-    searchButton.addEventListener("click", (e) => {
-      notes.searchEmbedding(note.embeddings[index]);
-    });
-    searchButton.setAttribute("title", "Search");
-    thoughtHeader.appendChild(searchButton);
-
-    const readButton = document.createElement("div");
-    readButton.classList.add("thoughtButton");
-    readButton.append(iconReader.newIcon("file", this.iconSize));
-    readButton.addEventListener("click", (e) => {
-      chunkViewer.displayNotes(note);
-    });
-    readButton.setAttribute("title", "Read note");
-    thoughtHeader.appendChild(readButton);
-
-    const useButton = document.createElement("div");
-    useButton.classList.add("thoughtButton");
-    useButton.append(iconReader.newIcon("stack", this.iconSize));
-    useButton.addEventListener("click", (e) => {
-      contextBuilder.addThought(note,index);
-    });
-    useButton.setAttribute("title", "Add to context");
-    thoughtHeader.appendChild(useButton);
-
-    const noteIdentifier = this.newNoteIdentifier(note);
-    thoughtHeader.appendChild(noteIdentifier);
-
+    thoughtHeader.appendChild(this.buildSearchButton(note, index));
+    thoughtHeader.appendChild(this.buildReadButton(note));
+    thoughtHeader.appendChild(this.buildUseButton(note, index));
+    thoughtHeader.appendChild(this.newNoteIdentifier(note));
     return thoughtHeader;
   }
 
   buildGraphHeader(note, index) {
     const thoughtHeader = document.createElement("div");
     thoughtHeader.classList.add("thoughtHeader");
-
-    const searchButton = document.createElement("div");
-    searchButton.classList.add("thoughtButton");
-    searchButton.append(iconReader.newIcon("search", this.iconSize));
-    searchButton.addEventListener("click", (e) => {
-      notes.searchEmbedding(note.embeddings[index]);
-    });
-    searchButton.setAttribute("title", "Search");
-    thoughtHeader.appendChild(searchButton);
-
-    const readButton = document.createElement("div");
-    readButton.classList.add("thoughtButton");
-    readButton.append(iconReader.newIcon("file", this.iconSize));
-    readButton.addEventListener("click", (e) => {
-      chunkViewer.displayNotes(note);
-    });
-    readButton.setAttribute("title", "Read note");
-    thoughtHeader.appendChild(readButton);
-
+    thoughtHeader.appendChild(this.buildSearchButton(note, index));
+    thoughtHeader.appendChild(this.buildReadButton(note));
     return thoughtHeader;
   }
 
@@ -136,8 +63,17 @@ class ThoughtHeader {
       contextBuilder.removeContext(note.chunks[index]);
     });
     removeButton.setAttribute("title", "Remove");
-    thoughtHeader.appendChild(removeButton);
+    removeButton.style.visibility = "hidden";
 
+    thoughtHeader.appendChild(removeButton);
+    thoughtHeader.appendChild(this.buildSearchButton(note, index));
+    thoughtHeader.appendChild(this.buildReadButton(note));
+    const noteIdentifier = this.newNoteIdentifier(note);
+    thoughtHeader.appendChild(noteIdentifier);
+    return thoughtHeader;
+  }
+
+  buildSearchButton(note, index) {
     const searchButton = document.createElement("div");
     searchButton.classList.add("thoughtButton");
     searchButton.append(iconReader.newIcon("search", this.iconSize));
@@ -145,8 +81,13 @@ class ThoughtHeader {
       notes.searchEmbedding(note.embeddings[index]);
     });
     searchButton.setAttribute("title", "Search");
-    thoughtHeader.appendChild(searchButton);
+    searchButton.style.left = `${this.searchSectionWidth / 4}px`;
+    searchButton.style.transform = "translateX(-50%)";
+    searchButton.style.visibility = "hidden";
+    return searchButton;
+  }
 
+  buildReadButton(note){
     const readButton = document.createElement("div");
     readButton.classList.add("thoughtButton");
     readButton.append(iconReader.newIcon("file", this.iconSize));
@@ -154,12 +95,24 @@ class ThoughtHeader {
       chunkViewer.displayNotes(note);
     });
     readButton.setAttribute("title", "Read note");
-    thoughtHeader.appendChild(readButton);
+    readButton.style.left = `${(2 * this.searchSectionWidth) / 4}px`;
+    readButton.style.transform = "translateX(-50%)";
+    readButton.style.visibility = "hidden";
+    return readButton;
+  }
 
-    const noteIdentifier = this.newNoteIdentifier(note);
-    thoughtHeader.appendChild(noteIdentifier);
-
-    return thoughtHeader;
+  buildUseButton(note, index){
+    const useButton = document.createElement("div");
+    useButton.classList.add("thoughtButton");
+    useButton.append(iconReader.newIcon("stack", this.iconSize));
+    useButton.addEventListener("click", (e) => {
+      contextBuilder.addThought(note, index);
+    });
+    useButton.setAttribute("title", "Add to context");
+    useButton.style.left = `${(3 * this.searchSectionWidth) / 4}px`;
+    useButton.style.transform = "translateX(-50%)";
+    useButton.style.visibility = "hidden";
+    return useButton;
   }
 
   newNoteIdentifier(note) {

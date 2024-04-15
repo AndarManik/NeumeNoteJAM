@@ -175,7 +175,7 @@ class GraphViewer {
       point.style.background = noteThought[index].getColor();
       point.style.boxShadow = `-0px 0px 50px hsl(${noteThought[index].innerHue}, 100%, 50%, 0.33)`;
 
-      const thought = this.thought.buildGraphthought(
+      const thought = this.thought.buildGraphThought(
         noteThought[index],
         indexes[index]
       );
